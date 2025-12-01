@@ -1,34 +1,45 @@
 import type { UR } from "./ur.js";
 import { URError } from "./error.js";
+import { FountainEncoder, type FountainPart } from "./fountain.js";
+import { encodeBytewords, BytewordsStyle } from "./utils.js";
 
 /**
  * Encodes a UR as multiple parts using fountain codes.
  *
  * This allows large CBOR structures to be split into multiple UR strings
- * that can be transmitted separately and reassembled.
+ * that can be transmitted separately and reassembled. The encoder uses
+ * fountain codes for resilient transmission over lossy channels.
+ *
+ * For single-part URs (small payloads), use the regular UR.string() method.
  *
  * @example
  * ```typescript
  * const ur = UR.new('bytes', cbor);
  * const encoder = new MultipartEncoder(ur, 100);
  *
+ * // Generate all pure parts
  * while (!encoder.isComplete()) {
  *   const part = encoder.nextPart();
  *   console.log(part); // "ur:bytes/1-10/..."
+ * }
+ *
+ * // Generate additional rateless parts for redundancy
+ * for (let i = 0; i < 5; i++) {
+ *   const part = encoder.nextPart();
+ *   console.log(part); // "ur:bytes/11-10/..."
  * }
  * ```
  */
 export class MultipartEncoder {
   private readonly _ur: UR;
-  private readonly _maxFragmentLen: number;
+  private readonly _fountainEncoder: FountainEncoder;
   private _currentIndex = 0;
-  private readonly _parts = new Map<number, string>();
 
   /**
    * Creates a new multipart encoder for the given UR.
    *
    * @param ur - The UR to encode
-   * @param maxFragmentLen - Maximum length of each fragment
+   * @param maxFragmentLen - Maximum length of each fragment in bytes
    * @throws {URError} If encoding fails
    *
    * @example
@@ -41,38 +52,81 @@ export class MultipartEncoder {
       throw new URError("Max fragment length must be at least 1");
     }
     this._ur = ur;
-    this._maxFragmentLen = maxFragmentLen;
 
-    // Note: Full fountain code implementation would go here
-    // For now, this is a placeholder that implements the API
-    this._initializeEncoding();
+    // Create fountain encoder from CBOR data
+    const cborData = ur.cbor().toData();
+    this._fountainEncoder = new FountainEncoder(cborData, maxFragmentLen);
   }
 
-  private _initializeEncoding(): void {
-    // This would use a fountain code library to generate parts
-    // For now, we generate a single part
-    const urString = this._ur.string();
-    this._parts.set(0, urString);
+  /**
+   * Returns whether the message fits in a single part.
+   *
+   * For single-part messages, consider using UR.string() directly.
+   */
+  isSinglePart(): boolean {
+    return this._fountainEncoder.isSinglePart();
   }
 
   /**
    * Gets the next part of the encoding.
    *
+   * Parts 1 through seqLen are "pure" fragments containing one piece each.
+   * Parts beyond seqLen are "mixed" fragments using fountain codes for redundancy.
+   *
    * @returns The next UR string part
-   * @throws {URError} If encoding fails
+   *
+   * @example
+   * ```typescript
+   * const part = encoder.nextPart();
+   * // Returns: "ur:bytes/1-3/lsadaoaxjygonesw"
+   * ```
    */
   nextPart(): string {
-    if (this._currentIndex >= this._parts.size) {
-      throw new URError("No more parts available");
-    }
-
-    const part = this._parts.get(this._currentIndex);
-    if (part === undefined) {
-      throw new URError("Failed to generate part");
-    }
-
+    const part = this._fountainEncoder.nextPart();
     this._currentIndex++;
-    return part;
+    return this._encodePart(part);
+  }
+
+  /**
+   * Encodes a fountain part as a UR string.
+   */
+  private _encodePart(part: FountainPart): string {
+    // For single-part messages, use simple format
+    if (part.seqLen === 1) {
+      return this._ur.string();
+    }
+
+    // Encode the part data as CBOR: [seqNum, seqLen, messageLen, checksum, data]
+    // Using a simple format: seqNum-seqLen prefix followed by bytewords-encoded part
+    const partData = this._encodePartData(part);
+    const encoded = encodeBytewords(partData, BytewordsStyle.Minimal);
+
+    return `ur:${this._ur.urTypeStr()}/${part.seqNum}-${part.seqLen}/${encoded}`;
+  }
+
+  /**
+   * Encodes part metadata and data into bytes for bytewords encoding.
+   */
+  private _encodePartData(part: FountainPart): Uint8Array {
+    // Simple encoding: messageLen (4 bytes) + checksum (4 bytes) + data
+    const result = new Uint8Array(8 + part.data.length);
+
+    // Message length (big-endian)
+    result[0] = (part.messageLen >>> 24) & 0xff;
+    result[1] = (part.messageLen >>> 16) & 0xff;
+    result[2] = (part.messageLen >>> 8) & 0xff;
+    result[3] = part.messageLen & 0xff;
+
+    // Checksum (big-endian)
+    result[4] = (part.checksum >>> 24) & 0xff;
+    result[5] = (part.checksum >>> 16) & 0xff;
+    result[6] = (part.checksum >>> 8) & 0xff;
+    result[7] = part.checksum & 0xff;
+
+    // Fragment data
+    result.set(part.data, 8);
+
+    return result;
   }
 
   /**
@@ -83,19 +137,23 @@ export class MultipartEncoder {
   }
 
   /**
-   * Gets the total number of parts (only available after full generation).
+   * Gets the total number of pure parts.
    *
-   * For fountain codes, this may be approximate or unknown until completion.
+   * Note: Fountain codes can generate unlimited parts beyond this count
+   * for additional redundancy.
    */
   partsCount(): number {
-    return this._parts.size;
+    return this._fountainEncoder.seqLen;
   }
 
   /**
-   * Checks if encoding is complete.
+   * Checks if all pure parts have been emitted.
+   *
+   * Even after this returns true, you can continue calling nextPart()
+   * to generate additional rateless parts for redundancy.
    */
   isComplete(): boolean {
-    return this._currentIndex >= this._parts.size;
+    return this._fountainEncoder.isComplete();
   }
 
   /**
@@ -103,5 +161,6 @@ export class MultipartEncoder {
    */
   reset(): void {
     this._currentIndex = 0;
+    this._fountainEncoder.reset();
   }
 }

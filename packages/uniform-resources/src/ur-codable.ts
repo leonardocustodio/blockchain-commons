@@ -18,8 +18,13 @@ import type { URDecodable } from "./ur-decodable.js";
  *     // Return UR string
  *   }
  *
- *   static fromUR(ur: UR): MyType {
+ *   fromUR(ur: UR): MyType {
  *     // Decode from UR
+ *   }
+ *
+ *   fromURString(urString: string): MyType {
+ *     // Decode from UR string (convenience method)
+ *     return this.fromUR(UR.fromURString(urString));
  *   }
  * }
  * ```

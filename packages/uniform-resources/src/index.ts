@@ -29,6 +29,20 @@ export type { URCodable } from "./ur-codable";
 export { MultipartEncoder } from "./multipart-encoder";
 export { MultipartDecoder } from "./multipart-decoder";
 
+// Fountain codes (for advanced multipart handling)
+export {
+  FountainEncoder,
+  FountainDecoder,
+  splitMessage,
+  xorBytes,
+  chooseFragments,
+  mixFragments,
+} from "./fountain";
+export type { FountainPart } from "./fountain";
+
+// PRNG for deterministic fountain code mixing
+export { Xoshiro256, createSeed } from "./xoshiro";
+
 // Utilities
 export {
   isURTypeChar,
@@ -39,4 +53,9 @@ export {
   BYTEMOJIS,
   encodeBytewordsIdentifier,
   encodeBytemojisIdentifier,
+  BytewordsStyle,
+  encodeBytewords,
+  decodeBytewords,
+  crc32,
+  MINIMAL_BYTEWORDS_MAP,
 } from "./utils";
