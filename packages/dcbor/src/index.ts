@@ -161,3 +161,13 @@ export {
 
 // Extract native JavaScript value from CBOR
 export { extractCbor } from "./conveniences";
+
+// Envelope compatibility functions
+export {
+  asTaggedValue,
+  asByteString,
+  asCborArray,
+  type CborArrayWrapper,
+  asCborMap,
+  isNumber,
+} from "./conveniences";
