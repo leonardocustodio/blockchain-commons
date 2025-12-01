@@ -1,6 +1,6 @@
 # Blockchain Commons - TypeScript
 
-> Disclaimer: This whole project is still in early development and under heavy development. Please note that the APIs and interfaces are subject to change and are not yet stable.
+> Disclaimer: This whole repository is still in its early stages and under heavy development. Please note that the APIs and interfaces are subject to change and are not yet stable.
 
 A comprehensive TypeScript monorepo implementing Blockchain Commons specifications for cryptographic data encoding, uniform resources, and secure information structures.
 
