@@ -608,3 +608,189 @@ export function encodeBytemojisIdentifier(data: Uint8Array): string {
   }
   return emojis.join(" ");
 }
+
+/**
+ * Bytewords encoding style.
+ */
+export enum BytewordsStyle {
+  /** Full 4-letter words separated by spaces */
+  Standard = "standard",
+  /** Full 4-letter words without separators */
+  Uri = "uri",
+  /** First and last character only (minimal) - used by UR encoding */
+  Minimal = "minimal",
+}
+
+/**
+ * Create a reverse mapping for minimal bytewords (first+last char) lookup.
+ */
+function createMinimalBytewordsMap(): Map<string, number> {
+  const map = new Map<string, number>();
+  BYTEWORDS.forEach((word, index) => {
+    // Minimal encoding uses first and last character
+    const minimal = word[0] + word[3];
+    map.set(minimal, index);
+  });
+  return map;
+}
+
+export const MINIMAL_BYTEWORDS_MAP = createMinimalBytewordsMap();
+
+/**
+ * CRC32 lookup table (IEEE polynomial).
+ */
+const CRC32_TABLE: number[] = (() => {
+  const table: number[] = [];
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let j = 0; j < 8; j++) {
+      c = (c & 1) !== 0 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    }
+    table.push(c >>> 0);
+  }
+  return table;
+})();
+
+/**
+ * Calculate CRC32 checksum of data.
+ */
+export function crc32(data: Uint8Array): number {
+  let crc = 0xffffffff;
+  for (const byte of data) {
+    crc = (CRC32_TABLE[(crc ^ byte) & 0xff] ^ (crc >>> 8)) >>> 0;
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+/**
+ * Convert a 32-bit number to 4 bytes (big-endian).
+ */
+function uint32ToBytes(value: number): Uint8Array {
+  return new Uint8Array([
+    (value >>> 24) & 0xff,
+    (value >>> 16) & 0xff,
+    (value >>> 8) & 0xff,
+    value & 0xff,
+  ]);
+}
+
+/**
+ * Encode data as bytewords with the specified style.
+ * Includes CRC32 checksum.
+ */
+export function encodeBytewords(data: Uint8Array, style: BytewordsStyle = BytewordsStyle.Minimal): string {
+  // Append CRC32 checksum
+  const checksum = crc32(data);
+  const checksumBytes = uint32ToBytes(checksum);
+  const dataWithChecksum = new Uint8Array(data.length + 4);
+  dataWithChecksum.set(data);
+  dataWithChecksum.set(checksumBytes, data.length);
+
+  const words: string[] = [];
+  for (const byte of dataWithChecksum) {
+    const word = BYTEWORDS[byte];
+    if (word === undefined) throw new Error(`Invalid byte value: ${byte}`);
+
+    switch (style) {
+      case BytewordsStyle.Standard:
+        words.push(word);
+        break;
+      case BytewordsStyle.Uri:
+        words.push(word);
+        break;
+      case BytewordsStyle.Minimal:
+        // First and last character
+        words.push(word[0] + word[3]);
+        break;
+    }
+  }
+
+  switch (style) {
+    case BytewordsStyle.Standard:
+      return words.join(" ");
+    case BytewordsStyle.Uri:
+    case BytewordsStyle.Minimal:
+      return words.join("");
+  }
+}
+
+/**
+ * Decode bytewords string back to data.
+ * Validates and removes CRC32 checksum.
+ */
+export function decodeBytewords(encoded: string, style: BytewordsStyle = BytewordsStyle.Minimal): Uint8Array {
+  const lowercased = encoded.toLowerCase();
+  let bytes: number[];
+
+  switch (style) {
+    case BytewordsStyle.Standard: {
+      const words = lowercased.split(" ");
+      bytes = words.map((word) => {
+        const index = BYTEWORDS_MAP.get(word);
+        if (index === undefined) {
+          throw new Error(`Invalid byteword: ${word}`);
+        }
+        return index;
+      });
+      break;
+    }
+    case BytewordsStyle.Uri: {
+      // 4-character words with no separator
+      if (lowercased.length % 4 !== 0) {
+        throw new Error("Invalid URI bytewords length");
+      }
+      bytes = [];
+      for (let i = 0; i < lowercased.length; i += 4) {
+        const word = lowercased.slice(i, i + 4);
+        const index = BYTEWORDS_MAP.get(word);
+        if (index === undefined) {
+          throw new Error(`Invalid byteword: ${word}`);
+        }
+        bytes.push(index);
+      }
+      break;
+    }
+    case BytewordsStyle.Minimal: {
+      // 2-character minimal words with no separator
+      if (lowercased.length % 2 !== 0) {
+        throw new Error("Invalid minimal bytewords length");
+      }
+      bytes = [];
+      for (let i = 0; i < lowercased.length; i += 2) {
+        const minimal = lowercased.slice(i, i + 2);
+        const index = MINIMAL_BYTEWORDS_MAP.get(minimal);
+        if (index === undefined) {
+          throw new Error(`Invalid minimal byteword: ${minimal}`);
+        }
+        bytes.push(index);
+      }
+      break;
+    }
+  }
+
+  if (bytes.length < 4) {
+    throw new Error("Bytewords data too short (missing checksum)");
+  }
+
+  // Extract data and checksum
+  const dataWithChecksum = new Uint8Array(bytes);
+  const data = dataWithChecksum.slice(0, -4);
+  const checksumBytes = dataWithChecksum.slice(-4);
+
+  // Verify checksum
+  const expectedChecksum = crc32(data);
+  const actualChecksum =
+    ((checksumBytes[0] << 24) |
+      (checksumBytes[1] << 16) |
+      (checksumBytes[2] << 8) |
+      checksumBytes[3]) >>>
+    0;
+
+  if (expectedChecksum !== actualChecksum) {
+    throw new Error(
+      `Bytewords checksum mismatch: expected ${expectedChecksum.toString(16)}, got ${actualChecksum.toString(16)}`
+    );
+  }
+
+  return data;
+}

@@ -9,9 +9,13 @@ import type { UR } from "./ur.js";
  * @example
  * ```typescript
  * class MyType implements URDecodable {
- *   static fromUR(ur: UR): MyType {
+ *   fromUR(ur: UR): MyType {
  *     const cbor = ur.cbor();
  *     // Decode from CBOR and return MyType instance
+ *   }
+ *
+ *   fromURString(urString: string): MyType {
+ *     return this.fromUR(UR.fromURString(urString));
  *   }
  * }
  * ```
@@ -25,6 +29,18 @@ export interface URDecodable {
    * @throws If the UR type is wrong or data is malformed
    */
   fromUR(ur: UR): unknown;
+
+  /**
+   * Creates an instance of this type from a UR string.
+   *
+   * This is a convenience method that parses the UR string and then
+   * calls fromUR().
+   *
+   * @param urString - The UR string to decode from (e.g., "ur:type/...")
+   * @returns An instance of this type
+   * @throws If the UR string is invalid or data is malformed
+   */
+  fromURString?(urString: string): unknown;
 }
 
 /**

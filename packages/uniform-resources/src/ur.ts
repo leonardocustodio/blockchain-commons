@@ -2,6 +2,7 @@ import type { Cbor } from "@blockchain-commons/dcbor";
 import { decodeCbor } from "@blockchain-commons/dcbor";
 import { InvalidSchemeError, TypeUnspecifiedError, UnexpectedTypeError, URError } from "./error.js";
 import { URType } from "./ur-type.js";
+import { encodeBytewords, decodeBytewords, BytewordsStyle } from "./utils.js";
 
 /**
  * A Uniform Resource (UR) is a URI-encoded CBOR object.
@@ -10,8 +11,8 @@ import { URType } from "./ur-type.js";
  *
  * @example
  * ```typescript
- * import { UR } from '@leonardocustodio/blockchain-commons/uniform-resources';
- * import { CBOR } from '@leonardocustodio/blockchain-commons/dcbor';
+ * import { UR } from '@blockchain-commons/uniform-resources';
+ * import { CBOR } from '@blockchain-commons/dcbor';
  *
  * // Create a UR from a CBOR object
  * const cbor = CBOR.fromArray([1, 2, 3]);
@@ -163,14 +164,13 @@ export class UR {
 }
 
 /**
- * Encodes a UR string using Bytewords Base32 encoding.
- * This is a simplified implementation that handles single-part URs.
+ * Encodes a UR string using Bytewords minimal encoding.
+ * This handles single-part URs according to BCR-2020-005.
  */
 class URStringEncoder {
   static encode(urType: string, cborData: Uint8Array): string {
-    // Use simple base32 encoding for now
-    // In production, this should use the proper UR encoding with fountain codes
-    const encoded = base32Encode(cborData);
+    // Encode CBOR data using bytewords minimal style (with CRC32 checksum)
+    const encoded = encodeBytewords(cborData, BytewordsStyle.Minimal);
     return `ur:${urType}/${encoded}`;
   }
 }
@@ -203,8 +203,8 @@ class URStringDecoder {
     }
 
     try {
-      // Decode the base32-encoded data
-      const cborData = base32Decode(data);
+      // Decode the bytewords-encoded data (validates CRC32 checksum)
+      const cborData = decodeBytewords(data, BytewordsStyle.Minimal);
       const cbor = decodeCbor(cborData);
       return { urType, cbor };
     } catch (error) {
@@ -212,58 +212,4 @@ class URStringDecoder {
       throw new URError(`Failed to decode UR: ${errorMessage}`);
     }
   }
-}
-
-/**
- * Simple Base32 encoding using the Crockford base32 alphabet.
- * This is used for UR encoding.
- */
-function base32Encode(data: Uint8Array): string {
-  const alphabet = "abcdefghijklmnopqrstuvwxyz234567";
-  let result = "";
-  let bits = 0;
-  let value = 0;
-
-  for (const byte of data) {
-    value = (value << 8) | byte;
-    bits += 8;
-
-    while (bits >= 5) {
-      bits -= 5;
-      result += alphabet[(value >> bits) & 31];
-    }
-  }
-
-  if (bits > 0) {
-    result += alphabet[(value << (5 - bits)) & 31];
-  }
-
-  return result;
-}
-
-/**
- * Simple Base32 decoding using the Crockford base32 alphabet.
- */
-function base32Decode(encoded: string): Uint8Array {
-  const alphabet = "abcdefghijklmnopqrstuvwxyz234567";
-  const result: number[] = [];
-  let bits = 0;
-  let value = 0;
-
-  for (const char of encoded) {
-    const index = alphabet.indexOf(char);
-    if (index === -1) {
-      throw new Error(`Invalid base32 character: ${char}`);
-    }
-
-    value = (value << 5) | index;
-    bits += 5;
-
-    if (bits >= 8) {
-      bits -= 8;
-      result.push((value >> bits) & 255);
-    }
-  }
-
-  return new Uint8Array(result);
 }
