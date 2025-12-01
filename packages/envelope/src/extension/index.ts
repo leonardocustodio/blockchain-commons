@@ -5,16 +5,16 @@
 /// signatures, and more.
 
 // Type system
-export { IS_A } from './types';
+export { IS_A } from "./types";
 
 // Salt support
-export { SALT } from './salt';
+export { SALT } from "./salt";
 
 // Compression support
-export { Compressed } from './compress';
+export { Compressed } from "./compress";
 
 // Encryption support
-export { SymmetricKey, EncryptedMessage } from './encrypt';
+export { SymmetricKey, EncryptedMessage } from "./encrypt";
 
 // Signature support
 export {
@@ -27,23 +27,13 @@ export {
   SIGNED,
   VERIFIED_BY,
   NOTE,
-} from './signature';
+} from "./signature";
 
 // Attachment support
-export {
-  Attachments,
-  ATTACHMENT,
-  VENDOR,
-  CONFORMS_TO,
-} from './attachment';
+export { Attachments, ATTACHMENT, VENDOR, CONFORMS_TO } from "./attachment";
 
 // Recipient support (public-key encryption)
-export {
-  PublicKeyBase,
-  PrivateKeyBase,
-  SealedMessage,
-  HAS_RECIPIENT,
-} from './recipient';
+export { PublicKeyBase, PrivateKeyBase, SealedMessage, HAS_RECIPIENT } from "./recipient";
 
 // Expression support
 export {
@@ -69,14 +59,14 @@ export {
   not,
   type FunctionID,
   type ParameterID,
-} from './expression';
+} from "./expression";
 
 // Import side-effect modules to register prototype extensions
-import './types';
-import './salt';
-import './compress';
-import './encrypt';
-import './signature';
-import './attachment';
-import './recipient';
-import './proof';
+import "./types";
+import "./salt";
+import "./compress";
+import "./encrypt";
+import "./signature";
+import "./attachment";
+import "./recipient";
+import "./proof";

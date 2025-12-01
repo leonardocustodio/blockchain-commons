@@ -7,37 +7,35 @@
  * Port of: bc-dcbor-rust/examples/text_collection_demo.rs
  */
 
-import { CborMap } from '../src/map';
-import { cbor } from '../src/cbor';
-import { walk, WalkElement } from '../src/walk';
-import { diagnosticFlat } from '../src/diag';
-import { MajorType } from '../src/cbor';
+import { CborMap } from "../src/map";
+import { cbor } from "../src/cbor";
+import { walk, WalkElement } from "../src/walk";
+import { diagnosticFlat } from "../src/diag";
+import { MajorType } from "../src/cbor";
 
 function main() {
   // Create a simple map with text keys and values
   const map = new CborMap();
-  map.set('name', 'Alice'); // Both text - should be easy to collect
-  map.set('age', 30); // Text key, number value
-  map.set('nested', [1, 2]); // Text key, array value
+  map.set("name", "Alice"); // Both text - should be easy to collect
+  map.set("age", 30); // Text key, number value
+  map.set("nested", [1, 2]); // Text key, array value
   const cborData = cbor(map);
 
   console.log(`CBOR: ${diagnosticFlat(cborData)}`);
-  console.log('\n=== Current behavior (with has_nested_content check) ===');
+  console.log("\n=== Current behavior (with has_nested_content check) ===");
 
   const texts: string[] = [];
   walk(cborData, undefined, (element: WalkElement, depth, edge, _state: void) => {
-    const indent = '  '.repeat(depth);
-    if (element.type === 'single') {
-      console.log(
-        `${indent}[${edge.type}] Single: ${diagnosticFlat(element.cbor)}`
-      );
+    const indent = "  ".repeat(depth);
+    if (element.type === "single") {
+      console.log(`${indent}[${edge.type}] Single: ${diagnosticFlat(element.cbor)}`);
       if (element.cbor.type === MajorType.Text) {
         texts.push(`Single: ${element.cbor.value}`);
       }
     } else {
       // KeyValue
       console.log(
-        `${indent}[${edge.type}] KeyValue: ${diagnosticFlat(element.key)} => ${diagnosticFlat(element.value)}`
+        `${indent}[${edge.type}] KeyValue: ${diagnosticFlat(element.key)} => ${diagnosticFlat(element.value)}`,
       );
 
       // User has to manually check both key and value

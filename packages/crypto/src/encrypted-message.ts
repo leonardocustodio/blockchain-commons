@@ -2,11 +2,11 @@
  * Encrypted message with ChaCha20-Poly1305 AEAD (nonce + ciphertext + authentication tag)
  */
 
-import { chacha20poly1305 } from '@noble/ciphers/chacha';
-import { CryptoError } from './error.js';
-import { SymmetricKey } from './symmetric-key.js';
-import { Nonce } from './nonce.js';
-import { AuthenticationTag } from './authentication-tag.js';
+import { chacha20poly1305 } from "@noble/ciphers/chacha";
+import { CryptoError } from "./error.js";
+import { SymmetricKey } from "./symmetric-key.js";
+import { Nonce } from "./nonce.js";
+import { AuthenticationTag } from "./authentication-tag.js";
 
 export class EncryptedMessage {
   private nonce: Nonce;
@@ -33,7 +33,7 @@ export class EncryptedMessage {
     plaintext: Uint8Array,
     key: SymmetricKey,
     nonce?: Nonce,
-    associatedData?: Uint8Array
+    associatedData?: Uint8Array,
   ): EncryptedMessage {
     try {
       // Generate random nonce if not provided
@@ -49,7 +49,7 @@ export class EncryptedMessage {
 
       // The last 16 bytes are the authentication tag
       if (ciphertext.length < 16) {
-        throw new Error('Ciphertext too short');
+        throw new Error("Ciphertext too short");
       }
 
       const tag = new AuthenticationTag(ciphertext.slice(ciphertext.length - 16));
@@ -67,7 +67,7 @@ export class EncryptedMessage {
   static decrypt(
     encrypted: EncryptedMessage,
     key: SymmetricKey,
-    associatedData?: Uint8Array
+    associatedData?: Uint8Array,
   ): Uint8Array {
     try {
       // Create cipher
@@ -123,8 +123,8 @@ export class EncryptedMessage {
   toHex(): string {
     const data = this.toData();
     return Array.from(data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
       .toUpperCase();
   }
 

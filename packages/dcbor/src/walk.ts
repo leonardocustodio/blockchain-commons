@@ -7,25 +7,31 @@
  * @module walk
  */
 
-import { type Cbor, MajorType, type CborMapType, type CborArrayType, type CborTaggedType } from './cbor';
-import { CborError } from './error';
+import {
+  type Cbor,
+  MajorType,
+  type CborMapType,
+  type CborArrayType,
+  type CborTaggedType,
+} from "./cbor";
+import { CborError } from "./error";
 
 /**
  * Types of edges in the CBOR tree traversal.
  */
 export enum EdgeType {
   /** No specific edge type (root element) */
-  None = 'none',
+  None = "none",
   /** Element within an array */
-  ArrayElement = 'array_element',
+  ArrayElement = "array_element",
   /** Key-value pair in a map (semantic unit) */
-  MapKeyValue = 'map_key_value',
+  MapKeyValue = "map_key_value",
   /** Key within a map */
-  MapKey = 'map_key',
+  MapKey = "map_key",
   /** Value within a map */
-  MapValue = 'map_value',
+  MapValue = "map_value",
   /** Content of a tagged value */
-  TaggedContent = 'tagged_content'
+  TaggedContent = "tagged_content",
 }
 
 /**
@@ -62,13 +68,13 @@ export const edgeLabel = (edge: EdgeTypeVariant): string | undefined => {
     case EdgeType.ArrayElement:
       return `arr[${edge.index}]`;
     case EdgeType.MapKeyValue:
-      return 'kv';
+      return "kv";
     case EdgeType.MapKey:
-      return 'key';
+      return "key";
     case EdgeType.MapValue:
-      return 'val';
+      return "val";
     case EdgeType.TaggedContent:
-      return 'content';
+      return "content";
     case EdgeType.None:
       return undefined;
   }
@@ -79,8 +85,8 @@ export const edgeLabel = (edge: EdgeTypeVariant): string | undefined => {
  * Can be either a single CBOR value or a key-value pair from a map.
  */
 export type WalkElement =
-  | { type: 'single'; cbor: Cbor }
-  | { type: 'keyvalue'; key: Cbor; value: Cbor };
+  | { type: "single"; cbor: Cbor }
+  | { type: "keyvalue"; key: Cbor; value: Cbor };
 
 /**
  * Helper functions for WalkElement
@@ -99,7 +105,7 @@ export type WalkElement =
  * ```
  */
 export const asSingle = (element: WalkElement): Cbor | undefined => {
-  return element.type === 'single' ? element.cbor : undefined;
+  return element.type === "single" ? element.cbor : undefined;
 };
 
 /**
@@ -115,7 +121,7 @@ export const asSingle = (element: WalkElement): Cbor | undefined => {
  * ```
  */
 export const asKeyValue = (element: WalkElement): [Cbor, Cbor] | undefined => {
-  return element.type === 'keyvalue' ? [element.key, element.value] : undefined;
+  return element.type === "keyvalue" ? [element.key, element.value] : undefined;
 };
 
 /**
@@ -134,7 +140,7 @@ export type Visitor<State> = (
   element: WalkElement,
   level: number,
   edge: EdgeTypeVariant,
-  state: State
+  state: State,
 ) => [State, boolean];
 
 /**
@@ -186,18 +192,8 @@ export type Visitor<State> = (
  * });
  * ```
  */
-export const walk = <State>(
-  cbor: Cbor,
-  initialState: State,
-  visitor: Visitor<State>
-): State => {
-  return walkInternal(
-    cbor,
-    0,
-    { type: EdgeType.None },
-    initialState,
-    visitor
-  );
+export const walk = <State>(cbor: Cbor, initialState: State, visitor: Visitor<State>): State => {
+  return walkInternal(cbor, 0, { type: EdgeType.None }, initialState, visitor);
 };
 
 /**
@@ -211,14 +207,14 @@ function walkInternal<State>(
   edge: EdgeTypeVariant,
   state: State,
   visitor: Visitor<State>,
-  skipVisit = false
+  skipVisit = false,
 ): State {
   let currentState = state;
   let stopDescent = false;
 
   // Visit the current element (unless skipVisit is true)
   if (!skipVisit) {
-    const element: WalkElement = { type: 'single', cbor };
+    const element: WalkElement = { type: "single", cbor };
     const [newState, stop] = visitor(element, level, edge, currentState);
     currentState = newState;
     stopDescent = stop;
@@ -263,21 +259,24 @@ function walkArray<State>(
   cbor: CborArrayType,
   level: number,
   state: State,
-  visitor: Visitor<State>
+  visitor: Visitor<State>,
 ): State {
   let currentState = state;
 
   for (let index = 0; index < cbor.value.length; index++) {
     const item = cbor.value[index];
     if (item === undefined) {
-      throw new CborError({ type: 'Custom', message: `Array element at index ${index} is undefined` });
+      throw new CborError({
+        type: "Custom",
+        message: `Array element at index ${index} is undefined`,
+      });
     }
     currentState = walkInternal(
       item,
       level + 1,
       { type: EdgeType.ArrayElement, index },
       currentState,
-      visitor
+      visitor,
     );
   }
 
@@ -298,7 +297,7 @@ function walkMap<State>(
   cbor: CborMapType,
   level: number,
   state: State,
-  visitor: Visitor<State>
+  visitor: Visitor<State>,
 ): State {
   let currentState = state;
 
@@ -306,31 +305,25 @@ function walkMap<State>(
     const { key, value } = entry;
 
     // First, visit the key-value pair as a semantic unit
-    const kvElement: WalkElement = { type: 'keyvalue', key, value };
+    const kvElement: WalkElement = { type: "keyvalue", key, value };
     const [kvState, kvStop] = visitor(
       kvElement,
       level + 1,
       { type: EdgeType.MapKeyValue },
-      currentState
+      currentState,
     );
     currentState = kvState;
 
     // If not stopped, visit key and value individually
     if (!kvStop) {
-      currentState = walkInternal(
-        key,
-        level + 1,
-        { type: EdgeType.MapKey },
-        currentState,
-        visitor
-      );
+      currentState = walkInternal(key, level + 1, { type: EdgeType.MapKey }, currentState, visitor);
 
       currentState = walkInternal(
         value,
         level + 1,
         { type: EdgeType.MapValue },
         currentState,
-        visitor
+        visitor,
       );
     }
   }
@@ -347,15 +340,9 @@ function walkTagged<State>(
   cbor: CborTaggedType,
   level: number,
   state: State,
-  visitor: Visitor<State>
+  visitor: Visitor<State>,
 ): State {
-  return walkInternal(
-    cbor.value,
-    level + 1,
-    { type: EdgeType.TaggedContent },
-    state,
-    visitor
-  );
+  return walkInternal(cbor.value, level + 1, { type: EdgeType.TaggedContent }, state, visitor);
 }
 
 /**
@@ -376,13 +363,9 @@ export const countElements = (cbor: Cbor): number => {
     count: number;
   }
 
-  const result = walk<CountState>(
-    cbor,
-    { count: 0 },
-    (_element, _level, _edge, state) => {
-      return [{ count: state.count + 1 }, false];
-    }
-  );
+  const result = walk<CountState>(cbor, { count: 0 }, (_element, _level, _edge, state) => {
+    return [{ count: state.count + 1 }, false];
+  });
 
   return result.count;
 };
@@ -408,19 +391,12 @@ export const collectAtLevel = (cbor: Cbor, targetLevel: number): Cbor[] => {
     items: Cbor[];
   }
 
-  const result = walk<CollectState>(
-    cbor,
-    { items: [] },
-    (element, level, _edge, state) => {
-      if (level === targetLevel && element.type === 'single') {
-        return [
-          { items: [...state.items, element.cbor] },
-          false
-        ];
-      }
-      return [state, false];
+  const result = walk<CollectState>(cbor, { items: [] }, (element, level, _edge, state) => {
+    if (level === targetLevel && element.type === "single") {
+      return [{ items: [...state.items, element.cbor] }, false];
     }
-  );
+    return [state, false];
+  });
 
   return result.items;
 };
@@ -452,32 +428,28 @@ export const collectAtLevel = (cbor: Cbor, targetLevel: number): Cbor[] => {
  */
 export const findFirst = (
   cbor: Cbor,
-  predicate: (element: WalkElement) => boolean
+  predicate: (element: WalkElement) => boolean,
 ): Cbor | undefined => {
   interface FindState {
     found?: Cbor;
   }
 
-  const result = walk<FindState>(
-    cbor,
-    {},
-    (element, _level, _edge, state) => {
-      if (state.found !== undefined) {
-        // Already found, stop descending
-        return [state, true];
-      }
-
-      if (predicate(element)) {
-        if (element.type === 'single') {
-          return [{ found: element.cbor }, true]; // Stop after finding
-        }
-        // Matched but not a single element, stop anyway
-        return [state, true];
-      }
-
-      return [state, false];
+  const result = walk<FindState>(cbor, {}, (element, _level, _edge, state) => {
+    if (state.found !== undefined) {
+      // Already found, stop descending
+      return [state, true];
     }
-  );
+
+    if (predicate(element)) {
+      if (element.type === "single") {
+        return [{ found: element.cbor }, true]; // Stop after finding
+      }
+      // Matched but not a single element, stop anyway
+      return [state, true];
+    }
+
+    return [state, false];
+  });
 
   return result.found;
 };
@@ -505,19 +477,12 @@ export const collectAllText = (cbor: Cbor): string[] => {
     texts: string[];
   }
 
-  const result = walk<TextState>(
-    cbor,
-    { texts: [] },
-    (element, _level, _edge, state) => {
-      if (element.type === 'single' && element.cbor.type === MajorType.Text) {
-        return [
-          { texts: [...state.texts, element.cbor.value] },
-          false
-        ];
-      }
-      return [state, false];
+  const result = walk<TextState>(cbor, { texts: [] }, (element, _level, _edge, state) => {
+    if (element.type === "single" && element.cbor.type === MajorType.Text) {
+      return [{ texts: [...state.texts, element.cbor.value] }, false];
     }
-  );
+    return [state, false];
+  });
 
   return result.texts;
 };
@@ -542,14 +507,10 @@ export const maxDepth = (cbor: Cbor): number => {
     maxDepth: number;
   }
 
-  const result = walk<DepthState>(
-    cbor,
-    { maxDepth: 0 },
-    (_element, level, _edge, state) => {
-      const newMaxDepth = Math.max(state.maxDepth, level);
-      return [{ maxDepth: newMaxDepth }, false];
-    }
-  );
+  const result = walk<DepthState>(cbor, { maxDepth: 0 }, (_element, level, _edge, state) => {
+    const newMaxDepth = Math.max(state.maxDepth, level);
+    return [{ maxDepth: newMaxDepth }, false];
+  });
 
   return result.maxDepth;
 };

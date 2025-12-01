@@ -1,5 +1,5 @@
-import { Envelope } from '../base/envelope';
-import { EnvelopeError } from '../base/error';
+import { Envelope } from "../base/envelope";
+import { EnvelopeError } from "../base/error";
 
 /// Extension for adding salt to envelopes to prevent correlation.
 ///
@@ -26,7 +26,7 @@ import { EnvelopeError } from '../base/error';
 /// ```
 
 /// The standard predicate for salt assertions
-export const SALT = 'salt';
+export const SALT = "salt";
 
 /// Minimum salt size in bytes (64 bits)
 const MIN_SALT_SIZE = 8;
@@ -36,12 +36,12 @@ const DEFAULT_SALT_RANGE = { min: 8, max: 16 };
 
 /// Generates random bytes using crypto
 function generateRandomBytes(length: number): Uint8Array {
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
     // Browser or Node.js 19+ with global crypto
     return crypto.getRandomValues(new Uint8Array(length));
   } else {
     // Node.js < 19 - use require
-    const nodeCrypto = require('crypto');
+    const nodeCrypto = require("crypto");
     return new Uint8Array(nodeCrypto.randomBytes(length));
   }
 }
@@ -61,7 +61,7 @@ function calculateProportionalSaltSize(envelopeSize: number): number {
   return Math.max(minSize, Math.min(proportional, 1024)); // Cap at 1KB
 }
 
-declare module '../base/envelope' {
+declare module "../base/envelope" {
   interface Envelope {
     /// Adds a proportionally-sized salt assertion to decorrelate the envelope.
     ///
@@ -179,46 +179,34 @@ Envelope.prototype.addSalt = function (this: Envelope): Envelope {
 };
 
 /// Implementation of addSaltWithLength()
-Envelope.prototype.addSaltWithLength = function (
-  this: Envelope,
-  count: number
-): Envelope {
+Envelope.prototype.addSaltWithLength = function (this: Envelope, count: number): Envelope {
   if (count < MIN_SALT_SIZE) {
-    throw EnvelopeError.general(
-      `Salt must be at least ${MIN_SALT_SIZE} bytes, got ${count}`
-    );
+    throw EnvelopeError.general(`Salt must be at least ${MIN_SALT_SIZE} bytes, got ${count}`);
   }
   const saltBytes = generateRandomBytes(count);
   return this.addAssertion(SALT, saltBytes);
 };
 
 /// Implementation of addSaltBytes()
-Envelope.prototype.addSaltBytes = function (
-  this: Envelope,
-  saltBytes: Uint8Array
-): Envelope {
+Envelope.prototype.addSaltBytes = function (this: Envelope, saltBytes: Uint8Array): Envelope {
   if (saltBytes.length < MIN_SALT_SIZE) {
     throw EnvelopeError.general(
-      `Salt must be at least ${MIN_SALT_SIZE} bytes, got ${saltBytes.length}`
+      `Salt must be at least ${MIN_SALT_SIZE} bytes, got ${saltBytes.length}`,
     );
   }
   return this.addAssertion(SALT, saltBytes);
 };
 
 /// Implementation of addSaltInRange()
-Envelope.prototype.addSaltInRange = function (
-  this: Envelope,
-  min: number,
-  max: number
-): Envelope {
+Envelope.prototype.addSaltInRange = function (this: Envelope, min: number, max: number): Envelope {
   if (min < MIN_SALT_SIZE) {
     throw EnvelopeError.general(
-      `Minimum salt size must be at least ${MIN_SALT_SIZE} bytes, got ${min}`
+      `Minimum salt size must be at least ${MIN_SALT_SIZE} bytes, got ${min}`,
     );
   }
   if (max < min) {
     throw EnvelopeError.general(
-      `Maximum salt size must be at least minimum, got min=${min} max=${max}`
+      `Maximum salt size must be at least minimum, got min=${min} max=${max}`,
     );
   }
   const saltSize = min + Math.floor(Math.random() * (max - min + 1));

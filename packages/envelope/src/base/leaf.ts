@@ -1,5 +1,5 @@
-import type { Cbor } from '@leonardocustodio/dcbor';
-import { Envelope } from './envelope';
+import type { Cbor } from "@leonardocustodio/dcbor";
+import { Envelope } from "./envelope";
 
 /// Provides methods for working with envelope leaf nodes,
 /// which are dCBOR values of any kind.
@@ -7,7 +7,7 @@ import { Envelope } from './envelope';
 /// This module extends the Envelope class with convenience methods for
 /// working with leaf values, including type checking and extraction.
 
-declare module './envelope' {
+declare module "./envelope" {
   interface Envelope {
     /// Checks if this envelope contains false.
     ///
@@ -72,7 +72,7 @@ declare module './envelope' {
     /// Returns the leaf CBOR as a map if possible.
     ///
     /// @returns The map value or undefined
-    asMap(): import('@leonardocustodio/dcbor').CborMap | undefined;
+    asMap(): import("@leonardocustodio/dcbor").CborMap | undefined;
 
     /// Returns the leaf CBOR as text if possible.
     ///
@@ -121,7 +121,7 @@ Envelope.prototype.isTrue = function (this: Envelope): boolean {
 Envelope.prototype.isBool = function (this: Envelope): boolean {
   try {
     const value = this.extractBoolean();
-    return typeof value === 'boolean';
+    return typeof value === "boolean";
   } catch {
     return false;
   }
@@ -134,7 +134,7 @@ Envelope.prototype.isNumber = function (this: Envelope): boolean {
     return false;
   }
 
-  const { isNumber } = require('@leonardocustodio/dcbor');
+  const { isNumber } = require("@leonardocustodio/dcbor");
   return isNumber(leaf);
 };
 
@@ -150,7 +150,7 @@ Envelope.prototype.isNaN = function (this: Envelope): boolean {
     return false;
   }
 
-  const { isNaN } = require('@leonardocustodio/dcbor');
+  const { isNaN } = require("@leonardocustodio/dcbor");
   return isNaN(leaf);
 };
 
@@ -175,9 +175,7 @@ Envelope.prototype.tryByteString = function (this: Envelope): Uint8Array {
 };
 
 /// Implementation of asByteString()
-Envelope.prototype.asByteString = function (
-  this: Envelope
-): Uint8Array | undefined {
+Envelope.prototype.asByteString = function (this: Envelope): Uint8Array | undefined {
   try {
     return this.extractBytes();
   } catch {
@@ -192,7 +190,7 @@ Envelope.prototype.asArray = function (this: Envelope): Cbor[] | undefined {
     return undefined;
   }
 
-  const { asArray } = require('@leonardocustodio/dcbor');
+  const { asArray } = require("@leonardocustodio/dcbor");
   return asArray(leaf);
 };
 
@@ -203,7 +201,7 @@ Envelope.prototype.asMap = function (this: Envelope) {
     return undefined;
   }
 
-  const { asMap } = require('@leonardocustodio/dcbor');
+  const { asMap } = require("@leonardocustodio/dcbor");
   return asMap(leaf);
 };
 
@@ -214,14 +212,14 @@ Envelope.prototype.asText = function (this: Envelope): string | undefined {
     return undefined;
   }
 
-  const { asText } = require('@leonardocustodio/dcbor');
+  const { asText } = require("@leonardocustodio/dcbor");
   return asText(leaf);
 };
 
 /// Implementation of asLeaf()
 Envelope.prototype.asLeaf = function (this: Envelope): Cbor | undefined {
   const c = this.case();
-  if (c.type === 'leaf') {
+  if (c.type === "leaf") {
     return c.cbor;
   }
   return undefined;

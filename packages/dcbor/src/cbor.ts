@@ -14,7 +14,7 @@ import { decodeCbor } from "./decode";
 import type { TagsStore } from "./tags-store";
 import { getGlobalTagsStore } from "./tags-store";
 import type { Visitor } from "./walk";
-import { CborError } from './error';
+import { CborError } from "./error";
 
 export type { Simple };
 
@@ -30,18 +30,18 @@ export const MajorType = {
 } as const;
 
 // eslint-disable-next-line no-redeclare -- Intentionally using same name for value and type
-export type MajorType = typeof MajorType[keyof typeof MajorType];
+export type MajorType = (typeof MajorType)[keyof typeof MajorType];
 
 // Helper to get MajorType name from value (replaces enum reverse mapping)
 const MajorTypeNames: Record<MajorType, string> = {
-  [MajorType.Unsigned]: 'Unsigned',
-  [MajorType.Negative]: 'Negative',
-  [MajorType.ByteString]: 'ByteString',
-  [MajorType.Text]: 'Text',
-  [MajorType.Array]: 'Array',
-  [MajorType.Map]: 'Map',
-  [MajorType.Tagged]: 'Tagged',
-  [MajorType.Simple]: 'Simple',
+  [MajorType.Unsigned]: "Unsigned",
+  [MajorType.Negative]: "Negative",
+  [MajorType.ByteString]: "ByteString",
+  [MajorType.Text]: "Text",
+  [MajorType.Array]: "Array",
+  [MajorType.Map]: "Map",
+  [MajorType.Tagged]: "Tagged",
+  [MajorType.Simple]: "Simple",
 };
 
 const getMajorTypeName = (type: MajorType): string => MajorTypeNames[type];
@@ -101,21 +101,54 @@ export type CborInput =
   | Record<string, unknown>;
 
 export const isCborNumber = (value: unknown): value is CborNumber => {
-  return typeof value === 'number' || typeof value === 'bigint';
+  return typeof value === "number" || typeof value === "bigint";
 };
 
 export const isCbor = (value: unknown): value is Cbor => {
-  return value !== null && typeof value === 'object' && 'isCbor' in value && value.isCbor === true;
+  return value !== null && typeof value === "object" && "isCbor" in value && value.isCbor === true;
 };
 
-export interface CborUnsignedType { readonly isCbor: true; readonly type: typeof MajorType.Unsigned; readonly value: CborNumber }
-export interface CborNegativeType { readonly isCbor: true; readonly type: typeof MajorType.Negative; readonly value: CborNumber }
-export interface CborByteStringType { readonly isCbor: true; readonly type: typeof MajorType.ByteString; readonly value: Uint8Array }
-export interface CborTextType { readonly isCbor: true; readonly type: typeof MajorType.Text; readonly value: string }
-export interface CborArrayType { readonly isCbor: true; readonly type: typeof MajorType.Array; readonly value: readonly Cbor[] }
-export interface CborMapType { readonly isCbor: true; readonly type: typeof MajorType.Map; readonly value: CborMap }
-export interface CborTaggedType { readonly isCbor: true; readonly type: typeof MajorType.Tagged; readonly tag: CborNumber; readonly value: Cbor }
-export interface CborSimpleType { readonly isCbor: true; readonly type: typeof MajorType.Simple; readonly value: Simple }
+export interface CborUnsignedType {
+  readonly isCbor: true;
+  readonly type: typeof MajorType.Unsigned;
+  readonly value: CborNumber;
+}
+export interface CborNegativeType {
+  readonly isCbor: true;
+  readonly type: typeof MajorType.Negative;
+  readonly value: CborNumber;
+}
+export interface CborByteStringType {
+  readonly isCbor: true;
+  readonly type: typeof MajorType.ByteString;
+  readonly value: Uint8Array;
+}
+export interface CborTextType {
+  readonly isCbor: true;
+  readonly type: typeof MajorType.Text;
+  readonly value: string;
+}
+export interface CborArrayType {
+  readonly isCbor: true;
+  readonly type: typeof MajorType.Array;
+  readonly value: readonly Cbor[];
+}
+export interface CborMapType {
+  readonly isCbor: true;
+  readonly type: typeof MajorType.Map;
+  readonly value: CborMap;
+}
+export interface CborTaggedType {
+  readonly isCbor: true;
+  readonly type: typeof MajorType.Tagged;
+  readonly tag: CborNumber;
+  readonly value: Cbor;
+}
+export interface CborSimpleType {
+  readonly isCbor: true;
+  readonly type: typeof MajorType.Simple;
+  readonly value: Simple;
+}
 
 // Instance methods interface
 export interface CborMethods {
@@ -229,10 +262,17 @@ export interface CborMethods {
   untagged(): Cbor;
 }
 
-export type Cbor = (CborUnsignedType |
-  CborNegativeType | CborByteStringType | CborTextType |
-  CborArrayType | CborMapType | CborTaggedType |
-  CborSimpleType) & CborMethods;
+export type Cbor = (
+  | CborUnsignedType
+  | CborNegativeType
+  | CborByteStringType
+  | CborTextType
+  | CborArrayType
+  | CborMapType
+  | CborTaggedType
+  | CborSimpleType
+) &
+  CborMethods;
 
 // ============================================================================
 // Encoding Functions (matches Rust CBOR conversion logic)
@@ -250,14 +290,24 @@ export interface TaggedCborEncodable {
  * Type guard to check if value has taggedCbor method.
  */
 const hasTaggedCbor = (value: unknown): value is TaggedCborEncodable => {
-  return typeof value === 'object' && value !== null && 'taggedCbor' in value && typeof (value as TaggedCborEncodable).taggedCbor === 'function';
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "taggedCbor" in value &&
+    typeof (value as TaggedCborEncodable).taggedCbor === "function"
+  );
 };
 
 /**
  * Type guard to check if value has toCbor method.
  */
 const hasToCbor = (value: unknown): value is ToCbor => {
-  return typeof value === 'object' && value !== null && 'toCbor' in value && typeof (value as ToCbor).toCbor === 'function';
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "toCbor" in value &&
+    typeof (value as ToCbor).toCbor === "function"
+  );
 };
 
 /**
@@ -266,7 +316,7 @@ const hasToCbor = (value: unknown): value is ToCbor => {
  */
 export const cbor = (value: CborInput): Cbor => {
   // If already CBOR and has methods, return as-is
-  if (isCbor(value) && 'toData' in value) {
+  if (isCbor(value) && "toData" in value) {
     return value;
   }
 
@@ -278,18 +328,18 @@ export const cbor = (value: CborInput): Cbor => {
   let result: Omit<Cbor, keyof CborMethods>;
 
   if (isCborNumber(value)) {
-    if (typeof value === 'number' && Number.isNaN(value)) {
-      result = { isCbor: true, type: MajorType.Simple, value: { type: 'Float', value: NaN } };
-    } else if (typeof value === 'number' && hasFractionalPart(value)) {
-      result = { isCbor: true, type: MajorType.Simple, value: { type: 'Float', value: value } };
+    if (typeof value === "number" && Number.isNaN(value)) {
+      result = { isCbor: true, type: MajorType.Simple, value: { type: "Float", value: NaN } };
+    } else if (typeof value === "number" && hasFractionalPart(value)) {
+      result = { isCbor: true, type: MajorType.Simple, value: { type: "Float", value: value } };
     } else if (value == Infinity) {
-      result = { isCbor: true, type: MajorType.Simple, value: { type: 'Float', value: Infinity } };
+      result = { isCbor: true, type: MajorType.Simple, value: { type: "Float", value: Infinity } };
     } else if (value == -Infinity) {
-      result = { isCbor: true, type: MajorType.Simple, value: { type: 'Float', value: -Infinity } };
+      result = { isCbor: true, type: MajorType.Simple, value: { type: "Float", value: -Infinity } };
     } else if (value < 0) {
       // Store the magnitude to encode, matching Rust's representation
       // For a negative value n, CBOR encodes it as -1-n, so we store -n-1
-      if (typeof value === 'bigint') {
+      if (typeof value === "bigint") {
         result = { isCbor: true, type: MajorType.Negative, value: -value - 1n };
       } else {
         result = { isCbor: true, type: MajorType.Negative, value: -value - 1 };
@@ -297,17 +347,17 @@ export const cbor = (value: CborInput): Cbor => {
     } else {
       result = { isCbor: true, type: MajorType.Unsigned, value: value };
     }
-  } else if (typeof value === 'string') {
+  } else if (typeof value === "string") {
     // dCBOR requires all text strings to be in Unicode Normalization Form C (NFC)
     // This ensures deterministic encoding regardless of how the string was composed
-    const normalized = value.normalize('NFC');
+    const normalized = value.normalize("NFC");
     result = { isCbor: true, type: MajorType.Text, value: normalized };
   } else if (value === null || value === undefined) {
-    result = { isCbor: true, type: MajorType.Simple, value: { type: 'Null' } };
+    result = { isCbor: true, type: MajorType.Simple, value: { type: "Null" } };
   } else if (value === true) {
-    result = { isCbor: true, type: MajorType.Simple, value: { type: 'True' } };
+    result = { isCbor: true, type: MajorType.Simple, value: { type: "True" } };
   } else if (value === false) {
-    result = { isCbor: true, type: MajorType.Simple, value: { type: 'False' } };
+    result = { isCbor: true, type: MajorType.Simple, value: { type: "False" } };
   } else if (Array.isArray(value)) {
     result = { isCbor: true, type: MajorType.Array, value: value.map(cbor) };
   } else if (value instanceof Uint8Array) {
@@ -317,16 +367,20 @@ export const cbor = (value: CborInput): Cbor => {
   } else if (value instanceof Map) {
     result = { isCbor: true, type: MajorType.Map, value: new CborMap(value) };
   } else if (value instanceof Set) {
-    result = { isCbor: true, type: MajorType.Array, value: Array.from(value).map(v => cbor(v as CborInput)) };
+    result = {
+      isCbor: true,
+      type: MajorType.Array,
+      value: Array.from(value).map((v) => cbor(v as CborInput)),
+    };
   } else if (hasTaggedCbor(value)) {
     return value.taggedCbor();
   } else if (hasToCbor(value)) {
     return value.toCbor();
-  } else if (typeof value === 'object' && value !== null && 'tag' in value && 'value' in value) {
+  } else if (typeof value === "object" && value !== null && "tag" in value && "value" in value) {
     // Handle plain tagged value format: { tag: number, value: unknown }
     const keys = Object.keys(value);
     const objValue = value as { tag: unknown; value: unknown; [key: string]: unknown };
-    if (keys.length === 2 && keys.includes('tag') && keys.includes('value')) {
+    if (keys.length === 2 && keys.includes("tag") && keys.includes("value")) {
       return taggedCbor(objValue.tag, objValue.value as CborInput);
     }
     // Not a tagged value, fall through to map handling
@@ -335,7 +389,7 @@ export const cbor = (value: CborInput): Cbor => {
       map.set(cbor(key as CborInput), cbor(val as CborInput));
     }
     result = { isCbor: true, type: MajorType.Map, value: map };
-  } else if (typeof value === 'object' && value !== null) {
+  } else if (typeof value === "object" && value !== null) {
     // Handle plain objects by converting to CborMap
     const map = new CborMap();
     for (const [key, val] of Object.entries(value)) {
@@ -343,7 +397,7 @@ export const cbor = (value: CborInput): Cbor => {
     }
     result = { isCbor: true, type: MajorType.Map, value: map };
   } else {
-    throw new CborError({ type: 'Custom', message: 'Unsupported type for CBOR encoding' });
+    throw new CborError({ type: "Custom", message: "Unsupported type for CBOR encoding" });
   }
 
   return attachMethods(result) as Cbor;
@@ -361,54 +415,56 @@ export const cborData = (value: CborInput): Uint8Array => {
   const c = cbor(value);
   switch (c.type) {
     case MajorType.Unsigned: {
-    return encodeVarInt(c.value, MajorType.Unsigned);
-  }
+      return encodeVarInt(c.value, MajorType.Unsigned);
+    }
     case MajorType.Negative: {
-    // Value is already stored as the magnitude to encode (matching Rust)
-    return encodeVarInt(c.value, MajorType.Negative);
-  }
+      // Value is already stored as the magnitude to encode (matching Rust)
+      return encodeVarInt(c.value, MajorType.Negative);
+    }
     case MajorType.ByteString: {
-    if (c.value instanceof Uint8Array) {
-      const lengthBytes = encodeVarInt(c.value.length, MajorType.ByteString);
-      return new Uint8Array([...lengthBytes, ...c.value]);
-  }
-    break;
-  }
+      if (c.value instanceof Uint8Array) {
+        const lengthBytes = encodeVarInt(c.value.length, MajorType.ByteString);
+        return new Uint8Array([...lengthBytes, ...c.value]);
+      }
+      break;
+    }
     case MajorType.Text: {
-    if (typeof c.value === 'string') {
-      const utf8Bytes = new TextEncoder().encode(c.value);
-      const lengthBytes = encodeVarInt(utf8Bytes.length, MajorType.Text);
-      return new Uint8Array([...lengthBytes, ...utf8Bytes]);
-  }
-    break;
-  }
+      if (typeof c.value === "string") {
+        const utf8Bytes = new TextEncoder().encode(c.value);
+        const lengthBytes = encodeVarInt(utf8Bytes.length, MajorType.Text);
+        return new Uint8Array([...lengthBytes, ...utf8Bytes]);
+      }
+      break;
+    }
     case MajorType.Tagged: {
-    if (typeof c.tag === 'bigint' || typeof c.tag === 'number') {
-      const tagBytes = encodeVarInt(c.tag, MajorType.Tagged);
-      const valueBytes = cborData(c.value);
-      return new Uint8Array([...tagBytes, ...valueBytes]);
-  }
-    break;
-  }
+      if (typeof c.tag === "bigint" || typeof c.tag === "number") {
+        const tagBytes = encodeVarInt(c.tag, MajorType.Tagged);
+        const valueBytes = cborData(c.value);
+        return new Uint8Array([...tagBytes, ...valueBytes]);
+      }
+      break;
+    }
     case MajorType.Simple: {
-    // Use the simpleCborData function from simple.ts
-    return simpleCborData(c.value);
-  }
+      // Use the simpleCborData function from simple.ts
+      return simpleCborData(c.value);
+    }
     case MajorType.Array: {
-    const arrayBytes = c.value.map(cborData);
-    const flatArrayBytes = concatBytes(arrayBytes);
-    const lengthBytes = encodeVarInt(c.value.length, MajorType.Array);
-    return new Uint8Array([...lengthBytes, ...flatArrayBytes]);
-  }
+      const arrayBytes = c.value.map(cborData);
+      const flatArrayBytes = concatBytes(arrayBytes);
+      const lengthBytes = encodeVarInt(c.value.length, MajorType.Array);
+      return new Uint8Array([...lengthBytes, ...flatArrayBytes]);
+    }
     case MajorType.Map: {
-    const entries = c.value.entries;
-    const arrayBytes = entries.map(({key, value}) => concatBytes([cborData(key), cborData(value)]));
-    const flatArrayBytes = concatBytes(arrayBytes);
-    const lengthBytes = encodeVarInt(entries.length, MajorType.Map);
-    return new Uint8Array([...lengthBytes, ...flatArrayBytes]);
+      const entries = c.value.entries;
+      const arrayBytes = entries.map(({ key, value }) =>
+        concatBytes([cborData(key), cborData(value)]),
+      );
+      const flatArrayBytes = concatBytes(arrayBytes);
+      const lengthBytes = encodeVarInt(entries.length, MajorType.Map);
+      return new Uint8Array([...lengthBytes, ...flatArrayBytes]);
+    }
   }
-  }
-  throw new CborError({ type: 'WrongType' });
+  throw new CborError({ type: "WrongType" });
 };
 
 export const encodeCbor = (value: CborInput): Uint8Array => {
@@ -417,7 +473,8 @@ export const encodeCbor = (value: CborInput): Uint8Array => {
 
 export const taggedCbor = (tag: unknown, value: CborInput): Cbor => {
   // Validate and convert tag to CborNumber
-  const tagNumber: CborNumber = typeof tag === 'number' || typeof tag === 'bigint' ? tag : Number(tag);
+  const tagNumber: CborNumber =
+    typeof tag === "number" || typeof tag === "bigint" ? tag : Number(tag);
   return attachMethods({
     isCbor: true,
     type: MajorType.Tagged,
@@ -440,29 +497,33 @@ export const toByteStringFromHex = (hex: string): Cbor => {
 };
 
 export const toTaggedValue = (tag: CborNumber | Tag, item: CborInput): Cbor => {
-  const tagValue = typeof tag === 'object' && 'value' in tag ? tag.value : tag;
+  const tagValue = typeof tag === "object" && "value" in tag ? tag.value : tag;
   return attachMethods({
     isCbor: true,
     type: MajorType.Tagged,
     tag: tagValue,
-    value: cbor(item)
+    value: cbor(item),
   });
 };
 
 export const cborFalse = (): Cbor => {
-  return attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: 'False' } });
+  return attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "False" } });
 };
 
 export const cborTrue = (): Cbor => {
-  return attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: 'True' } });
+  return attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "True" } });
 };
 
 export const cborNull = (): Cbor => {
-  return attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: 'Null' } });
+  return attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "Null" } });
 };
 
 export const cborNaN = (): Cbor => {
-  return attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: 'Float', value: NaN } });
+  return attachMethods({
+    isCbor: true,
+    type: MajorType.Simple,
+    value: { type: "Float", value: NaN },
+  });
 };
 
 // ============================================================================
@@ -485,8 +546,8 @@ export const attachMethods = <T extends Omit<Cbor, keyof CborMethods>>(obj: T): 
     },
     toHexAnnotated(this: Cbor, tagsStore?: TagsStore): string {
       // Use lazy import to avoid circular dependency
-      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef, @typescript-eslint/no-unsafe-assignment
-      const { hexOpt } = require('./dump');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+      const { hexOpt } = require("./dump");
       tagsStore = tagsStore ?? getGlobalTagsStore();
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
       return hexOpt(this, { annotate: true, tagsStore });
@@ -524,17 +585,19 @@ export const attachMethods = <T extends Omit<Cbor, keyof CborMethods>>(obj: T): 
       return this.type === MajorType.Simple;
     },
     isBool(this: Cbor): boolean {
-      return this.type === MajorType.Simple &&
-             (this.value.type === 'True' || this.value.type === 'False');
+      return (
+        this.type === MajorType.Simple &&
+        (this.value.type === "True" || this.value.type === "False")
+      );
     },
     isTrue(this: Cbor): boolean {
-      return this.type === MajorType.Simple && this.value.type === 'True';
+      return this.type === MajorType.Simple && this.value.type === "True";
     },
     isFalse(this: Cbor): boolean {
-      return this.type === MajorType.Simple && this.value.type === 'False';
+      return this.type === MajorType.Simple && this.value.type === "False";
     },
     isNull(this: Cbor): boolean {
-      return this.type === MajorType.Simple && this.value.type === 'Null';
+      return this.type === MajorType.Simple && this.value.type === "Null";
     },
     isNumber(this: Cbor): boolean {
       if (this.type === MajorType.Unsigned || this.type === MajorType.Negative) {
@@ -555,9 +618,11 @@ export const attachMethods = <T extends Omit<Cbor, keyof CborMethods>>(obj: T): 
       return this.type === MajorType.Negative;
     },
     isNaN(this: Cbor): boolean {
-      return this.type === MajorType.Simple &&
-             this.value.type === 'Float' &&
-             Number.isNaN(this.value.value);
+      return (
+        this.type === MajorType.Simple &&
+        this.value.type === "Float" &&
+        Number.isNaN(this.value.value)
+      );
     },
     isFloat(this: Cbor): boolean {
       return this.type === MajorType.Simple && isSimpleFloat(this.value);
@@ -585,15 +650,15 @@ export const attachMethods = <T extends Omit<Cbor, keyof CborMethods>>(obj: T): 
     },
     asBool(this: Cbor): boolean | undefined {
       if (this.type !== MajorType.Simple) return undefined;
-      if (this.value.type === 'True') return true;
-      if (this.value.type === 'False') return false;
+      if (this.value.type === "True") return true;
+      if (this.value.type === "False") return false;
       return undefined;
     },
     asInteger(this: Cbor): (number | bigint) | undefined {
       if (this.type === MajorType.Unsigned) {
         return this.value;
       } else if (this.type === MajorType.Negative) {
-        if (typeof this.value === 'bigint') {
+        if (typeof this.value === "bigint") {
           return -this.value - 1n;
         } else {
           return -this.value - 1;
@@ -605,7 +670,7 @@ export const attachMethods = <T extends Omit<Cbor, keyof CborMethods>>(obj: T): 
       if (this.type === MajorType.Unsigned) {
         return this.value;
       } else if (this.type === MajorType.Negative) {
-        if (typeof this.value === 'bigint') {
+        if (typeof this.value === "bigint") {
           return -this.value - 1n;
         } else {
           return -this.value - 1;
@@ -622,31 +687,41 @@ export const attachMethods = <T extends Omit<Cbor, keyof CborMethods>>(obj: T): 
     // Throwing conversion (throws on mismatch)
     toByteString(this: Cbor): Uint8Array {
       if (this.type !== MajorType.ByteString) {
-        throw new TypeError(`Cannot convert CBOR to ByteString: expected ByteString type, got ${getMajorTypeName(this.type)}`);
+        throw new TypeError(
+          `Cannot convert CBOR to ByteString: expected ByteString type, got ${getMajorTypeName(this.type)}`,
+        );
       }
       return this.value;
     },
     toText(this: Cbor): string {
       if (this.type !== MajorType.Text) {
-        throw new TypeError(`Cannot convert CBOR to Text: expected Text type, got ${getMajorTypeName(this.type)}`);
+        throw new TypeError(
+          `Cannot convert CBOR to Text: expected Text type, got ${getMajorTypeName(this.type)}`,
+        );
       }
       return this.value;
     },
     toArray(this: Cbor): readonly Cbor[] {
       if (this.type !== MajorType.Array) {
-        throw new TypeError(`Cannot convert CBOR to Array: expected Array type, got ${getMajorTypeName(this.type)}`);
+        throw new TypeError(
+          `Cannot convert CBOR to Array: expected Array type, got ${getMajorTypeName(this.type)}`,
+        );
       }
       return this.value;
     },
     toMap(this: Cbor): CborMap {
       if (this.type !== MajorType.Map) {
-        throw new TypeError(`Cannot convert CBOR to Map: expected Map type, got ${getMajorTypeName(this.type)}`);
+        throw new TypeError(
+          `Cannot convert CBOR to Map: expected Map type, got ${getMajorTypeName(this.type)}`,
+        );
       }
       return this.value;
     },
     toTagged(this: Cbor): [Tag, Cbor] {
       if (this.type !== MajorType.Tagged) {
-        throw new TypeError(`Cannot convert CBOR to Tagged: expected Tagged type, got ${getMajorTypeName(this.type)}`);
+        throw new TypeError(
+          `Cannot convert CBOR to Tagged: expected Tagged type, got ${getMajorTypeName(this.type)}`,
+        );
       }
       const tag: Tag = { value: this.tag, name: `tag-${this.tag}` };
       return [tag, this.value];
@@ -654,37 +729,49 @@ export const attachMethods = <T extends Omit<Cbor, keyof CborMethods>>(obj: T): 
     toBool(this: Cbor): boolean {
       const result = this.asBool();
       if (result === undefined) {
-        throw new TypeError(`Cannot convert CBOR to boolean: expected Simple(True/False) type, got ${getMajorTypeName(this.type)}`);
+        throw new TypeError(
+          `Cannot convert CBOR to boolean: expected Simple(True/False) type, got ${getMajorTypeName(this.type)}`,
+        );
       }
       return result;
     },
     toInteger(this: Cbor): number | bigint {
       const result = this.asInteger();
       if (result === undefined) {
-        throw new TypeError(`Cannot convert CBOR to integer: expected Unsigned or Negative type, got ${getMajorTypeName(this.type)}`);
+        throw new TypeError(
+          `Cannot convert CBOR to integer: expected Unsigned or Negative type, got ${getMajorTypeName(this.type)}`,
+        );
       }
       return result;
     },
     toNumber(this: Cbor): number | bigint {
       const result = this.asNumber();
       if (result === undefined) {
-        throw new TypeError(`Cannot convert CBOR to number: expected Unsigned, Negative, or Float type, got ${getMajorTypeName(this.type)}`);
+        throw new TypeError(
+          `Cannot convert CBOR to number: expected Unsigned, Negative, or Float type, got ${getMajorTypeName(this.type)}`,
+        );
       }
       return result;
     },
     toSimpleValue(this: Cbor): Simple {
       if (this.type !== MajorType.Simple) {
-        throw new TypeError(`Cannot convert CBOR to Simple: expected Simple type, got ${getMajorTypeName(this.type)}`);
+        throw new TypeError(
+          `Cannot convert CBOR to Simple: expected Simple type, got ${getMajorTypeName(this.type)}`,
+        );
       }
       return this.value;
     },
     expectTag(this: Cbor, expectedTag: CborNumber | Tag): Cbor {
       if (this.type !== MajorType.Tagged) {
-        throw new CborError({ type: 'WrongType' });
+        throw new CborError({ type: "WrongType" });
       }
-      const expectedValue = typeof expectedTag === 'object' && 'value' in expectedTag ? expectedTag.value : expectedTag;
+      const expectedValue =
+        typeof expectedTag === "object" && "value" in expectedTag ? expectedTag.value : expectedTag;
       if (this.tag !== expectedValue) {
-        throw new CborError({ type: 'Custom', message: `Wrong tag: expected ${expectedValue}, got ${this.tag}` });
+        throw new CborError({
+          type: "Custom",
+          message: `Wrong tag: expected ${expectedValue}, got ${this.tag}`,
+        });
       }
       return this.value;
     },
@@ -692,27 +779,30 @@ export const attachMethods = <T extends Omit<Cbor, keyof CborMethods>>(obj: T): 
     // Advanced operations
     walk<State>(this: Cbor, initialState: State, visitor: Visitor<State>): State {
       // Use lazy import to avoid circular dependency
-      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef, @typescript-eslint/no-unsafe-assignment
-      const { walk: walkFn } = require('./walk');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+      const { walk: walkFn } = require("./walk");
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
       return walkFn(this, initialState, visitor);
     },
     validateTag(this: Cbor, expectedTags: Tag[]): Tag {
       if (this.type !== MajorType.Tagged) {
-        throw new CborError({ type: 'WrongType' });
+        throw new CborError({ type: "WrongType" });
       }
-      const expectedValues = expectedTags.map(t => t.value);
+      const expectedValues = expectedTags.map((t) => t.value);
       const tagValue = this.tag;
-      const matchingTag = expectedTags.find(t => t.value === tagValue);
+      const matchingTag = expectedTags.find((t) => t.value === tagValue);
       if (matchingTag === undefined) {
-        const expectedStr = expectedValues.join(' or ');
-        throw new CborError({ type: 'Custom', message: `Wrong tag: expected ${expectedStr}, got ${tagValue}` });
+        const expectedStr = expectedValues.join(" or ");
+        throw new CborError({
+          type: "Custom",
+          message: `Wrong tag: expected ${expectedStr}, got ${tagValue}`,
+        });
       }
       return matchingTag;
     },
     untagged(this: Cbor): Cbor {
       if (this.type !== MajorType.Tagged) {
-        throw new CborError({ type: 'WrongType' });
+        throw new CborError({ type: "WrongType" });
       }
       return this.value;
     },
@@ -732,10 +822,14 @@ export const attachMethods = <T extends Omit<Cbor, keyof CborMethods>>(obj: T): 
 // eslint-disable-next-line no-redeclare
 export const Cbor = {
   // Static CBOR simple values (matching Rust naming) - with methods attached
-  False: attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: 'False' } }),
-  True: attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: 'True' } }),
-  Null: attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: 'Null' } }),
-  NaN: attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: 'Float', value: NaN } }),
+  False: attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "False" } }),
+  True: attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "True" } }),
+  Null: attachMethods({ isCbor: true, type: MajorType.Simple, value: { type: "Null" } }),
+  NaN: attachMethods({
+    isCbor: true,
+    type: MajorType.Simple,
+    value: { type: "Float", value: NaN },
+  }),
 
   // ============================================================================
   // Static Factory/Decoding Methods (matches Rust CBOR static methods)
@@ -780,4 +874,3 @@ export const Cbor = {
     return this.tryFromData(data);
   },
 };
-

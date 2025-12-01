@@ -11,8 +11,8 @@
  * @module cbor-tagged-codable
  */
 
-import type { CborTaggedEncodable } from './cbor-tagged-encodable';
-import type { CborTaggedDecodable } from './cbor-tagged-decodable';
+import type { CborTaggedEncodable } from "./cbor-tagged-encodable";
+import type { CborTaggedDecodable } from "./cbor-tagged-decodable";
 
 /**
  * Interface for types that can be both encoded to and decoded from CBOR with a

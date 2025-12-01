@@ -2,14 +2,14 @@
  * Uniform Resource Identifier (URI) - String-based identifier
  */
 
-import { CryptoError } from './error.js';
+import { CryptoError } from "./error.js";
 
 export class URI {
   private uri: string;
 
   private constructor(uri: string) {
     if (!uri || uri.trim().length === 0) {
-      throw CryptoError.invalidInput('URI cannot be empty');
+      throw CryptoError.invalidInput("URI cannot be empty");
     }
     this.uri = uri;
   }
@@ -32,7 +32,7 @@ export class URI {
     } catch {
       // Allow non-URL URIs, just validate it's not empty
       if (!uriString || uriString.trim().length === 0) {
-        throw CryptoError.invalidFormat('URI cannot be empty');
+        throw CryptoError.invalidFormat("URI cannot be empty");
       }
       return new URI(uriString);
     }
@@ -76,7 +76,7 @@ export class URI {
       return url.pathname;
     } catch {
       // For non-URL URIs, try to extract path after scheme
-      const withoutScheme = this.uri.replace(/^[a-z][a-z0-9+.-]*:\/?\/?/i, '');
+      const withoutScheme = this.uri.replace(/^[a-z][a-z0-9+.-]*:\/?\/?/i, "");
       return withoutScheme;
     }
   }
@@ -113,7 +113,7 @@ export class URI {
    * Get base64 representation of the URI string
    */
   toBase64(): string {
-    return Buffer.from(this.uri).toString('base64');
+    return Buffer.from(this.uri).toString("base64");
   }
 
   /**

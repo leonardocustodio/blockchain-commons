@@ -5,19 +5,19 @@
 /// error handling, and various utility functions.
 
 // Core types
-export { Envelope, type EnvelopeCase } from './envelope';
-export { Assertion } from './assertion';
-export { Digest, type DigestProvider } from './digest';
+export { Envelope, type EnvelopeCase } from "./envelope";
+export { Assertion } from "./assertion";
+export { Digest, type DigestProvider } from "./digest";
 
 // Error handling
-export { EnvelopeError, ErrorCode } from './error';
+export { EnvelopeError, ErrorCode } from "./error";
 
 // Encodable/Decodable traits
 export {
   type EnvelopeEncodable,
   type EnvelopeEncodableValue,
   isEnvelopeEncodable,
-} from './envelope-encodable';
+} from "./envelope-encodable";
 
 // CBOR encoding/decoding
 export {
@@ -28,7 +28,7 @@ export {
   envelopeFromCbor,
   envelopeToBytes,
   envelopeFromBytes,
-} from './cbor';
+} from "./cbor";
 
 // Envelope decoding utilities
 export {
@@ -38,19 +38,19 @@ export {
   extractBytes,
   extractNull,
   EnvelopeDecoder,
-} from './envelope-decodable';
+} from "./envelope-decodable";
 
 // Elision and selective disclosure
-export { ObscureType, type ObscureAction, elideAction } from './elide';
+export { ObscureType, type ObscureAction, elideAction } from "./elide";
 
 // Walking/traversal
-export { EdgeType, edgeLabel, type Visitor } from './walk';
+export { EdgeType, edgeLabel, type Visitor } from "./walk";
 
 // Import side-effect modules to register prototype extensions
-import './assertions';
-import './leaf';
-import './queries';
-import './elide';
-import './wrap';
-import './walk';
-import './envelope-decodable';
+import "./assertions";
+import "./leaf";
+import "./queries";
+import "./elide";
+import "./wrap";
+import "./walk";
+import "./envelope-decodable";

@@ -7,8 +7,8 @@
  * @module tags-store
  */
 
-import type { Cbor, CborNumber } from './cbor';
-import type { Tag } from './tag';
+import type { Cbor, CborNumber } from "./cbor";
+import type { Tag } from "./tag";
 
 /**
  * Function type for custom CBOR value summarizers.

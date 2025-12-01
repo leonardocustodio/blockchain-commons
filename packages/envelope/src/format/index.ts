@@ -5,9 +5,9 @@
 /// and mermaid diagram formats.
 
 // Export types
-export type { TreeFormatOptions } from './tree';
+export type { TreeFormatOptions } from "./tree";
 
 // Import side-effect modules to register prototype extensions
-import './hex';
-import './diagnostic';
-import './tree';
+import "./hex";
+import "./diagnostic";
+import "./tree";

@@ -2,7 +2,7 @@
  * Cryptographic nonce (12 bytes, suitable for AES-GCM and ChaCha20-Poly1305)
  */
 
-import { CryptoError } from './error.js';
+import { CryptoError } from "./error.js";
 
 const NONCE_SIZE = 12;
 
@@ -39,11 +39,11 @@ export class Nonce {
    */
   static random(): Nonce {
     const data = new Uint8Array(NONCE_SIZE);
-    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+    if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
       globalThis.crypto.getRandomValues(data);
     } else {
       // Fallback for Node.js
-      const { randomBytes } = require('crypto');
+      const { randomBytes } = require("crypto");
       const buf = randomBytes(NONCE_SIZE);
       data.set(buf);
     }
@@ -62,15 +62,15 @@ export class Nonce {
    */
   toHex(): string {
     return Array.from(this.data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   /**
    * Get base64 representation
    */
   toBase64(): string {
-    return Buffer.from(this.data).toString('base64');
+    return Buffer.from(this.data).toString("base64");
   }
 
   /**

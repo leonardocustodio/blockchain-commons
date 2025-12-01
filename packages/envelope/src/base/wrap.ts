@@ -1,12 +1,12 @@
-import { Envelope } from './envelope';
-import { EnvelopeError } from './error';
+import { Envelope } from "./envelope";
+import { EnvelopeError } from "./error";
 
 /// Support for wrapping and unwrapping envelopes.
 ///
 /// Wrapping allows treating an envelope (including its assertions) as a single
 /// unit, making it possible to add assertions about the envelope as a whole.
 
-declare module './envelope' {
+declare module "./envelope" {
   interface Envelope {
     /// Returns a new envelope which wraps the current envelope.
     ///
@@ -60,7 +60,7 @@ Envelope.prototype.wrap = function (this: Envelope): Envelope {
 /// Implementation of tryUnwrap()
 Envelope.prototype.tryUnwrap = function (this: Envelope): Envelope {
   const c = this.subject().case();
-  if (c.type === 'wrapped') {
+  if (c.type === "wrapped") {
     return c.envelope;
   }
   throw EnvelopeError.notWrapped();

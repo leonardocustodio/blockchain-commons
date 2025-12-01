@@ -7,7 +7,7 @@
  * @module tag
  */
 
-import type { CborNumber } from './cbor';
+import type { CborNumber } from "./cbor";
 
 /**
  * A CBOR tag with an optional name.
@@ -50,5 +50,4 @@ export const createTag = (value: CborNumber, name?: string): Tag => {
  *
  * @internal
  */
-export const tagToString = (tag: Tag): string =>
-  tag.name ?? tag.value.toString();
+export const tagToString = (tag: Tag): string => tag.name ?? tag.value.toString();

@@ -15,8 +15,8 @@
  */
 
 // Core types
-export { Cbor, MajorType } from './cbor';
-export type { Simple } from './simple';
+export { Cbor, MajorType } from "./cbor";
+export type { Simple } from "./simple";
 export type {
   CborUnsignedType,
   CborNegativeType,
@@ -26,41 +26,45 @@ export type {
   CborMapType,
   CborTaggedType,
   CborSimpleType,
-  CborNumber
-} from './cbor';
+  CborNumber,
+} from "./cbor";
 
 // Codable interfaces
-export type { CborEncodable, CborDecodable, CborCodable } from './cbor-codable';
+export type { CborEncodable, CborDecodable, CborCodable } from "./cbor-codable";
 
 // Tagged value interfaces
-export type { CborTagged, CborTaggedEncodable, CborTaggedDecodable, CborTaggedCodable } from './cbor-tagged';
+export type {
+  CborTagged,
+  CborTaggedEncodable,
+  CborTaggedDecodable,
+  CborTaggedCodable,
+} from "./cbor-tagged";
 
 // Map and Set classes
-export { CborMap } from './map';
-export { CborSet } from './set';
+export { CborMap } from "./map";
+export { CborSet } from "./set";
 
 // ByteString class
-export { ByteString } from './byte-string';
+export { ByteString } from "./byte-string";
 
 // Date class
-export { CborDate } from './date';
+export { CborDate } from "./date";
 
 // Tag handling
-export type { Tag } from './tag';
-export { createTag } from './tag';
-export { TagsStore, getGlobalTagsStore, withTags, withTagsMut } from './tags-store';
-export type { TagsStoreTrait } from './tags-store';
-export { tagsForValues } from './tags';
+export type { Tag } from "./tag";
+export { createTag } from "./tag";
+export { TagsStore, getGlobalTagsStore, withTags, withTagsMut } from "./tags-store";
+export type { TagsStoreTrait } from "./tags-store";
+export { tagsForValues } from "./tags";
 
 // Format options
-export type { DiagFormatOpts } from './diag';
-export type { HexFormatOpts } from './dump';
+export type { DiagFormatOpts } from "./diag";
+export type { HexFormatOpts } from "./dump";
 
 // Walk/traversal
-export { EdgeType } from './walk';
-export type { WalkElement, EdgeTypeVariant, Visitor } from './walk';
+export { EdgeType } from "./walk";
+export type { WalkElement, EdgeTypeVariant, Visitor } from "./walk";
 
 // Error handling
-export type { Error, Result } from './error';
-export { Ok, Err, errorMsg, errorToString, CborError } from './error';
-
+export type { Error, Result } from "./error";
+export { Ok, Err, errorMsg, errorToString, CborError } from "./error";

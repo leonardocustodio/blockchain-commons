@@ -1,4 +1,4 @@
-import { Envelope } from '../base/envelope';
+import { Envelope } from "../base/envelope";
 
 /// Hex formatting for Gordian Envelopes.
 ///
@@ -6,7 +6,7 @@ import { Envelope } from '../base/envelope';
 /// representations of their CBOR encoding, useful for debugging and
 /// low-level inspection.
 
-declare module '../base/envelope' {
+declare module "../base/envelope" {
   interface Envelope {
     /// Returns the CBOR hex dump of this envelope.
     ///
@@ -42,13 +42,13 @@ declare module '../base/envelope' {
 Envelope.prototype.hex = function (this: Envelope): string {
   const bytes = this.cborBytes();
   return Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 };
 
 /// Implementation of cborBytes()
 Envelope.prototype.cborBytes = function (this: Envelope): Uint8Array {
-  const { cborData } = require('@leonardocustodio/dcbor');
+  const { cborData } = require("@leonardocustodio/dcbor");
   const cbor = this.taggedCbor();
   return cborData(cbor);
 };

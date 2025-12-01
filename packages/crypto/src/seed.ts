@@ -2,7 +2,7 @@
  * Cryptographic seed with optional metadata (minimum 16 bytes)
  */
 
-import { CryptoError } from './error.js';
+import { CryptoError } from "./error.js";
 
 const MIN_SEED_SIZE = 16;
 
@@ -50,11 +50,11 @@ export class Seed {
       throw CryptoError.invalidSize(MIN_SEED_SIZE, size);
     }
     const data = new Uint8Array(size);
-    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+    if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
       globalThis.crypto.getRandomValues(data);
     } else {
       // Fallback for Node.js
-      const { randomBytes } = require('crypto');
+      const { randomBytes } = require("crypto");
       const buf = randomBytes(size);
       data.set(buf);
     }
@@ -73,15 +73,15 @@ export class Seed {
    */
   toHex(): string {
     return Array.from(this.data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   /**
    * Get base64 representation
    */
   toBase64(): string {
-    return Buffer.from(this.data).toString('base64');
+    return Buffer.from(this.data).toString("base64");
   }
 
   /**

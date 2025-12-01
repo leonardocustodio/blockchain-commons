@@ -1,7 +1,7 @@
-import { Envelope } from '../base/envelope';
-import { EnvelopeError } from '../base/error';
-import { Digest } from '../base/digest';
-import * as pako from 'pako';
+import { Envelope } from "../base/envelope";
+import { EnvelopeError } from "../base/error";
+import { Digest } from "../base/digest";
+import * as pako from "pako";
 
 /// Extension for compressing and decompressing envelopes.
 ///
@@ -45,10 +45,7 @@ export class Compressed {
   }
 
   /// Creates a Compressed instance from decompressed data
-  static fromDecompressedData(
-    decompressedData: Uint8Array,
-    digest?: Digest
-  ): Compressed {
+  static fromDecompressedData(decompressedData: Uint8Array, digest?: Digest): Compressed {
     const compressed = pako.deflate(decompressedData);
     return new Compressed(compressed, digest);
   }
@@ -69,7 +66,7 @@ export class Compressed {
   }
 }
 
-declare module '../base/envelope' {
+declare module "../base/envelope" {
   interface Envelope {
     /// Returns a compressed version of this envelope.
     ///
@@ -191,63 +188,60 @@ Envelope.prototype.compress = function (this: Envelope): Envelope {
   const c = this.case();
 
   // If already compressed, return as-is
-  if (c.type === 'compressed') {
+  if (c.type === "compressed") {
     return this;
   }
 
   // Can't compress encrypted or elided envelopes
-  if (c.type === 'encrypted') {
-    throw EnvelopeError.general('Cannot compress encrypted envelope');
+  if (c.type === "encrypted") {
+    throw EnvelopeError.general("Cannot compress encrypted envelope");
   }
-  if (c.type === 'elided') {
-    throw EnvelopeError.general('Cannot compress elided envelope');
+  if (c.type === "elided") {
+    throw EnvelopeError.general("Cannot compress elided envelope");
   }
 
   // Compress the entire envelope
   const cbor = this.taggedCbor();
-  const { cborData } = require('@leonardocustodio/dcbor');
+  const { cborData } = require("@leonardocustodio/dcbor");
   const decompressedData = cborData(cbor);
 
-  const compressed = Compressed.fromDecompressedData(
-    decompressedData,
-    this.digest()
-  );
+  const compressed = Compressed.fromDecompressedData(decompressedData, this.digest());
 
   // Create a compressed envelope case
-  return Envelope.fromCase({ type: 'compressed', value: compressed });
+  return Envelope.fromCase({ type: "compressed", value: compressed });
 };
 
 /// Implementation of decompress()
 Envelope.prototype.decompress = function (this: Envelope): Envelope {
   const c = this.case();
 
-  if (c.type !== 'compressed') {
-    throw EnvelopeError.general('Envelope is not compressed');
+  if (c.type !== "compressed") {
+    throw EnvelopeError.general("Envelope is not compressed");
   }
 
   const compressed = c.value as Compressed;
   const digest = compressed.digestOpt();
 
   if (!digest) {
-    throw EnvelopeError.general('Missing digest in compressed envelope');
+    throw EnvelopeError.general("Missing digest in compressed envelope");
   }
 
   // Verify the digest matches
   if (!digest.equals(this.digest())) {
-    throw EnvelopeError.general('Invalid digest in compressed envelope');
+    throw EnvelopeError.general("Invalid digest in compressed envelope");
   }
 
   // Decompress the data
   const decompressedData = compressed.decompress();
 
   // Parse back to envelope
-  const { decodeCbor } = require('@leonardocustodio/dcbor');
+  const { decodeCbor } = require("@leonardocustodio/dcbor");
   const cbor = decodeCbor(decompressedData);
   const envelope = Envelope.fromTaggedCbor(cbor);
 
   // Verify the decompressed envelope has the correct digest
   if (!envelope.digest().equals(digest)) {
-    throw EnvelopeError.general('Invalid digest after decompression');
+    throw EnvelopeError.general("Invalid digest after decompression");
   }
 
   return envelope;
@@ -275,5 +269,5 @@ Envelope.prototype.decompressSubject = function (this: Envelope): Envelope {
 
 /// Implementation of isCompressed()
 Envelope.prototype.isCompressed = function (this: Envelope): boolean {
-  return this.case().type === 'compressed';
+  return this.case().type === "compressed";
 };

@@ -1,4 +1,4 @@
-import { Envelope } from './envelope';
+import { Envelope } from "./envelope";
 
 /// Functions for traversing and manipulating the envelope hierarchy.
 ///
@@ -20,17 +20,17 @@ import { Envelope } from './envelope';
 /// semantic relationship between elements.
 export enum EdgeType {
   /// No incoming edge (root)
-  None = 'none',
+  None = "none",
   /// Element is the subject of a node
-  Subject = 'subject',
+  Subject = "subject",
   /// Element is an assertion on a node
-  Assertion = 'assertion',
+  Assertion = "assertion",
   /// Element is the predicate of an assertion
-  Predicate = 'predicate',
+  Predicate = "predicate",
   /// Element is the object of an assertion
-  Object = 'object',
+  Object = "object",
   /// Element is the content wrapped by another envelope
-  Content = 'content',
+  Content = "content",
 }
 
 /// Returns a short text label for the edge type, or undefined if no label is
@@ -44,13 +44,13 @@ export enum EdgeType {
 export function edgeLabel(edgeType: EdgeType): string | undefined {
   switch (edgeType) {
     case EdgeType.Subject:
-      return 'subj';
+      return "subj";
     case EdgeType.Content:
-      return 'cont';
+      return "cont";
     case EdgeType.Predicate:
-      return 'pred';
+      return "pred";
     case EdgeType.Object:
-      return 'obj';
+      return "obj";
     default:
       return undefined;
   }
@@ -73,10 +73,10 @@ export type Visitor<State> = (
   envelope: Envelope,
   level: number,
   incomingEdge: EdgeType,
-  state: State
+  state: State,
 ) => [State, boolean];
 
-declare module './envelope' {
+declare module "./envelope" {
   interface Envelope {
     /// Walks the envelope structure, calling the visitor function for each
     /// element.
@@ -98,11 +98,7 @@ declare module './envelope' {
     ///   containers
     /// @param state - Initial state passed to the visitor
     /// @param visit - The visitor function called for each element
-    walk<State>(
-      hideNodes: boolean,
-      state: State,
-      visit: Visitor<State>
-    ): void;
+    walk<State>(hideNodes: boolean, state: State, visit: Visitor<State>): void;
   }
 }
 
@@ -111,7 +107,7 @@ Envelope.prototype.walk = function <State>(
   this: Envelope,
   hideNodes: boolean,
   state: State,
-  visit: Visitor<State>
+  visit: Visitor<State>,
 ): void {
   if (hideNodes) {
     walkTree(this, 0, EdgeType.None, state, visit);
@@ -130,7 +126,7 @@ function walkStructure<State>(
   level: number,
   incomingEdge: EdgeType,
   state: State,
-  visit: Visitor<State>
+  visit: Visitor<State>,
 ): void {
   // Visit this envelope
   const [newState, stop] = visit(envelope, level, incomingEdge, state);
@@ -142,7 +138,7 @@ function walkStructure<State>(
   const c = envelope.case();
 
   switch (c.type) {
-    case 'node':
+    case "node":
       // Visit subject
       walkStructure(c.subject, nextLevel, EdgeType.Subject, newState, visit);
       // Visit all assertions
@@ -151,27 +147,15 @@ function walkStructure<State>(
       }
       break;
 
-    case 'wrapped':
+    case "wrapped":
       // Visit wrapped envelope
       walkStructure(c.envelope, nextLevel, EdgeType.Content, newState, visit);
       break;
 
-    case 'assertion':
+    case "assertion":
       // Visit predicate and object
-      walkStructure(
-        c.assertion.predicate(),
-        nextLevel,
-        EdgeType.Predicate,
-        newState,
-        visit
-      );
-      walkStructure(
-        c.assertion.object(),
-        nextLevel,
-        EdgeType.Object,
-        newState,
-        visit
-      );
+      walkStructure(c.assertion.predicate(), nextLevel, EdgeType.Predicate, newState, visit);
+      walkStructure(c.assertion.object(), nextLevel, EdgeType.Object, newState, visit);
       break;
 
     default:
@@ -191,7 +175,7 @@ function walkTree<State>(
   level: number,
   incomingEdge: EdgeType,
   state: State,
-  visit: Visitor<State>
+  visit: Visitor<State>,
 ): State {
   let currentState = state;
   let subjectLevel = level;
@@ -209,50 +193,32 @@ function walkTree<State>(
   const c = envelope.case();
 
   switch (c.type) {
-    case 'node': {
+    case "node": {
       // Visit subject
       const assertionState = walkTree(
         c.subject,
         subjectLevel,
         EdgeType.Subject,
         currentState,
-        visit
+        visit,
       );
       // Visit all assertions
       const assertionLevel = subjectLevel + 1;
       for (const assertion of c.assertions) {
-        walkTree(
-          assertion,
-          assertionLevel,
-          EdgeType.Assertion,
-          assertionState,
-          visit
-        );
+        walkTree(assertion, assertionLevel, EdgeType.Assertion, assertionState, visit);
       }
       break;
     }
 
-    case 'wrapped':
+    case "wrapped":
       // Visit wrapped envelope
       walkTree(c.envelope, subjectLevel, EdgeType.Content, currentState, visit);
       break;
 
-    case 'assertion':
+    case "assertion":
       // Visit predicate and object
-      walkTree(
-        c.assertion.predicate(),
-        subjectLevel,
-        EdgeType.Predicate,
-        currentState,
-        visit
-      );
-      walkTree(
-        c.assertion.object(),
-        subjectLevel,
-        EdgeType.Object,
-        currentState,
-        visit
-      );
+      walkTree(c.assertion.predicate(), subjectLevel, EdgeType.Predicate, currentState, visit);
+      walkTree(c.assertion.object(), subjectLevel, EdgeType.Object, currentState, visit);
       break;
 
     default:

@@ -1,4 +1,4 @@
-import { UR } from './ur';
+import type { UR } from "./ur.js";
 
 /**
  * A type that can be encoded to a UR (Uniform Resource).
@@ -21,27 +21,27 @@ import { UR } from './ur';
  * ```
  */
 export interface UREncodable {
-	/**
-	 * Returns the UR representation of the object.
-	 */
-	ur(): UR;
+  /**
+   * Returns the UR representation of the object.
+   */
+  ur(): UR;
 
-	/**
-	 * Returns the UR string representation of the object.
-	 */
-	urString(): string;
+  /**
+   * Returns the UR string representation of the object.
+   */
+  urString(): string;
 }
 
 /**
  * Helper function to check if an object implements UREncodable.
  */
 export function isUREncodable(obj: unknown): obj is UREncodable {
-	return (
-		typeof obj === 'object' &&
-		obj !== null &&
-		'ur' in obj &&
-		'urString' in obj &&
-		typeof (obj as Record<string, unknown>)['ur'] === 'function' &&
-		typeof (obj as Record<string, unknown>)['urString'] === 'function'
-	);
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+    "ur" in obj &&
+    "urString" in obj &&
+    typeof (obj as Record<string, unknown>)["ur"] === "function" &&
+    typeof (obj as Record<string, unknown>)["urString"] === "function"
+  );
 }

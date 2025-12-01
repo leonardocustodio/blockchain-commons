@@ -12,8 +12,7 @@
  * @param right - Right flanking string
  * @returns Flanked string
  */
-export const flanked = (s: string, left: string, right: string): string =>
-  left + s + right;
+export const flanked = (s: string, left: string, right: string): string => left + s + right;
 
 /**
  * Check if a character is printable.
@@ -44,7 +43,7 @@ export const sanitized = (str: string): string | undefined => {
       hasPrintable = true;
       chars.push(c);
     } else {
-      chars.push('.');
+      chars.push(".");
     }
   }
 
@@ -52,5 +51,5 @@ export const sanitized = (str: string): string | undefined => {
     return undefined;
   }
 
-  return chars.join('');
+  return chars.join("");
 };

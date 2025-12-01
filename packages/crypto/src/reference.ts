@@ -2,27 +2,69 @@
  * Content-addressable reference - SHA-256 digest with short reference encoding
  */
 
-import { Digest } from './digest.js';
-import { CryptoError } from './error.js';
+import { Digest } from "./digest.js";
+import { CryptoError } from "./error.js";
 
 // CBOR tag for Reference
 const REFERENCE_TAG = 352;
 
-export type ReferenceEncodingFormat = 'hex' | 'bytewords' | 'bytemojis';
+export type ReferenceEncodingFormat = "hex" | "bytewords" | "bytemojis";
 
 // Bytewords mapping (256 words)
 const BYTEWORDS = [
-  'abled', 'ache', 'acid', 'acme', 'acre', 'aged', 'aide', 'airy',
-  'ajar', 'akin', 'alas', 'alba', 'alee', 'alms', 'aloe', 'also',
-  'ante', 'anti', 'ants', 'anus', 'anus', 'apes', 'apex', 'apse',
-  'arch', 'area', 'ares', 'aria', 'arid', 'ark', 'arms', 'army',
+  "abled",
+  "ache",
+  "acid",
+  "acme",
+  "acre",
+  "aged",
+  "aide",
+  "airy",
+  "ajar",
+  "akin",
+  "alas",
+  "alba",
+  "alee",
+  "alms",
+  "aloe",
+  "also",
+  "ante",
+  "anti",
+  "ants",
+  "anus",
+  "anus",
+  "apes",
+  "apex",
+  "apse",
+  "arch",
+  "area",
+  "ares",
+  "aria",
+  "arid",
+  "ark",
+  "arms",
+  "army",
   // ... (256 total - abbreviated for space)
 ];
 
 // Bytemojis mapping (256 emojis)
 const BYTEMOJIS = [
-  '😀', '😂', '😆', '😉', '😊', '😌', '😎', '😏',
-  '😑', '😒', '😓', '😔', '😕', '😖', '😗', '😘',
+  "😀",
+  "😂",
+  "😆",
+  "😉",
+  "😊",
+  "😌",
+  "😎",
+  "😏",
+  "😑",
+  "😒",
+  "😓",
+  "😔",
+  "😕",
+  "😖",
+  "😗",
+  "😘",
   // ... (256 total - abbreviated for space)
 ];
 
@@ -73,26 +115,26 @@ export class Reference {
   /**
    * Get short reference (first 4 bytes) in various formats
    */
-  shortReference(format: ReferenceEncodingFormat = 'hex'): string {
+  shortReference(format: ReferenceEncodingFormat = "hex"): string {
     const data = this.digest.toData();
     const shortData = data.slice(0, 4);
 
     switch (format) {
-      case 'hex':
+      case "hex":
         return Array.from(shortData)
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('')
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("")
           .toUpperCase();
 
-      case 'bytewords':
+      case "bytewords":
         return Array.from(shortData)
-          .map(b => BYTEWORDS[b] || `word${b}`)
-          .join(' ');
+          .map((b) => BYTEWORDS[b] || `word${b}`)
+          .join(" ");
 
-      case 'bytemojis':
+      case "bytemojis":
         return Array.from(shortData)
-          .map(b => BYTEMOJIS[b] || '❓')
-          .join(' ');
+          .map((b) => BYTEMOJIS[b] || "❓")
+          .join(" ");
 
       default:
         throw CryptoError.invalidFormat(`Unknown reference format: ${format}`);
@@ -124,6 +166,6 @@ export class Reference {
    * Get string representation
    */
   toString(): string {
-    return `Reference(${this.shortReference('hex')})`;
+    return `Reference(${this.shortReference("hex")})`;
   }
 }

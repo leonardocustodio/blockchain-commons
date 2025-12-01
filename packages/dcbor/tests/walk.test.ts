@@ -37,18 +37,12 @@
  *   document structure converted to CBOR
  */
 
-import {
-  cbor,
-  CborInput,
-  CborMap,
-  WalkElement,
-  toTaggedValue
-} from '../src';
-import { EdgeTypeVariant } from '../src/walk';
+import type { CborInput, WalkElement, EdgeTypeVariant } from "../src";
+import { cbor, CborMap, toTaggedValue } from "../src";
 
 // Helper function to format WalkElement as diagnostic string
 function formatElement(element: WalkElement): string {
-  if (element.type === 'single') {
+  if (element.type === "single") {
     return element.cbor.toString();
   } else {
     return `${element.key.toString()}: ${element.value.toString()}`;
@@ -62,7 +56,7 @@ function countVisits(cborValue: CborInput): number {
     _element: WalkElement,
     _level: number,
     _edge: EdgeTypeVariant,
-    state: void
+    state: void,
   ): [void, boolean] => {
     count++;
     return [state, false];
@@ -72,9 +66,9 @@ function countVisits(cborValue: CborInput): number {
   return count;
 }
 
-describe('walk tests', () => {
+describe("walk tests", () => {
   /// Test basic traversal counts for different CBOR structures
-  test('test_traversal_counts', () => {
+  test("test_traversal_counts", () => {
     // Simple array
     const array = [1, 2, 3];
     const count1 = countVisits(array);
@@ -83,8 +77,8 @@ describe('walk tests', () => {
 
     // Simple map
     const map = CborMap.new();
-    map.insert('a', 1);
-    map.insert('b', 2);
+    map.insert("a", 1);
+    map.insert("b", 2);
     const count2 = countVisits(map);
     // Root + 2 key-value pairs + 4 individual keys/values = 7
     expect(count2).toBe(7);
@@ -97,10 +91,10 @@ describe('walk tests', () => {
 
     // Nested structure
     const innerMap = CborMap.new();
-    innerMap.insert('x', [1, 2]);
+    innerMap.insert("x", [1, 2]);
     const outerMap = CborMap.new();
-    outerMap.insert('inner', innerMap);
-    outerMap.insert('simple', 42);
+    outerMap.insert("inner", innerMap);
+    outerMap.insert("simple", 42);
     const count4 = countVisits(outerMap);
     // Should visit:
     // 1. root map
@@ -116,7 +110,7 @@ describe('walk tests', () => {
   });
 
   /// Test that visitor state is properly threaded through traversal
-  test('test_visitor_state_threading', () => {
+  test("test_visitor_state_threading", () => {
     const array = [1, 2, 3, 4, 5];
 
     // Count only even numbers using visitor state
@@ -125,11 +119,12 @@ describe('walk tests', () => {
       element: WalkElement,
       _level: number,
       _edge: EdgeTypeVariant,
-      state: void
+      state: void,
     ): [void, boolean] => {
-      if (element.type === 'single') {
+      if (element.type === "single") {
         const cborValue = element.cbor;
-        if (cborValue.type === 0) { // Unsigned
+        if (cborValue.type === 0) {
+          // Unsigned
           const n = cborValue.value as number;
           if (n % 2 === 0) {
             evenCount++;
@@ -144,13 +139,13 @@ describe('walk tests', () => {
   });
 
   /// Test early termination using visitor pattern
-  test('test_early_termination', () => {
+  test("test_early_termination", () => {
     // Test shows that stop flag prevents descent into children but doesn't
     // abort entire walk
     const nestedStructure = [
-      ['should', 'see', 'this'], // This array's children will be visited
-      'abort_marker', // This will set stop flag
-      ['should', 'not', 'see'] // This array will be visited but not its children
+      ["should", "see", "this"], // This array's children will be visited
+      "abort_marker", // This will set stop flag
+      ["should", "not", "see"], // This array will be visited but not its children
     ];
 
     const visitLog: string[] = [];
@@ -160,18 +155,19 @@ describe('walk tests', () => {
       element: WalkElement,
       level: number,
       edge: EdgeTypeVariant,
-      state: void
+      state: void,
     ): [void, boolean] => {
-      const edgeStr = edge.type === 'array_element' ? `ArrayElement(${edge.index})` : edge.type;
+      const edgeStr = edge.type === "array_element" ? `ArrayElement(${edge.index})` : edge.type;
       const desc = `L${level}: ${edgeStr} - ${formatElement(element)}`;
       visitLog.push(desc);
 
       // Check if this is our abort marker
-      if (element.type === 'single') {
+      if (element.type === "single") {
         const cborValue = element.cbor;
-        if (cborValue.type === 3) { // Text
+        if (cborValue.type === 3) {
+          // Text
           const text = cborValue.value as string;
-          if (text === 'abort_marker') {
+          if (text === "abort_marker") {
             foundAbort = true;
             // Return stop=true to prevent descent into this element's
             // children (though strings don't have children anyway)
@@ -182,25 +178,26 @@ describe('walk tests', () => {
 
       // If we've seen the abort marker and this is an array at level 1, stop
       // descent
-      const stop = foundAbort
-        && element.type === 'single'
-        && edge.type === 'array_element'
-        && edge.index === 2;
+      const stop =
+        foundAbort &&
+        element.type === "single" &&
+        edge.type === "array_element" &&
+        edge.index === 2;
 
       return [state, stop];
     };
 
     cbor(nestedStructure).walk(undefined, visitor);
 
-    const logStr = visitLog.join('\n');
+    const logStr = visitLog.join("\n");
 
     // Should visit the abort marker
-    expect(logStr).toContain('abort_marker');
+    expect(logStr).toContain("abort_marker");
 
     // Should visit the first array and its children (before abort marker)
-    expect(logStr).toContain('should');
-    expect(logStr).toContain('see');
-    expect(logStr).toContain('this');
+    expect(logStr).toContain("should");
+    expect(logStr).toContain("see");
+    expect(logStr).toContain("this");
 
     // Should visit the third array but NOT its children (after abort marker
     // with stop=true)
@@ -209,34 +206,31 @@ describe('walk tests', () => {
     // Should NOT visit the individual strings "should", "not", "see" that come
     // from the third array
     // Find the index of the third array visit
-    const thirdArrayIndex = visitLog.findIndex(line =>
-      line.includes('ArrayElement(2)')
-      && line.includes('["should", "not", "see"]')
+    const thirdArrayIndex = visitLog.findIndex(
+      (line) => line.includes("ArrayElement(2)") && line.includes('["should", "not", "see"]'),
     );
 
     expect(thirdArrayIndex).toBeGreaterThanOrEqual(0);
 
     // Check that there are no Level 2 visits after this index
     const visitsAfterThirdArray = visitLog.slice(thirdArrayIndex + 1);
-    const level2AfterThird = visitsAfterThirdArray.filter(line =>
-      line.startsWith('L2:')
-    );
+    const level2AfterThird = visitsAfterThirdArray.filter((line) => line.startsWith("L2:"));
 
     // Should be no Level 2 visits after the third array due to stop flag
     expect(level2AfterThird.length).toBe(0);
   });
 
   /// Test depth-limited traversal using level parameter
-  test('test_depth_limited_traversal', () => {
+  test("test_depth_limited_traversal", () => {
     // Create deeply nested structure
     const level3 = CborMap.new();
-    level3.insert('deep', 'value');
+    level3.insert("deep", "value");
 
     const level2 = CborMap.new();
-    level2.insert('level3', level3);
+    level2.insert("level3", level3);
 
     const level1 = CborMap.new();
-    level1.insert('level2', level2);
+    level1.insert("level2", level2);
 
     // Collect elements at each level
     const elementsByLevel: Record<number, number> = {};
@@ -245,7 +239,7 @@ describe('walk tests', () => {
       _element: WalkElement,
       level: number,
       _edge: EdgeTypeVariant,
-      state: void
+      state: void,
     ): [void, boolean] => {
       elementsByLevel[level] = (elementsByLevel[level] || 0) + 1;
       // Stop descent if we're at level 2 or deeper
@@ -262,20 +256,20 @@ describe('walk tests', () => {
   });
 
   /// Test text extraction from complex CBOR structures
-  test('test_text_extraction', () => {
+  test("test_text_extraction", () => {
     // Create a complex structure with text at various levels
     const metadata = CborMap.new();
-    metadata.insert('title', 'Important Document');
-    metadata.insert('author', 'Alice Smith');
+    metadata.insert("title", "Important Document");
+    metadata.insert("author", "Alice Smith");
 
     const content = CborMap.new();
-    content.insert('body', 'Lorem ipsum dolor sit amet');
-    content.insert('footer', 'Copyright 2024');
+    content.insert("body", "Lorem ipsum dolor sit amet");
+    content.insert("footer", "Copyright 2024");
 
     const document = CborMap.new();
-    document.insert('metadata', metadata);
-    document.insert('content', content);
-    document.insert('tags', ['urgent', 'confidential', 'draft']);
+    document.insert("metadata", metadata);
+    document.insert("content", content);
+    document.insert("tags", ["urgent", "confidential", "draft"]);
 
     // Extract all text strings
     const texts: string[] = [];
@@ -284,18 +278,21 @@ describe('walk tests', () => {
       element: WalkElement,
       _level: number,
       _edge: EdgeTypeVariant,
-      state: void
+      state: void,
     ): [void, boolean] => {
-      if (element.type === 'single') {
+      if (element.type === "single") {
         const cborValue = element.cbor;
-        if (cborValue.type === 3) { // Text
+        if (cborValue.type === 3) {
+          // Text
           texts.push(cborValue.value as string);
         }
-      } else if (element.type === 'keyvalue') {
-        if (element.key.type === 3) { // Text
+      } else if (element.type === "keyvalue") {
+        if (element.key.type === 3) {
+          // Text
           texts.push(element.key.value as string);
         }
-        if (element.value.type === 3) { // Text
+        if (element.value.type === 3) {
+          // Text
           texts.push(element.value.value as string);
         }
       }
@@ -305,28 +302,28 @@ describe('walk tests', () => {
     cbor(document).walk(undefined, visitor);
 
     // Should find all text strings in the structure
-    expect(texts).toContain('Important Document');
-    expect(texts).toContain('Alice Smith');
-    expect(texts).toContain('Lorem ipsum dolor sit amet');
-    expect(texts).toContain('Copyright 2024');
-    expect(texts).toContain('urgent');
-    expect(texts).toContain('confidential');
-    expect(texts).toContain('draft');
+    expect(texts).toContain("Important Document");
+    expect(texts).toContain("Alice Smith");
+    expect(texts).toContain("Lorem ipsum dolor sit amet");
+    expect(texts).toContain("Copyright 2024");
+    expect(texts).toContain("urgent");
+    expect(texts).toContain("confidential");
+    expect(texts).toContain("draft");
     // Also keys
-    expect(texts).toContain('title');
-    expect(texts).toContain('author');
-    expect(texts).toContain('body');
-    expect(texts).toContain('footer');
-    expect(texts).toContain('metadata');
-    expect(texts).toContain('content');
-    expect(texts).toContain('tags');
+    expect(texts).toContain("title");
+    expect(texts).toContain("author");
+    expect(texts).toContain("body");
+    expect(texts).toContain("footer");
+    expect(texts).toContain("metadata");
+    expect(texts).toContain("content");
+    expect(texts).toContain("tags");
   });
 
   /// Test traversal order and edge types
-  test('test_traversal_order_and_edge_types', () => {
+  test("test_traversal_order_and_edge_types", () => {
     const map = CborMap.new();
-    map.insert('a', [1, 2]);
-    map.insert('b', 42);
+    map.insert("a", [1, 2]);
+    map.insert("b", 42);
 
     const traversalLog: Array<[string, EdgeTypeVariant]> = [];
 
@@ -334,11 +331,12 @@ describe('walk tests', () => {
       element: WalkElement,
       _level: number,
       edge: EdgeTypeVariant,
-      state: void
+      state: void,
     ): [void, boolean] => {
-      const desc = element.type === 'single'
-        ? `Single(${formatElement(element)})`
-        : `KeyValue(${formatElement(element)})`;
+      const desc =
+        element.type === "single"
+          ? `Single(${formatElement(element)})`
+          : `KeyValue(${formatElement(element)})`;
       traversalLog.push([desc, edge]);
       return [state, false];
     };
@@ -348,29 +346,29 @@ describe('walk tests', () => {
     // Verify root visit
     const firstLog = traversalLog[0];
     if (firstLog === undefined) {
-      throw new Error('Expected at least one traversal log entry');
+      throw new Error("Expected at least one traversal log entry");
     }
-    expect(firstLog[1].type).toBe('none');
+    expect(firstLog[1].type).toBe("none");
 
     // Check that we have the expected edge types
     const edgeTypes = traversalLog.map(([_, edge]) => edge.type);
-    expect(edgeTypes).toContain('map_key_value');
-    expect(edgeTypes).toContain('map_key');
-    expect(edgeTypes).toContain('map_value');
+    expect(edgeTypes).toContain("map_key_value");
+    expect(edgeTypes).toContain("map_key");
+    expect(edgeTypes).toContain("map_value");
 
     // Check for array element edges with indices
-    const hasArrayElement0 = traversalLog.some(([_, edge]) =>
-      edge.type === 'array_element' && 'index' in edge && edge.index === 0
+    const hasArrayElement0 = traversalLog.some(
+      ([_, edge]) => edge.type === "array_element" && "index" in edge && edge.index === 0,
     );
-    const hasArrayElement1 = traversalLog.some(([_, edge]) =>
-      edge.type === 'array_element' && 'index' in edge && edge.index === 1
+    const hasArrayElement1 = traversalLog.some(
+      ([_, edge]) => edge.type === "array_element" && "index" in edge && edge.index === 1,
     );
     expect(hasArrayElement0).toBe(true);
     expect(hasArrayElement1).toBe(true);
   });
 
   /// Test tagged value traversal
-  test('test_tagged_value_traversal', () => {
+  test("test_tagged_value_traversal", () => {
     // Create nested tagged values
     const innerTagged = toTaggedValue(123, [1, 2, 3]);
     const outerTagged = toTaggedValue(456, innerTagged);
@@ -381,7 +379,7 @@ describe('walk tests', () => {
       _element: WalkElement,
       _level: number,
       edge: EdgeTypeVariant,
-      state: void
+      state: void,
     ): [void, boolean] => {
       edgeLog.push(edge);
       return [state, false];
@@ -398,27 +396,33 @@ describe('walk tests', () => {
     const edge4 = edgeLog[4];
     const edge5 = edgeLog[5];
 
-    if (edge0 === undefined || edge1 === undefined || edge2 === undefined ||
-        edge3 === undefined || edge4 === undefined || edge5 === undefined) {
-      throw new Error('Expected 6 edges in log');
+    if (
+      edge0 === undefined ||
+      edge1 === undefined ||
+      edge2 === undefined ||
+      edge3 === undefined ||
+      edge4 === undefined ||
+      edge5 === undefined
+    ) {
+      throw new Error("Expected 6 edges in log");
     }
 
-    expect(edge0.type).toBe('none'); // Root tagged value
-    expect(edge1.type).toBe('tagged_content'); // Inner tagged value
-    expect(edge2.type).toBe('tagged_content'); // Array content of inner tagged
-    expect(edge3.type).toBe('array_element'); // First array element
-    if (edge3.type === 'array_element') expect(edge3.index).toBe(0);
-    expect(edge4.type).toBe('array_element'); // Second array element
-    if (edge4.type === 'array_element') expect(edge4.index).toBe(1);
-    expect(edge5.type).toBe('array_element'); // Third array element
-    if (edge5.type === 'array_element') expect(edge5.index).toBe(2);
+    expect(edge0.type).toBe("none"); // Root tagged value
+    expect(edge1.type).toBe("tagged_content"); // Inner tagged value
+    expect(edge2.type).toBe("tagged_content"); // Array content of inner tagged
+    expect(edge3.type).toBe("array_element"); // First array element
+    if (edge3.type === "array_element") expect(edge3.index).toBe(0);
+    expect(edge4.type).toBe("array_element"); // Second array element
+    if (edge4.type === "array_element") expect(edge4.index).toBe(1);
+    expect(edge5.type).toBe("array_element"); // Third array element
+    if (edge5.type === "array_element") expect(edge5.index).toBe(2);
   });
 
   /// Test map key-value semantics
-  test('test_map_keyvalue_semantics', () => {
+  test("test_map_keyvalue_semantics", () => {
     const map = CborMap.new();
-    map.insert('simple', 42);
-    map.insert('nested', [1, 2]);
+    map.insert("simple", 42);
+    map.insert("nested", [1, 2]);
 
     let keyvalueCount = 0;
     let individualCount = 0;
@@ -427,13 +431,13 @@ describe('walk tests', () => {
       element: WalkElement,
       _level: number,
       edge: EdgeTypeVariant,
-      state: void
+      state: void,
     ): [void, boolean] => {
-      if (element.type === 'keyvalue') {
+      if (element.type === "keyvalue") {
         keyvalueCount++;
-        expect(edge.type).toBe('map_key_value');
-      } else if (element.type === 'single') {
-        if (edge.type === 'map_key' || edge.type === 'map_value') {
+        expect(edge.type).toBe("map_key_value");
+      } else if (element.type === "single") {
+        if (edge.type === "map_key" || edge.type === "map_value") {
           individualCount++;
         }
       }
@@ -448,11 +452,11 @@ describe('walk tests', () => {
   });
 
   /// Test stop flag prevents descent consistently
-  test('test_stop_flag_prevents_descent', () => {
+  test("test_stop_flag_prevents_descent", () => {
     const nested = [
       [1, 2, 3], // Index 0: prevent descent into this
       [4, 5, 6], // Index 1: allow descent into this
-      [7, 8, 9]  // Index 2: allow descent into this
+      [7, 8, 9], // Index 2: allow descent into this
     ];
 
     const visitLog: string[] = [];
@@ -461,51 +465,53 @@ describe('walk tests', () => {
       element: WalkElement,
       level: number,
       edge: EdgeTypeVariant,
-      state: void
+      state: void,
     ): [void, boolean] => {
-      const edgeStr = edge.type === 'array_element' ? `ArrayElement(${edge.index})` : edge.type;
+      const edgeStr = edge.type === "array_element" ? `ArrayElement(${edge.index})` : edge.type;
       const desc = `L${level}: ${edgeStr} - ${formatElement(element)}`;
       visitLog.push(desc);
 
       // Stop descent into the first nested array (at index 0)
-      const stop = level === 1 && edge.type === 'array_element' && edge.index === 0;
+      const stop = level === 1 && edge.type === "array_element" && edge.index === 0;
       return [state, stop];
     };
 
     cbor(nested).walk(undefined, visitor);
 
-    const logStr = visitLog.join('\n');
+    const logStr = visitLog.join("\n");
 
     // Should visit the first array but not descend into it
-    expect(logStr).toContain('ArrayElement(0) - [1, 2, 3]'); // First array is visited
+    expect(logStr).toContain("ArrayElement(0) - [1, 2, 3]"); // First array is visited
 
     // Should NOT find any level 2 visits that came from the first array
     // The elements 1, 2, 3 should not appear at level 2
-    const level2Lines = visitLog.filter(line => line.startsWith('L2:'));
+    const level2Lines = visitLog.filter((line) => line.startsWith("L2:"));
 
     // None of the level 2 visits should contain the values from the first array
     for (const line of level2Lines) {
-      expect(line).not.toContain(' - 1');
-      expect(line).not.toContain(' - 2');
-      expect(line).not.toContain(' - 3');
+      expect(line).not.toContain(" - 1");
+      expect(line).not.toContain(" - 2");
+      expect(line).not.toContain(" - 3");
     }
 
     // Should visit second and third arrays with descent
-    expect(logStr).toContain('ArrayElement(1) - [4, 5, 6]'); // Second array is visited
-    expect(logStr).toContain('ArrayElement(2) - [7, 8, 9]'); // Third array is visited
+    expect(logStr).toContain("ArrayElement(1) - [4, 5, 6]"); // Second array is visited
+    expect(logStr).toContain("ArrayElement(2) - [7, 8, 9]"); // Third array is visited
 
     // Should find level 2 visits from second and third arrays
-    const hasLevel2From456 = logStr.includes('L2:') &&
-      (logStr.includes(' - 4') || logStr.includes(' - 5') || logStr.includes(' - 6'));
+    const hasLevel2From456 =
+      logStr.includes("L2:") &&
+      (logStr.includes(" - 4") || logStr.includes(" - 5") || logStr.includes(" - 6"));
     expect(hasLevel2From456).toBe(true);
 
-    const hasLevel2From789 = logStr.includes('L2:') &&
-      (logStr.includes(' - 7') || logStr.includes(' - 8') || logStr.includes(' - 9'));
+    const hasLevel2From789 =
+      logStr.includes("L2:") &&
+      (logStr.includes(" - 7") || logStr.includes(" - 8") || logStr.includes(" - 9"));
     expect(hasLevel2From789).toBe(true);
   });
 
   /// Test empty structures
-  test('test_empty_structures', () => {
+  test("test_empty_structures", () => {
     // Empty array
     const emptyArray: number[] = [];
     const count1 = countVisits(emptyArray);
@@ -518,14 +524,8 @@ describe('walk tests', () => {
   });
 
   /// Test primitive values
-  test('test_primitive_values', () => {
-    const primitives = [
-      42,
-      'hello',
-      3.2222,
-      true,
-      null
-    ];
+  test("test_primitive_values", () => {
+    const primitives = [42, "hello", 3.2222, true, null];
 
     for (const primitive of primitives) {
       const count = countVisits(primitive);
@@ -534,26 +534,26 @@ describe('walk tests', () => {
   });
 
   /// Test real-world document structure
-  test('test_real_world_document', () => {
+  test("test_real_world_document", () => {
     // Simulate a JSON-like document converted to CBOR
     const person = CborMap.new();
-    person.insert('name', 'John Doe');
-    person.insert('age', 30);
-    person.insert('email', 'john@example.com');
+    person.insert("name", "John Doe");
+    person.insert("age", 30);
+    person.insert("email", "john@example.com");
 
     const address = CborMap.new();
-    address.insert('street', '123 Main St');
-    address.insert('city', 'Anytown');
-    address.insert('zipcode', '12345');
+    address.insert("street", "123 Main St");
+    address.insert("city", "Anytown");
+    address.insert("zipcode", "12345");
 
-    person.insert('address', address);
-    person.insert('hobbies', ['reading', 'cycling', 'cooking']);
+    person.insert("address", address);
+    person.insert("hobbies", ["reading", "cycling", "cooking"]);
 
     const skills = CborMap.new();
-    skills.insert('programming', ['Rust', 'Python', 'JavaScript']);
-    skills.insert('languages', ['English', 'Spanish']);
+    skills.insert("programming", ["Rust", "Python", "JavaScript"]);
+    skills.insert("languages", ["English", "Spanish"]);
 
-    person.insert('skills', skills);
+    person.insert("skills", skills);
 
     // Extract all string values for search/indexing
     const strings: string[] = [];
@@ -562,18 +562,21 @@ describe('walk tests', () => {
       element: WalkElement,
       _level: number,
       _edge: EdgeTypeVariant,
-      state: void
+      state: void,
     ): [void, boolean] => {
-      if (element.type === 'single') {
+      if (element.type === "single") {
         const cborValue = element.cbor;
-        if (cborValue.type === 3) { // Text
+        if (cborValue.type === 3) {
+          // Text
           strings.push(cborValue.value as string);
         }
-      } else if (element.type === 'keyvalue') {
-        if (element.key.type === 3) { // Text
+      } else if (element.type === "keyvalue") {
+        if (element.key.type === 3) {
+          // Text
           strings.push(element.key.value as string);
         }
-        if (element.value.type === 3) { // Text
+        if (element.value.type === 3) {
+          // Text
           strings.push(element.value.value as string);
         }
       }
@@ -583,28 +586,28 @@ describe('walk tests', () => {
     cbor(person).walk(undefined, visitor);
 
     // Verify we found all expected strings
-    expect(strings).toContain('John Doe');
-    expect(strings).toContain('john@example.com');
-    expect(strings).toContain('123 Main St');
-    expect(strings).toContain('Anytown');
-    expect(strings).toContain('12345');
-    expect(strings).toContain('reading');
-    expect(strings).toContain('cycling');
-    expect(strings).toContain('cooking');
-    expect(strings).toContain('Rust');
-    expect(strings).toContain('Python');
-    expect(strings).toContain('JavaScript');
-    expect(strings).toContain('English');
-    expect(strings).toContain('Spanish');
+    expect(strings).toContain("John Doe");
+    expect(strings).toContain("john@example.com");
+    expect(strings).toContain("123 Main St");
+    expect(strings).toContain("Anytown");
+    expect(strings).toContain("12345");
+    expect(strings).toContain("reading");
+    expect(strings).toContain("cycling");
+    expect(strings).toContain("cooking");
+    expect(strings).toContain("Rust");
+    expect(strings).toContain("Python");
+    expect(strings).toContain("JavaScript");
+    expect(strings).toContain("English");
+    expect(strings).toContain("Spanish");
 
     // Should also find all field names
-    expect(strings).toContain('name');
-    expect(strings).toContain('age');
-    expect(strings).toContain('email');
-    expect(strings).toContain('address');
-    expect(strings).toContain('hobbies');
-    expect(strings).toContain('skills');
-    expect(strings).toContain('programming');
-    expect(strings).toContain('languages');
+    expect(strings).toContain("name");
+    expect(strings).toContain("age");
+    expect(strings).toContain("email");
+    expect(strings).toContain("address");
+    expect(strings).toContain("hobbies");
+    expect(strings).toContain("skills");
+    expect(strings).toContain("programming");
+    expect(strings).toContain("languages");
   });
 });

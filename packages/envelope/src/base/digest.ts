@@ -1,4 +1,4 @@
-import { sha256 } from '@noble/hashes/sha256';
+import { sha256 } from "@noble/hashes/sha256";
 
 /// A cryptographic digest used to uniquely identify digital objects.
 ///
@@ -17,9 +17,7 @@ export class Digest {
   /// @throws {Error} If data is not exactly 32 bytes
   constructor(data: Uint8Array) {
     if (data.length !== 32) {
-      throw new Error(
-        `Digest must be exactly 32 bytes, got ${data.length} bytes`
-      );
+      throw new Error(`Digest must be exactly 32 bytes, got ${data.length} bytes`);
     }
     this.#data = data;
   }
@@ -84,8 +82,8 @@ export class Digest {
   /// ```
   hex(): string {
     return Array.from(this.#data)
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   /// Returns an abbreviated hexadecimal representation for visual comparison.
@@ -117,9 +115,7 @@ export class Digest {
   /// ```
   static fromHex(hex: string): Digest {
     if (hex.length !== 64) {
-      throw new Error(
-        `Hex string must be exactly 64 characters, got ${hex.length}`
-      );
+      throw new Error(`Hex string must be exactly 64 characters, got ${hex.length}`);
     }
     const data = new Uint8Array(32);
     for (let i = 0; i < 32; i++) {

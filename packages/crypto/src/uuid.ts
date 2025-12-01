@@ -2,7 +2,7 @@
  * Universally Unique Identifier (UUID) - 16-byte identifier
  */
 
-import { CryptoError } from './error.js';
+import { CryptoError } from "./error.js";
 
 const UUID_SIZE = 16;
 
@@ -46,7 +46,7 @@ export class UUID {
     if (!uuidRegex.test(uuidString)) {
       throw CryptoError.invalidFormat(`Invalid UUID format: ${uuidString}`);
     }
-    const hex = uuidString.replace(/-/g, '');
+    const hex = uuidString.replace(/-/g, "");
     return UUID.fromHex(hex);
   }
 
@@ -55,11 +55,11 @@ export class UUID {
    */
   static random(): UUID {
     const data = new Uint8Array(UUID_SIZE);
-    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+    if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
       globalThis.crypto.getRandomValues(data);
     } else {
       // Fallback for Node.js
-      const { randomBytes } = require('crypto');
+      const { randomBytes } = require("crypto");
       const buf = randomBytes(UUID_SIZE);
       data.set(buf);
     }
@@ -84,8 +84,8 @@ export class UUID {
    */
   toHex(): string {
     return Array.from(this.data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
       .toUpperCase();
   }
 
@@ -102,7 +102,7 @@ export class UUID {
    * Get base64 representation
    */
   toBase64(): string {
-    return Buffer.from(this.data).toString('base64');
+    return Buffer.from(this.data).toString("base64");
   }
 
   /**

@@ -2,7 +2,7 @@
  * Apparently Random Identifier (ARID) - 32-byte random identifier
  */
 
-import { CryptoError } from './error.js';
+import { CryptoError } from "./error.js";
 
 const ARID_SIZE = 32;
 
@@ -39,11 +39,11 @@ export class ARID {
    */
   static random(): ARID {
     const data = new Uint8Array(ARID_SIZE);
-    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+    if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
       globalThis.crypto.getRandomValues(data);
     } else {
       // Fallback for Node.js
-      const { randomBytes } = require('crypto');
+      const { randomBytes } = require("crypto");
       const buf = randomBytes(ARID_SIZE);
       data.set(buf);
     }
@@ -62,8 +62,8 @@ export class ARID {
    */
   toHex(): string {
     return Array.from(this.data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
       .toUpperCase();
   }
 
@@ -71,7 +71,7 @@ export class ARID {
    * Get base64 representation
    */
   toBase64(): string {
-    return Buffer.from(this.data).toString('base64');
+    return Buffer.from(this.data).toString("base64");
   }
 
   /**

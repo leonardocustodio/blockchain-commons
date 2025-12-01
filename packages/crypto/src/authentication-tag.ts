@@ -2,7 +2,7 @@
  * Authentication tag for AEAD encryption (16 bytes)
  */
 
-import { CryptoError } from './error.js';
+import { CryptoError } from "./error.js";
 
 const AUTH_TAG_SIZE = 16;
 
@@ -28,7 +28,9 @@ export class AuthenticationTag {
    */
   static fromHex(hex: string): AuthenticationTag {
     if (hex.length !== 32) {
-      throw CryptoError.invalidFormat(`AuthenticationTag hex must be 32 characters, got ${hex.length}`);
+      throw CryptoError.invalidFormat(
+        `AuthenticationTag hex must be 32 characters, got ${hex.length}`,
+      );
     }
     const data = new Uint8Array(16);
     for (let i = 0; i < 16; i++) {
@@ -49,8 +51,8 @@ export class AuthenticationTag {
    */
   toHex(): string {
     return Array.from(this.data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
       .toUpperCase();
   }
 
@@ -58,7 +60,7 @@ export class AuthenticationTag {
    * Get base64 representation
    */
   toBase64(): string {
-    return Buffer.from(this.data).toString('base64');
+    return Buffer.from(this.data).toString("base64");
   }
 
   /**
