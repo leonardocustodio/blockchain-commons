@@ -1,5 +1,5 @@
 {
-  "name": "@leonardocustodio/blockchain-commons/envelope",
+  "name": "@blockchain-commons/envelope",
   "version": "1.0.0-alpha.1",
   "type": "module",
   "description": "Gordian Envelope for TypeScript",
@@ -71,8 +71,8 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "@leonardocustodio/blockchain-commons/eslint": "workspace:*",
-    "@leonardocustodio/blockchain-commons/tsconfig": "workspace:*",
+    "@blockchain-commons/eslint": "workspace:*",
+    "@blockchain-commons/tsconfig": "workspace:*",
     "@eslint/js": "^9.39.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.12.7",
@@ -88,7 +88,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@leonardocustodio/blockchain-commons/dcbor": "workspace:*",
+    "@blockchain-commons/dcbor": "workspace:*",
     "@noble/curves": "^1.4.0",
     "@noble/hashes": "^1.4.0",
     "libsodium-wrappers": "^0.7.13",

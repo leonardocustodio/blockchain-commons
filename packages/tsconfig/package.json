@@ -1,5 +1,5 @@
 {
-  "name": "@leonardocustodio/blockchain-commons/tsconfig",
+  "name": "@blockchain-commons/tsconfig",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",

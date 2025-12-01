@@ -1,5 +1,5 @@
 {
-  "name": "@leonardocustodio/blockchain-commons/eslint",
+  "name": "@blockchain-commons/eslint",
   "license": "MIT",
   "version": "0.0.0",
   "type": "module",
