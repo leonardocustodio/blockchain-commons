@@ -43,8 +43,6 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "author": "Blockchain Commons",
-  "license": "Apache-2.0",
   "dependencies": {
     "@blockchain-commons/dcbor": "workspace:*",
     "@blockchain-commons/uniform-resources": "workspace:*",

@@ -61,12 +61,6 @@
     "encoding",
     "serialization"
   ],
-  "author": "Blockchain Commons",
-  "license": "BSD-2-Clause-Patent",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BlockchainCommons/bc-envelope-ts"
-  },
   "engines": {
     "node": ">=18.0.0"
   },
