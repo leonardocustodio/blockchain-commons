@@ -2,7 +2,7 @@
  * Cryptographic salt - variable-length randomization value (minimum 8 bytes)
  */
 
-import { CryptoError } from './error.js';
+import { CryptoError } from "./error.js";
 
 const MIN_SALT_SIZE = 8;
 
@@ -42,11 +42,11 @@ export class Salt {
       throw CryptoError.invalidSize(MIN_SALT_SIZE, size);
     }
     const data = new Uint8Array(size);
-    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+    if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
       globalThis.crypto.getRandomValues(data);
     } else {
       // Fallback for Node.js
-      const { randomBytes } = require('crypto');
+      const { randomBytes } = require("crypto");
       const buf = randomBytes(size);
       data.set(buf);
     }
@@ -74,15 +74,15 @@ export class Salt {
    */
   toHex(): string {
     return Array.from(this.data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   /**
    * Get base64 representation
    */
   toBase64(): string {
-    return Buffer.from(this.data).toString('base64');
+    return Buffer.from(this.data).toString("base64");
   }
 
   /**

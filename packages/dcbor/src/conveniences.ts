@@ -20,12 +20,12 @@ import {
   type CborMapType,
   type CborTaggedType,
   type CborSimpleType,
-  type CborMethods
-} from './cbor';
-import type { CborMap } from './map';
-import { isFloat as isSimpleFloat } from './simple';
-import { decodeCbor } from './decode';
-import { CborError } from './error';
+  type CborMethods,
+} from "./cbor";
+import type { CborMap } from "./map";
+import { isFloat as isSimpleFloat } from "./simple";
+import { decodeCbor } from "./decode";
+import { CborError } from "./error";
 
 // ============================================================================
 // Extraction
@@ -46,7 +46,7 @@ export const extractCbor = (cbor: Cbor | Uint8Array): unknown => {
     case MajorType.Unsigned:
       return c.value;
     case MajorType.Negative:
-      if (typeof c.value === 'bigint') {
+      if (typeof c.value === "bigint") {
         return -c.value - 1n;
       } else {
         return -c.value - 1;
@@ -62,10 +62,10 @@ export const extractCbor = (cbor: Cbor | Uint8Array): unknown => {
     case MajorType.Tagged:
       return c;
     case MajorType.Simple:
-      if (c.value.type === 'True') return true;
-      if (c.value.type === 'False') return false;
-      if (c.value.type === 'Null') return null;
-      if (c.value.type === 'Float') return c.value.value;
+      if (c.value.type === "True") return true;
+      if (c.value.type === "False") return false;
+      if (c.value.type === "Null") return null;
+      if (c.value.type === "Float") return c.value.value;
       return c;
   }
   return undefined;
@@ -108,7 +108,9 @@ export const isNegative = (cbor: Cbor): cbor is CborNegativeType & CborMethods =
  * @param cbor - CBOR value to check
  * @returns True if value is an integer
  */
-export const isInteger = (cbor: Cbor): cbor is (CborUnsignedType | CborNegativeType) & CborMethods => {
+export const isInteger = (
+  cbor: Cbor,
+): cbor is (CborUnsignedType | CborNegativeType) & CborMethods => {
   return cbor.type === MajorType.Unsigned || cbor.type === MajorType.Negative;
 };
 
@@ -178,11 +180,14 @@ export const isSimple = (cbor: Cbor): cbor is CborSimpleType & CborMethods => {
  * @param cbor - CBOR value to check
  * @returns True if value is boolean
  */
-export const isBoolean = (cbor: Cbor): cbor is CborSimpleType & CborMethods & { readonly value: { readonly type: 'False' } | { readonly type: 'True' } } => {
+export const isBoolean = (
+  cbor: Cbor,
+): cbor is CborSimpleType &
+  CborMethods & { readonly value: { readonly type: "False" } | { readonly type: "True" } } => {
   if (cbor.type !== MajorType.Simple) {
     return false;
   }
-  return cbor.value.type === 'False' || cbor.value.type === 'True';
+  return cbor.value.type === "False" || cbor.value.type === "True";
 };
 
 /**
@@ -191,11 +196,13 @@ export const isBoolean = (cbor: Cbor): cbor is CborSimpleType & CborMethods & { 
  * @param cbor - CBOR value to check
  * @returns True if value is null
  */
-export const isNull = (cbor: Cbor): cbor is CborSimpleType & CborMethods & { readonly value: { readonly type: 'Null' } } => {
+export const isNull = (
+  cbor: Cbor,
+): cbor is CborSimpleType & CborMethods & { readonly value: { readonly type: "Null" } } => {
   if (cbor.type !== MajorType.Simple) {
     return false;
   }
-  return cbor.value.type === 'Null';
+  return cbor.value.type === "Null";
 };
 
 /**
@@ -204,7 +211,10 @@ export const isNull = (cbor: Cbor): cbor is CborSimpleType & CborMethods & { rea
  * @param cbor - CBOR value to check
  * @returns True if value is float
  */
-export const isFloat = (cbor: Cbor): cbor is CborSimpleType & CborMethods & { readonly value: { readonly type: 'Float'; readonly value: number } } => {
+export const isFloat = (
+  cbor: Cbor,
+): cbor is CborSimpleType &
+  CborMethods & { readonly value: { readonly type: "Float"; readonly value: number } } => {
   if (cbor.type !== MajorType.Simple) {
     return false;
   }
@@ -237,7 +247,7 @@ export const asUnsigned = (cbor: Cbor): number | bigint | undefined => {
 export const asNegative = (cbor: Cbor): number | bigint | undefined => {
   if (cbor.type === MajorType.Negative) {
     // Convert stored magnitude back to actual negative value
-    if (typeof cbor.value === 'bigint') {
+    if (typeof cbor.value === "bigint") {
       return -cbor.value - 1n;
     } else {
       return -cbor.value - 1;
@@ -257,7 +267,7 @@ export const asInteger = (cbor: Cbor): number | bigint | undefined => {
     return cbor.value;
   } else if (cbor.type === MajorType.Negative) {
     // Convert stored magnitude back to actual negative value
-    if (typeof cbor.value === 'bigint') {
+    if (typeof cbor.value === "bigint") {
       return -cbor.value - 1n;
     } else {
       return -cbor.value - 1;
@@ -328,10 +338,10 @@ export const asBoolean = (cbor: Cbor): boolean | undefined => {
   if (cbor.type !== MajorType.Simple) {
     return undefined;
   }
-  if (cbor.value.type === 'True') {
+  if (cbor.value.type === "True") {
     return true;
   }
-  if (cbor.value.type === 'False') {
+  if (cbor.value.type === "False") {
     return false;
   }
   return undefined;
@@ -366,7 +376,7 @@ export const asNumber = (cbor: Cbor): CborNumber | undefined => {
   }
   if (cbor.type === MajorType.Negative) {
     // Convert stored magnitude back to actual negative value
-    if (typeof cbor.value === 'bigint') {
+    if (typeof cbor.value === "bigint") {
       return -cbor.value - 1n;
     } else {
       return -cbor.value - 1;
@@ -395,7 +405,7 @@ export const asNumber = (cbor: Cbor): CborNumber | undefined => {
 export const expectUnsigned = (cbor: Cbor): number | bigint => {
   const value = asUnsigned(cbor);
   if (value === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return value;
 };
@@ -410,7 +420,7 @@ export const expectUnsigned = (cbor: Cbor): number | bigint => {
 export const expectNegative = (cbor: Cbor): number | bigint => {
   const value = asNegative(cbor);
   if (value === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return value;
 };
@@ -425,7 +435,7 @@ export const expectNegative = (cbor: Cbor): number | bigint => {
 export const expectInteger = (cbor: Cbor): number | bigint => {
   const value = asInteger(cbor);
   if (value === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return value;
 };
@@ -440,7 +450,7 @@ export const expectInteger = (cbor: Cbor): number | bigint => {
 export const expectBytes = (cbor: Cbor): Uint8Array => {
   const value = asBytes(cbor);
   if (value === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return value;
 };
@@ -455,7 +465,7 @@ export const expectBytes = (cbor: Cbor): Uint8Array => {
 export const expectText = (cbor: Cbor): string => {
   const value = asText(cbor);
   if (value === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return value;
 };
@@ -470,7 +480,7 @@ export const expectText = (cbor: Cbor): string => {
 export const expectArray = (cbor: Cbor): readonly Cbor[] => {
   const value = asArray(cbor);
   if (value === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return value;
 };
@@ -485,7 +495,7 @@ export const expectArray = (cbor: Cbor): readonly Cbor[] => {
 export const expectMap = (cbor: Cbor): CborMap => {
   const value = asMap(cbor);
   if (value === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return value;
 };
@@ -500,7 +510,7 @@ export const expectMap = (cbor: Cbor): CborMap => {
 export const expectBoolean = (cbor: Cbor): boolean => {
   const value = asBoolean(cbor);
   if (value === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return value;
 };
@@ -515,7 +525,7 @@ export const expectBoolean = (cbor: Cbor): boolean => {
 export const expectFloat = (cbor: Cbor): number => {
   const value = asFloat(cbor);
   if (value === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return value;
 };
@@ -530,7 +540,7 @@ export const expectFloat = (cbor: Cbor): number => {
 export const expectNumber = (cbor: Cbor): CborNumber => {
   const value = asNumber(cbor);
   if (value === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return value;
 };
@@ -625,7 +635,7 @@ export const mapKeys = (cbor: Cbor): Cbor[] | undefined => {
   if (cbor.type !== MajorType.Map) {
     return undefined;
   }
-  return cbor.value.entries.map(e => e.key);
+  return cbor.value.entries.map((e) => e.key);
 };
 
 /**
@@ -638,7 +648,7 @@ export const mapValues = (cbor: Cbor): Cbor[] | undefined => {
   if (cbor.type !== MajorType.Map) {
     return undefined;
   }
-  return cbor.value.entries.map(e => e.value);
+  return cbor.value.entries.map((e) => e.value);
 };
 
 /**
@@ -736,7 +746,7 @@ export const getTaggedContent = (cbor: Cbor, tag: number | bigint): Cbor | undef
 export const expectTaggedContent = (cbor: Cbor, tag: number | bigint): Cbor => {
   const content = getTaggedContent(cbor, tag);
   if (content === undefined) {
-    throw new CborError({ type: 'WrongType' });
+    throw new CborError({ type: "WrongType" });
   }
   return content;
 };

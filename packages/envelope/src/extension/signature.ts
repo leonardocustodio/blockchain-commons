@@ -11,28 +11,28 @@
  * - Support for multiple signatures on a single envelope
  */
 
-import { secp256k1 } from '@noble/curves/secp256k1';
-import { Envelope } from '../base/envelope';
-import { Digest } from '../base/digest';
-import { EnvelopeError } from '../base/error';
+import { secp256k1 } from "@noble/curves/secp256k1";
+import { Envelope } from "../base/envelope";
+import { Digest } from "../base/digest";
+import { EnvelopeError } from "../base/error";
 
 /**
  * Known value for the 'signed' predicate.
  * This is the standard predicate used for signature assertions.
  */
-export const SIGNED = 'signed';
+export const SIGNED = "signed";
 
 /**
  * Known value for the 'verifiedBy' predicate.
  * Used to indicate verification status.
  */
-export const VERIFIED_BY = 'verifiedBy';
+export const VERIFIED_BY = "verifiedBy";
 
 /**
  * Known value for the 'note' predicate.
  * Used for adding notes/comments to signatures.
  */
-export const NOTE = 'note';
+export const NOTE = "note";
 
 /**
  * Represents a cryptographic signature.
@@ -56,8 +56,8 @@ export class Signature {
    */
   hex(): string {
     return Array.from(this.#data)
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   /**
@@ -101,7 +101,7 @@ export class SigningPrivateKey implements Signer {
 
   constructor(privateKey: Uint8Array) {
     if (privateKey.length !== 32) {
-      throw new Error('Private key must be 32 bytes');
+      throw new Error("Private key must be 32 bytes");
     }
     this.#privateKey = privateKey;
   }
@@ -157,7 +157,7 @@ export class SigningPublicKey implements Verifier {
 
   constructor(publicKey: Uint8Array) {
     if (publicKey.length !== 33 && publicKey.length !== 65) {
-      throw new Error('Public key must be 33 bytes (compressed) or 65 bytes (uncompressed)');
+      throw new Error("Public key must be 33 bytes (compressed) or 65 bytes (uncompressed)");
     }
     this.#publicKey = publicKey;
   }
@@ -181,7 +181,7 @@ export class SigningPublicKey implements Verifier {
       return secp256k1.verify(
         secp256k1.Signature.fromCompact(signature.data()),
         data,
-        this.#publicKey
+        this.#publicKey,
       );
     } catch {
       return false;
@@ -200,8 +200,8 @@ export class SigningPublicKey implements Verifier {
    */
   hex(): string {
     return Array.from(this.#publicKey)
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 }
 
@@ -239,7 +239,7 @@ export class SignatureMetadata {
 /**
  * Support for signing envelopes and verifying signatures.
  */
-declare module '../base/envelope' {
+declare module "../base/envelope" {
   interface Envelope {
     /**
      * Creates a signature for the envelope's subject and returns a new
@@ -264,10 +264,7 @@ declare module '../base/envelope' {
      * @param metadata - Optional metadata to attach to the signature
      * @returns The signed envelope
      */
-    addSignatureWithMetadata(
-      signer: Signer,
-      metadata?: SignatureMetadata
-    ): Envelope;
+    addSignatureWithMetadata(signer: Signer, metadata?: SignatureMetadata): Envelope;
 
     /**
      * Creates multiple signatures for the envelope's subject.
@@ -306,17 +303,14 @@ declare module '../base/envelope' {
 
 // Implementation
 
-Envelope.prototype.addSignature = function (
-  this: Envelope,
-  signer: Signer
-): Envelope {
+Envelope.prototype.addSignature = function (this: Envelope, signer: Signer): Envelope {
   return this.addSignatureWithMetadata(signer, undefined);
 };
 
 Envelope.prototype.addSignatureWithMetadata = function (
   this: Envelope,
   signer: Signer,
-  metadata?: SignatureMetadata
+  metadata?: SignatureMetadata,
 ): Envelope {
   const digest = this.subject().digest();
   const signature = signer.sign(digest.data());
@@ -333,36 +327,24 @@ Envelope.prototype.addSignatureWithMetadata = function (
 
     // Sign the wrapped envelope
     const outerSignature = signer.sign(signatureEnvelope.digest().data());
-    signatureEnvelope = signatureEnvelope.addAssertion(
-      SIGNED,
-      outerSignature.data()
-    );
+    signatureEnvelope = signatureEnvelope.addAssertion(SIGNED, outerSignature.data());
   }
 
   return this.addAssertion(SIGNED, signatureEnvelope);
 };
 
-Envelope.prototype.addSignatures = function (
-  this: Envelope,
-  signers: Signer[]
-): Envelope {
-  return signers.reduce(
-    (envelope, signer) => envelope.addSignature(signer),
-    this
-  );
+Envelope.prototype.addSignatures = function (this: Envelope, signers: Signer[]): Envelope {
+  return signers.reduce((envelope, signer) => envelope.addSignature(signer), this);
 };
 
-Envelope.prototype.hasSignatureFrom = function (
-  this: Envelope,
-  verifier: Verifier
-): boolean {
+Envelope.prototype.hasSignatureFrom = function (this: Envelope, verifier: Verifier): boolean {
   const subjectDigest = this.subject().digest();
   const signatures = this.signatures();
 
   for (const sigEnvelope of signatures) {
     const c = sigEnvelope.case();
 
-    if (c.type === 'leaf') {
+    if (c.type === "leaf") {
       // Simple signature - verify directly
       try {
         const sigData = sigEnvelope.asByteString();
@@ -375,13 +357,13 @@ Envelope.prototype.hasSignatureFrom = function (
       } catch {
         continue;
       }
-    } else if (c.type === 'node') {
+    } else if (c.type === "node") {
       // Signature with metadata - it's a node with 'signed' assertion
       // The structure is: { wrapped_signature [signed: outer_signature] }
       // Check if this node has a 'signed' assertion
       const outerSigs = sigEnvelope.assertions().filter((a) => {
         const aC = a.case();
-        if (aC.type === 'assertion') {
+        if (aC.type === "assertion") {
           const pred = aC.assertion.predicate();
           try {
             return pred.asText() === SIGNED;
@@ -394,7 +376,7 @@ Envelope.prototype.hasSignatureFrom = function (
 
       for (const outerSig of outerSigs) {
         const outerSigCase = outerSig.case();
-        if (outerSigCase.type === 'assertion') {
+        if (outerSigCase.type === "assertion") {
           const outerSigObj = outerSigCase.assertion.object();
           try {
             const outerSigData = outerSigObj.asByteString();
@@ -406,8 +388,10 @@ Envelope.prototype.hasSignatureFrom = function (
               const nodeSubjectCase = nodeSubject.case();
 
               // Verify outer signature against the wrapped envelope
-              if (nodeSubjectCase.type === 'wrapped' &&
-                  verifier.verify(nodeSubject.digest().data(), outerSignature)) {
+              if (
+                nodeSubjectCase.type === "wrapped" &&
+                verifier.verify(nodeSubject.digest().data(), outerSignature)
+              ) {
                 // Now verify inner signature
                 const wrapped = nodeSubjectCase.envelope;
                 const innerSig = wrapped.subject();
@@ -431,34 +415,33 @@ Envelope.prototype.hasSignatureFrom = function (
   return false;
 };
 
-Envelope.prototype.verifySignatureFrom = function (
-  this: Envelope,
-  verifier: Verifier
-): Envelope {
+Envelope.prototype.verifySignatureFrom = function (this: Envelope, verifier: Verifier): Envelope {
   if (this.hasSignatureFrom(verifier)) {
     return this;
   }
-  throw EnvelopeError.general('No valid signature found from the given verifier');
+  throw EnvelopeError.general("No valid signature found from the given verifier");
 };
 
 Envelope.prototype.signatures = function (this: Envelope): Envelope[] {
   const assertions = this.assertions();
-  return assertions.filter((a) => {
-    const c = a.case();
-    if (c.type === 'assertion') {
-      const pred = c.assertion.predicate();
-      try {
-        return pred.asText() === SIGNED;
-      } catch {
-        return false;
+  return assertions
+    .filter((a) => {
+      const c = a.case();
+      if (c.type === "assertion") {
+        const pred = c.assertion.predicate();
+        try {
+          return pred.asText() === SIGNED;
+        } catch {
+          return false;
+        }
       }
-    }
-    return false;
-  }).map((a) => {
-    const c = a.case();
-    if (c.type === 'assertion') {
-      return c.assertion.object();
-    }
-    throw EnvelopeError.general('Invalid signature assertion');
-  });
+      return false;
+    })
+    .map((a) => {
+      const c = a.case();
+      if (c.type === "assertion") {
+        return c.assertion.object();
+      }
+      throw EnvelopeError.general("Invalid signature assertion");
+    });
 };

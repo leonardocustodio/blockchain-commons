@@ -1,6 +1,6 @@
-import type { Cbor } from '@leonardocustodio/dcbor';
-import { Envelope } from './envelope';
-import { EnvelopeError } from './error';
+import type { Cbor } from "@leonardocustodio/dcbor";
+import { Envelope } from "./envelope";
+import { EnvelopeError } from "./error";
 
 /// Provides functions for extracting typed values from envelopes.
 ///
@@ -18,13 +18,13 @@ import { EnvelopeError } from './error';
 /// @throws {EnvelopeError} If the envelope is not a leaf or cannot be converted
 export function extractString(envelope: Envelope): string {
   const cbor = envelope.tryLeaf();
-  const { tryIntoText } = require('@leonardocustodio/dcbor');
+  const { tryIntoText } = require("@leonardocustodio/dcbor");
   try {
     return tryIntoText(cbor);
   } catch (error) {
     throw EnvelopeError.cbor(
-      'envelope does not contain a string',
-      error instanceof Error ? error : undefined
+      "envelope does not contain a string",
+      error instanceof Error ? error : undefined,
     );
   }
 }
@@ -38,25 +38,21 @@ export function extractNumber(envelope: Envelope): number {
   const cbor = envelope.tryLeaf();
 
   // Handle unsigned, negative, and simple (float) types
-  if ('type' in cbor) {
+  if ("type" in cbor) {
     switch (cbor.type) {
       case 0: // MajorType.Unsigned
-        return typeof cbor.value === 'bigint'
-          ? Number(cbor.value)
-          : (cbor.value as number);
+        return typeof cbor.value === "bigint" ? Number(cbor.value) : (cbor.value as number);
       case 1: // MajorType.Negative
         // Negative values are stored as magnitude, convert back
         const magnitude =
-          typeof cbor.value === 'bigint'
-            ? Number(cbor.value)
-            : (cbor.value as number);
+          typeof cbor.value === "bigint" ? Number(cbor.value) : (cbor.value as number);
         return -magnitude - 1;
       case 7: // MajorType.Simple
         if (
-          typeof cbor.value === 'object' &&
+          typeof cbor.value === "object" &&
           cbor.value &&
-          'type' in cbor.value &&
-          cbor.value.type === 'Float'
+          "type" in cbor.value &&
+          cbor.value.type === "Float"
         ) {
           return cbor.value.value as number;
         }
@@ -64,7 +60,7 @@ export function extractNumber(envelope: Envelope): number {
     }
   }
 
-  throw EnvelopeError.cbor('envelope does not contain a number');
+  throw EnvelopeError.cbor("envelope does not contain a number");
 }
 
 /// Extracts a boolean value from an envelope.
@@ -74,13 +70,13 @@ export function extractNumber(envelope: Envelope): number {
 /// @throws {EnvelopeError} If the envelope is not a leaf or cannot be converted
 export function extractBoolean(envelope: Envelope): boolean {
   const cbor = envelope.tryLeaf();
-  const { tryIntoBool } = require('@leonardocustodio/dcbor');
+  const { tryIntoBool } = require("@leonardocustodio/dcbor");
   try {
     return tryIntoBool(cbor);
   } catch (error) {
     throw EnvelopeError.cbor(
-      'envelope does not contain a boolean',
-      error instanceof Error ? error : undefined
+      "envelope does not contain a boolean",
+      error instanceof Error ? error : undefined,
     );
   }
 }
@@ -92,13 +88,13 @@ export function extractBoolean(envelope: Envelope): boolean {
 /// @throws {EnvelopeError} If the envelope is not a leaf or cannot be converted
 export function extractBytes(envelope: Envelope): Uint8Array {
   const cbor = envelope.tryLeaf();
-  const { tryIntoByteString } = require('@leonardocustodio/dcbor');
+  const { tryIntoByteString } = require("@leonardocustodio/dcbor");
   try {
     return tryIntoByteString(cbor);
   } catch (error) {
     throw EnvelopeError.cbor(
-      'envelope does not contain bytes',
-      error instanceof Error ? error : undefined
+      "envelope does not contain bytes",
+      error instanceof Error ? error : undefined,
     );
   }
 }
@@ -109,18 +105,18 @@ export function extractBytes(envelope: Envelope): Uint8Array {
 /// @throws {EnvelopeError} If the envelope is not a leaf containing null
 export function extractNull(envelope: Envelope): null {
   const cbor = envelope.tryLeaf();
-  const { isNull } = require('@leonardocustodio/dcbor');
+  const { isNull } = require("@leonardocustodio/dcbor");
   if (isNull(cbor)) {
     return null;
   }
-  throw EnvelopeError.cbor('envelope does not contain null');
+  throw EnvelopeError.cbor("envelope does not contain null");
 }
 
 /// Extension methods for Envelope to support CBOR decoding.
 ///
 /// These methods are added to the Envelope class prototype to match
 /// the Rust API.
-declare module './envelope' {
+declare module "./envelope" {
   interface Envelope {
     /// Attempts to extract the leaf CBOR value from this envelope.
     ///
@@ -167,10 +163,7 @@ export class EnvelopeDecoder {
     try {
       return Envelope.fromTaggedCbor(cbor);
     } catch (error) {
-      throw EnvelopeError.cbor(
-        'invalid envelope CBOR',
-        error instanceof Error ? error : undefined
-      );
+      throw EnvelopeError.cbor("invalid envelope CBOR", error instanceof Error ? error : undefined);
     }
   }
 
@@ -181,14 +174,14 @@ export class EnvelopeDecoder {
   /// @throws {EnvelopeError} If the data is not valid CBOR or does not
   ///   represent a valid envelope structure
   static tryFromCborData(data: Uint8Array): Envelope {
-    const { decodeCbor } = require('@leonardocustodio/dcbor');
+    const { decodeCbor } = require("@leonardocustodio/dcbor");
     try {
       const cbor = decodeCbor(data);
       return EnvelopeDecoder.tryFromCbor(cbor);
     } catch (error) {
       throw EnvelopeError.cbor(
-        'invalid envelope CBOR data',
-        error instanceof Error ? error : undefined
+        "invalid envelope CBOR data",
+        error instanceof Error ? error : undefined,
       );
     }
   }
@@ -199,7 +192,7 @@ export class EnvelopeDecoder {
 /// This extracts the leaf CBOR value from an envelope.
 Envelope.prototype.tryLeaf = function (this: Envelope): Cbor {
   const c = this.case();
-  if (c.type !== 'leaf') {
+  if (c.type !== "leaf") {
     throw EnvelopeError.notLeaf();
   }
   return c.cbor;

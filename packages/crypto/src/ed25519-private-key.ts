@@ -2,9 +2,9 @@
  * Ed25519 private key for EdDSA signatures (32 bytes seed)
  */
 
-import { ed25519ph } from '@noble/curves/ed25519';
-import { CryptoError } from './error.js';
-import { Ed25519PublicKey } from './ed25519-public-key.js';
+import { ed25519ph } from "@noble/curves/ed25519";
+import { CryptoError } from "./error.js";
+import { Ed25519PublicKey } from "./ed25519-public-key.js";
 
 const ED25519_SEED_SIZE = 32;
 const ED25519_PRIVATE_KEY_SIZE = 64; // seed (32) + public (32)
@@ -47,11 +47,11 @@ export class Ed25519PrivateKey {
    */
   static random(): Ed25519PrivateKey {
     const seed = new Uint8Array(ED25519_SEED_SIZE);
-    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+    if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
       globalThis.crypto.getRandomValues(seed);
     } else {
       // Fallback for Node.js
-      const { randomBytes } = require('crypto');
+      const { randomBytes } = require("crypto");
       const buf = randomBytes(ED25519_SEED_SIZE);
       seed.set(buf);
     }
@@ -70,8 +70,8 @@ export class Ed25519PrivateKey {
    */
   toHex(): string {
     return Array.from(this.seed)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
       .toUpperCase();
   }
 
@@ -79,7 +79,7 @@ export class Ed25519PrivateKey {
    * Get base64 representation of the seed
    */
   toBase64(): string {
-    return Buffer.from(this.seed).toString('base64');
+    return Buffer.from(this.seed).toString("base64");
   }
 
   /**

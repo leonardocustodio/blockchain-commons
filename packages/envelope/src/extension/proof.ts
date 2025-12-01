@@ -1,5 +1,5 @@
-import { Envelope } from '../base/envelope';
-import { Digest } from '../base/digest';
+import { Envelope } from "../base/envelope";
+import { Digest } from "../base/digest";
 
 /// Extension for envelope inclusion proofs.
 ///
@@ -47,7 +47,7 @@ import { Digest } from '../base/digest';
 /// }
 /// ```
 
-declare module '../base/envelope' {
+declare module "../base/envelope" {
   interface Envelope {
     /// Creates a proof that this envelope includes every element in the target set.
     ///
@@ -97,9 +97,7 @@ declare module '../base/envelope' {
 }
 
 /// Implementation of proof methods on Envelope prototype
-Envelope.prototype.proofContainsSet = function (
-  target: Set<Digest>
-): Envelope | undefined {
+Envelope.prototype.proofContainsSet = function (target: Set<Digest>): Envelope | undefined {
   const revealSet = revealSetOfSet(this, target);
 
   // Check if all targets can be revealed
@@ -112,17 +110,12 @@ Envelope.prototype.proofContainsSet = function (
   return revealed.elideRemovingSet(target);
 };
 
-Envelope.prototype.proofContainsTarget = function (
-  target: Envelope
-): Envelope | undefined {
+Envelope.prototype.proofContainsTarget = function (target: Envelope): Envelope | undefined {
   const targetSet = new Set<Digest>([target.digest()]);
   return this.proofContainsSet(targetSet);
 };
 
-Envelope.prototype.confirmContainsSet = function (
-  target: Set<Digest>,
-  proof: Envelope
-): boolean {
+Envelope.prototype.confirmContainsSet = function (target: Set<Digest>, proof: Envelope): boolean {
   // Verify the proof has the same digest as this envelope
   if (this.digest().hex() !== proof.digest().hex()) {
     return false;
@@ -132,10 +125,7 @@ Envelope.prototype.confirmContainsSet = function (
   return containsAll(proof, target);
 };
 
-Envelope.prototype.confirmContainsTarget = function (
-  target: Envelope,
-  proof: Envelope
-): boolean {
+Envelope.prototype.confirmContainsTarget = function (target: Envelope, proof: Envelope): boolean {
   const targetSet = new Set<Digest>([target.digest()]);
   return this.confirmContainsSet(targetSet, proof);
 };
@@ -160,7 +150,7 @@ function revealSets(
   envelope: Envelope,
   target: Set<Digest>,
   current: Set<Digest>,
-  result: Set<Digest>
+  result: Set<Digest>,
 ): void {
   // Add current envelope's digest to the path
   const newCurrent = new Set(current);
@@ -176,7 +166,7 @@ function revealSets(
   // Traverse the envelope structure
   const envelopeCase = envelope.case();
 
-  if (envelopeCase.type === 'node') {
+  if (envelopeCase.type === "node") {
     // Traverse subject
     revealSets(envelopeCase.subject, target, newCurrent, result);
 
@@ -184,10 +174,10 @@ function revealSets(
     for (const assertion of envelopeCase.assertions) {
       revealSets(assertion, target, newCurrent, result);
     }
-  } else if (envelopeCase.type === 'wrapped') {
+  } else if (envelopeCase.type === "wrapped") {
     // Traverse wrapped envelope
     revealSets(envelopeCase.envelope, target, newCurrent, result);
-  } else if (envelopeCase.type === 'assertion') {
+  } else if (envelopeCase.type === "assertion") {
     // Traverse predicate and object
     const predicate = envelopeCase.assertion.predicate();
     const object = envelopeCase.assertion.object();
@@ -223,7 +213,7 @@ function removeAllFound(envelope: Envelope, target: Set<Digest>): void {
   // Traverse the envelope structure
   const envelopeCase = envelope.case();
 
-  if (envelopeCase.type === 'node') {
+  if (envelopeCase.type === "node") {
     // Traverse subject
     removeAllFound(envelopeCase.subject, target);
 
@@ -232,10 +222,10 @@ function removeAllFound(envelope: Envelope, target: Set<Digest>): void {
       removeAllFound(assertion, target);
       if (target.size === 0) break;
     }
-  } else if (envelopeCase.type === 'wrapped') {
+  } else if (envelopeCase.type === "wrapped") {
     // Traverse wrapped envelope
     removeAllFound(envelopeCase.envelope, target);
-  } else if (envelopeCase.type === 'assertion') {
+  } else if (envelopeCase.type === "assertion") {
     // Traverse predicate and object
     const predicate = envelopeCase.assertion.predicate();
     const object = envelopeCase.assertion.object();

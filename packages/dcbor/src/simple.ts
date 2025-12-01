@@ -4,9 +4,9 @@
  * @module simple
  */
 
-import { MajorType } from './cbor';
-import { encodeVarInt } from './varint';
-import { f64CborData } from './float';
+import { MajorType } from "./cbor";
+import { encodeVarInt } from "./varint";
+import { f64CborData } from "./float";
 
 /**
  * Represents CBOR simple values (major type 7).
@@ -25,10 +25,10 @@ import { f64CborData } from './float';
  * - NaN values must be normalized to the canonical form `f97e00`
  */
 export type Simple =
-  | { readonly type: 'False' }
-  | { readonly type: 'True' }
-  | { readonly type: 'Null' }
-  | { readonly type: 'Float'; readonly value: number };
+  | { readonly type: "False" }
+  | { readonly type: "True" }
+  | { readonly type: "Null" }
+  | { readonly type: "Float"; readonly value: number };
 
 /**
  * Returns the standard name of the simple value as a string.
@@ -38,18 +38,18 @@ export type Simple =
  */
 export const simpleName = (simple: Simple): string => {
   switch (simple.type) {
-    case 'False':
-      return 'false';
-    case 'True':
-      return 'true';
-    case 'Null':
-      return 'null';
-    case 'Float': {
+    case "False":
+      return "false";
+    case "True":
+      return "true";
+    case "Null":
+      return "null";
+    case "Float": {
       const v = simple.value;
       if (Number.isNaN(v)) {
-        return 'NaN';
+        return "NaN";
       } else if (!Number.isFinite(v)) {
-        return v > 0 ? 'Infinity' : '-Infinity';
+        return v > 0 ? "Infinity" : "-Infinity";
       } else {
         return String(v);
       }
@@ -60,14 +60,14 @@ export const simpleName = (simple: Simple): string => {
 /**
  * Checks if the simple value is a floating point number.
  */
-export const isFloat = (simple: Simple): simple is { type: 'Float'; value: number } =>
-  simple.type === 'Float';
+export const isFloat = (simple: Simple): simple is { type: "Float"; value: number } =>
+  simple.type === "Float";
 
 /**
  * Checks if the simple value is the NaN (Not a Number) representation.
  */
 export const isNaN = (simple: Simple): boolean =>
-  simple.type === 'Float' && Number.isNaN(simple.value);
+  simple.type === "Float" && Number.isNaN(simple.value);
 
 /**
  * Encodes the simple value to its raw CBOR byte representation.
@@ -82,13 +82,13 @@ export const isNaN = (simple: Simple): boolean =>
  */
 export const simpleCborData = (simple: Simple): Uint8Array => {
   switch (simple.type) {
-    case 'False':
+    case "False":
       return encodeVarInt(20, MajorType.Simple);
-    case 'True':
+    case "True":
       return encodeVarInt(21, MajorType.Simple);
-    case 'Null':
+    case "Null":
       return encodeVarInt(22, MajorType.Simple);
-    case 'Float':
+    case "Float":
       return f64CborData(simple.value);
   }
 };
@@ -104,12 +104,12 @@ export const simpleEquals = (a: Simple, b: Simple): boolean => {
   if (a.type !== b.type) return false;
 
   switch (a.type) {
-    case 'False':
-    case 'True':
-    case 'Null':
+    case "False":
+    case "True":
+    case "Null":
       return true;
-    case 'Float': {
-      const bFloat = b as { type: 'Float'; value: number };
+    case "Float": {
+      const bFloat = b as { type: "Float"; value: number };
       const v1 = a.value;
       const v2 = bFloat.value;
       return v1 === v2 || (Number.isNaN(v1) && Number.isNaN(v2));
@@ -127,16 +127,16 @@ export const simpleHash = (simple: Simple): number => {
   let hash = 2166136261;
 
   switch (simple.type) {
-    case 'False':
+    case "False":
       hash ^= 0;
       break;
-    case 'True':
+    case "True":
       hash ^= 1;
       break;
-    case 'Null':
+    case "Null":
       hash ^= 2;
       break;
-    case 'Float': {
+    case "Float": {
       // Hash the bit representation of the float
       const buffer = new ArrayBuffer(8);
       const view = new DataView(buffer);

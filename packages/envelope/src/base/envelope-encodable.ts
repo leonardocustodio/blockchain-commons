@@ -1,4 +1,4 @@
-import type { Envelope } from './envelope';
+import type { Envelope } from "./envelope";
 
 /// A trait for types that can be encoded as a Gordian Envelope.
 ///
@@ -43,10 +43,10 @@ export interface EnvelopeEncodable {
 /// @returns `true` if the value implements EnvelopeEncodable, `false` otherwise
 export function isEnvelopeEncodable(value: unknown): value is EnvelopeEncodable {
   return (
-    typeof value === 'object' &&
+    typeof value === "object" &&
     value !== null &&
-    'intoEnvelope' in value &&
-    typeof (value as EnvelopeEncodable).intoEnvelope === 'function'
+    "intoEnvelope" in value &&
+    typeof (value as EnvelopeEncodable).intoEnvelope === "function"
   );
 }
 

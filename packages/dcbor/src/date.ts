@@ -15,19 +15,19 @@
  * @module date
  */
 
-import { type Cbor, MajorType } from './cbor';
-import { cbor } from './cbor';
-import { createTag, type Tag } from './tag';
-import { TAG_EPOCH_DATE_TIME } from './tags';
+import { type Cbor, MajorType } from "./cbor";
+import { cbor } from "./cbor";
+import { createTag, type Tag } from "./tag";
+import { TAG_EPOCH_DATE_TIME } from "./tags";
 import {
   type CborTaggedEncodable,
   type CborTaggedDecodable,
   type CborTagged,
   createTaggedCbor,
   validateTag,
-  extractTaggedContent
-} from './cbor-tagged';
-import { CborError } from './error';
+  extractTaggedContent,
+} from "./cbor-tagged";
+import { CborError } from "./error";
 
 /**
  * A CBOR-friendly representation of a date and time.
@@ -142,7 +142,7 @@ export class CborDate implements CborTagged, CborTaggedEncodable, CborTaggedDeco
     day: number,
     hour: number,
     minute: number,
-    second: number
+    second: number,
   ): CborDate {
     const dt = new Date(Date.UTC(year, month - 1, day, hour, minute, second, 0));
     return CborDate.fromDatetime(dt);
@@ -209,7 +209,7 @@ export class CborDate implements CborTagged, CborTaggedEncodable, CborTaggedDeco
     // Try parsing as ISO 8601 date string
     const dt = new Date(value);
     if (isNaN(dt.getTime())) {
-      throw new CborError({ type: 'InvalidDate', message: `Invalid date string: ${value}` });
+      throw new CborError({ type: "InvalidDate", message: `Invalid date string: ${value}` });
     }
     return CborDate.fromDatetime(dt);
   }
@@ -350,7 +350,7 @@ export class CborDate implements CborTagged, CborTaggedEncodable, CborTaggedDeco
    * @returns A vector containing tag 1
    */
   cborTags(): Tag[] {
-    return [createTag(TAG_EPOCH_DATE_TIME, 'date')];
+    return [createTag(TAG_EPOCH_DATE_TIME, "date")];
   }
 
   /**
@@ -399,12 +399,12 @@ export class CborDate implements CborTagged, CborTaggedEncodable, CborTaggedDeco
     // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (cbor.type) {
       case MajorType.Unsigned:
-        timestamp = typeof cbor.value === 'number' ? cbor.value : Number(cbor.value);
+        timestamp = typeof cbor.value === "number" ? cbor.value : Number(cbor.value);
         break;
 
       case MajorType.Negative:
         // Convert stored magnitude back to actual negative value
-        if (typeof cbor.value === 'bigint') {
+        if (typeof cbor.value === "bigint") {
           timestamp = Number(-cbor.value - 1n);
         } else {
           timestamp = -cbor.value - 1;
@@ -412,15 +412,21 @@ export class CborDate implements CborTagged, CborTaggedEncodable, CborTaggedDeco
         break;
 
       case MajorType.Simple:
-        if (cbor.value.type === 'Float') {
+        if (cbor.value.type === "Float") {
           timestamp = cbor.value.value;
         } else {
-          throw new CborError({ type: 'Custom', message: 'Invalid date CBOR: expected numeric value' });
+          throw new CborError({
+            type: "Custom",
+            message: "Invalid date CBOR: expected numeric value",
+          });
         }
         break;
 
       default:
-        throw new CborError({ type: 'Custom', message: 'Invalid date CBOR: expected numeric value' });
+        throw new CborError({
+          type: "Custom",
+          message: "Invalid date CBOR: expected numeric value",
+        });
     }
 
     const date = CborDate.fromTimestamp(timestamp);
@@ -491,22 +497,20 @@ export class CborDate implements CborTagged, CborTaggedEncodable, CborTaggedDeco
   toString(): string {
     const dt = this.#datetime;
     // Check only hours, minutes, and seconds (not milliseconds) to match Rust behavior
-    const hasTime = dt.getUTCHours() !== 0 ||
-                    dt.getUTCMinutes() !== 0 ||
-                    dt.getUTCSeconds() !== 0;
+    const hasTime = dt.getUTCHours() !== 0 || dt.getUTCMinutes() !== 0 || dt.getUTCSeconds() !== 0;
 
     if (!hasTime) {
       // Midnight (with possible subsecond precision) - show only date
-      const datePart = dt.toISOString().split('T')[0];
+      const datePart = dt.toISOString().split("T")[0];
       if (datePart === undefined) {
-        throw new CborError({ type: 'Custom', message: 'Invalid ISO string format' });
+        throw new CborError({ type: "Custom", message: "Invalid ISO string format" });
       }
       return datePart;
     } else {
       // Show full ISO datetime without milliseconds (matches Rust's SecondsFormat::Secs)
       const iso = dt.toISOString();
       // Remove milliseconds: "2023-02-08T15:30:45.000Z" -> "2023-02-08T15:30:45Z"
-      return iso.replace(/\.\d{3}Z$/, 'Z');
+      return iso.replace(/\.\d{3}Z$/, "Z");
     }
   }
 

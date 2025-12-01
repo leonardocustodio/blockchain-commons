@@ -5,7 +5,7 @@
 export class CryptoError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'CryptoError';
+    this.name = "CryptoError";
   }
 
   static invalidSize(expected: number, actual: number): CryptoError {

@@ -5,7 +5,7 @@
  * @see https://www.iana.org/assignments/cbor-tags/cbor-tags.xhtml
  */
 
-import { type Tag, createTag } from './tag';
+import { type Tag, createTag } from "./tag";
 
 // ============================================================================
 // Standard Date/Time Tags
@@ -170,15 +170,15 @@ export const TAG_SELF_DESCRIBE_CBOR = 55799;
 // Matches Rust's register_tags() functionality
 // ============================================================================
 
-import type { TagsStore } from './tags-store';
-import { getGlobalTagsStore } from './tags-store';
-import { CborDate } from './date';
-import type { Cbor } from './cbor';
-import { diagnostic } from './diag';
+import type { TagsStore } from "./tags-store";
+import { getGlobalTagsStore } from "./tags-store";
+import { CborDate } from "./date";
+import type { Cbor } from "./cbor";
+import { diagnostic } from "./diag";
 
 // Tag constants matching Rust
 export const TAG_DATE = 1;
-export const TAG_NAME_DATE = 'date';
+export const TAG_NAME_DATE = "date";
 
 /**
  * Register standard tags in a specific tags store.
@@ -191,16 +191,13 @@ export const registerTagsIn = (tagsStore: TagsStore): void => {
   tagsStore.insertAll(tags);
 
   // Set summarizer for date tag
-  tagsStore.setSummarizer(
-    TAG_DATE,
-    (untaggedCbor: Cbor, _flat: boolean): string => {
-      try {
-        return CborDate.fromUntaggedCbor(untaggedCbor).toString();
-      } catch {
-        return diagnostic(untaggedCbor);
-      }
+  tagsStore.setSummarizer(TAG_DATE, (untaggedCbor: Cbor, _flat: boolean): string => {
+    try {
+      return CborDate.fromUntaggedCbor(untaggedCbor).toString();
+    } catch {
+      return diagnostic(untaggedCbor);
     }
-  );
+  });
 };
 
 /**
@@ -245,7 +242,7 @@ export const registerTags = (): void => {
  */
 export const tagsForValues = (values: (number | bigint)[]): Tag[] => {
   const globalStore = getGlobalTagsStore();
-  return values.map(value => {
+  return values.map((value) => {
     const tag = globalStore.tagForValue(value);
     if (tag !== undefined) {
       return tag;

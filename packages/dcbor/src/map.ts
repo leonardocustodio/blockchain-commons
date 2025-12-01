@@ -22,14 +22,14 @@
  * @module map
  */
 
-import { SortedMap } from 'collections/sorted-map';
-import { type Cbor, type CborInput, MajorType } from './cbor';
-import { cbor, cborData, encodeCbor } from './cbor';
-import { areBytesEqual, lexicographicallyCompareBytes } from './stdlib';
-import { bytesToHex } from './dump';
-import { diagnostic } from './diag';
-import { extractCbor } from './conveniences';
-import { CborError } from './error';
+import { SortedMap } from "collections/sorted-map";
+import { type Cbor, type CborInput, MajorType } from "./cbor";
+import { cbor, cborData, encodeCbor } from "./cbor";
+import { areBytesEqual, lexicographicallyCompareBytes } from "./stdlib";
+import { bytesToHex } from "./dump";
+import { diagnostic } from "./diag";
+import { extractCbor } from "./conveniences";
+import { CborError } from "./error";
 
 type MapKey = Uint8Array;
 export interface MapEntry {
@@ -114,7 +114,7 @@ export class CborMap {
   extract<K extends CborInput, V>(key: K): V {
     const value = this.get<K, V>(key);
     if (value === undefined) {
-      throw new CborError({ type: 'MissingMapKey' });
+      throw new CborError({ type: "MissingMapKey" });
     }
     return value;
   }
@@ -181,7 +181,10 @@ export class CborMap {
    * Keys are sorted in lexicographic order of their encoded CBOR bytes.
    */
   get entries(): MapEntry[] {
-    return this.#dict.map((value: MapEntry, _key: MapKey) => ({ key: value.key, value: value.value }));
+    return this.#dict.map((value: MapEntry, _key: MapKey) => ({
+      key: value.key,
+      value: value.value,
+    }));
   }
 
   /**
@@ -208,21 +211,21 @@ export class CborMap {
     const keyCbor = cbor(key);
     const newKey = cborData(keyCbor);
     if (this.#dict.has(newKey)) {
-      throw new CborError({ type: 'DuplicateMapKey' });
+      throw new CborError({ type: "DuplicateMapKey" });
     }
     const lastEntryKey = this.#makeKey(lastEntry.key);
-    if(lexicographicallyCompareBytes(newKey, lastEntryKey) <= 0) {
-      throw new CborError({ type: 'MisorderedMapKey' });
+    if (lexicographicallyCompareBytes(newKey, lastEntryKey) <= 0) {
+      throw new CborError({ type: "MisorderedMapKey" });
     }
     this.#dict.set(newKey, { key: keyCbor, value: cbor(value) });
   }
 
   get debug(): string {
-    return `map({${this.entries.map(CborMap.entryDebug).join(', ')}})`;
+    return `map({${this.entries.map(CborMap.entryDebug).join(", ")}})`;
   }
 
   get diagnostic(): string {
-    return `{${this.entries.map(CborMap.entryDiagnostic).join(', ')}}`;
+    return `{${this.entries.map(CborMap.entryDiagnostic).join(", ")}}`;
   }
 
   private static entryDebug(this: void, entry: MapEntry): string {
@@ -237,9 +240,7 @@ export class CborMap {
       case MajorType.Unsigned:
         return `unsigned(${cbor.value})`;
       case MajorType.Negative: {
-        const negValue = typeof cbor.value === 'bigint'
-          ? -cbor.value - 1n
-          : -cbor.value - 1;
+        const negValue = typeof cbor.value === "bigint" ? -cbor.value - 1n : -cbor.value - 1;
         return `negative(${negValue})`;
       }
       case MajorType.ByteString: {
@@ -249,7 +250,7 @@ export class CborMap {
         return `text("${cbor.value}")`;
       case MajorType.Array: {
         const items = cbor.value.map(CborMap.formatDebug);
-        return `array([${items.join(', ')}])`;
+        return `array([${items.join(", ")}])`;
       }
       case MajorType.Map: {
         return cbor.value.debug;
@@ -258,19 +259,19 @@ export class CborMap {
         return `tagged(${cbor.tag}, ${CborMap.formatDebug(cbor.value)})`;
       case MajorType.Simple: {
         const simple = cbor.value;
-        if (typeof simple === 'object' && simple !== null && 'type' in simple) {
+        if (typeof simple === "object" && simple !== null && "type" in simple) {
           switch (simple.type) {
-            case 'True':
-              return 'simple(true)';
-            case 'False':
-              return 'simple(false)';
-            case 'Null':
-              return 'simple(null)';
-            case 'Float':
+            case "True":
+              return "simple(true)";
+            case "False":
+              return "simple(false)";
+            case "Null":
+              return "simple(null)";
+            case "Float":
               return `simple(${simple.value})`;
           }
         }
-        return 'simple';
+        return "simple";
       }
       default:
         return diagnostic(cbor);

@@ -21,10 +21,10 @@
  */
 
 import * as byteData from "byte-data";
-import { encodeVarInt } from './varint';
-import { MajorType } from './cbor';
-import { ExactU64, ExactU32, ExactU16, ExactI128 } from './exact';
-import { CborError } from './error';
+import { encodeVarInt } from "./varint";
+import { MajorType } from "./cbor";
+import { ExactU64, ExactU32, ExactU16, ExactI128 } from "./exact";
+import { CborError } from "./error";
 
 /**
  * Canonical NaN representation in CBOR: 0xf97e00
@@ -99,7 +99,7 @@ export const f64CborData = (value: number): Uint8Array => {
       const i = ExactU64.exactFromI128(-1n - i128);
       if (i !== undefined) {
         // Encode as a negative integer
-        const num = typeof i === 'bigint' ? Number(i) : i;
+        const num = typeof i === "bigint" ? Number(i) : i;
         return encodeVarInt(num, MajorType.Negative);
       }
     }
@@ -108,7 +108,7 @@ export const f64CborData = (value: number): Uint8Array => {
   // Try numeric reduction to unsigned integer
   const u = ExactU64.exactFromF64(n);
   if (u !== undefined) {
-    const num = typeof u === 'bigint' ? Number(u) : u;
+    const num = typeof u === "bigint" ? Number(u) : u;
     return encodeVarInt(num, MajorType.Unsigned);
   }
 
@@ -137,7 +137,7 @@ export const validateCanonicalF64 = (n: number): void => {
   const f32 = binary32ToNumber(f32Bytes);
 
   if (n === f32 || n === Math.trunc(n) || Number.isNaN(n)) {
-    throw new CborError({ type: 'NonCanonicalNumeric' });
+    throw new CborError({ type: "NonCanonicalNumeric" });
   }
 };
 
@@ -161,7 +161,7 @@ export const f32CborData = (value: number): Uint8Array => {
   if (n < 0.0) {
     const u = ExactU64.exactFromF32(-1.0 - n);
     if (u !== undefined) {
-      const num = typeof u === 'bigint' ? Number(u) : u;
+      const num = typeof u === "bigint" ? Number(u) : u;
       return encodeVarInt(num, MajorType.Negative);
     }
   }
@@ -193,7 +193,7 @@ export const validateCanonicalF32 = (n: number): void => {
   const f16 = binary16ToNumber(f16Bytes);
 
   if (n === f16 || n === Math.trunc(n) || Number.isNaN(n)) {
-    throw new CborError({ type: 'NonCanonicalNumeric' });
+    throw new CborError({ type: "NonCanonicalNumeric" });
   }
 };
 
@@ -210,7 +210,7 @@ export const f16CborData = (value: number): Uint8Array => {
   if (n < 0.0) {
     const u = ExactU64.exactFromF64(-1.0 - n);
     if (u !== undefined) {
-      const num = typeof u === 'bigint' ? Number(u) : u;
+      const num = typeof u === "bigint" ? Number(u) : u;
       return encodeVarInt(num, MajorType.Negative);
     }
   }
@@ -245,7 +245,7 @@ export const validateCanonicalF16 = (value: number): void => {
   const bits = new DataView(f16Bytes.buffer).getUint16(0, false);
 
   if (f === Math.trunc(f) || (Number.isNaN(value) && bits !== 0x7e00)) {
-    throw new CborError({ type: 'NonCanonicalNumeric' });
+    throw new CborError({ type: "NonCanonicalNumeric" });
   }
 };
 

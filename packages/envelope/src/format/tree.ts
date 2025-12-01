@@ -1,5 +1,5 @@
-import { Envelope } from '../base/envelope';
-import { EdgeType, edgeLabel } from '../base/walk';
+import { Envelope } from "../base/envelope";
+import { EdgeType, edgeLabel } from "../base/walk";
 
 /// Tree formatting for Gordian Envelopes.
 ///
@@ -22,7 +22,7 @@ export interface TreeFormatOptions {
   /// Set of digest strings to highlight in the tree
   highlightDigests?: Set<string>;
   /// Format for displaying digests
-  digestDisplay?: 'short' | 'full';
+  digestDisplay?: "short" | "full";
 }
 
 /// Represents an element in the tree representation
@@ -39,7 +39,7 @@ interface TreeElement {
   isHighlighted: boolean;
 }
 
-declare module '../base/envelope' {
+declare module "../base/envelope" {
   interface Envelope {
     /// Returns a tree-formatted string representation of the envelope.
     ///
@@ -68,7 +68,7 @@ declare module '../base/envelope' {
     ///
     /// @param format - Format for the digest ('short' or 'full')
     /// @returns A digest identifier string
-    shortId(format?: 'short' | 'full'): string;
+    shortId(format?: "short" | "full"): string;
 
     /// Returns a summary string for this envelope.
     ///
@@ -79,34 +79,27 @@ declare module '../base/envelope' {
 }
 
 /// Implementation of shortId()
-Envelope.prototype.shortId = function (
-  this: Envelope,
-  format: 'short' | 'full' = 'short'
-): string {
+Envelope.prototype.shortId = function (this: Envelope, format: "short" | "full" = "short"): string {
   const digest = this.digest();
-  if (format === 'full') {
+  if (format === "full") {
     return digest.hex();
   }
   return digest.short();
 };
 
 /// Implementation of summary()
-Envelope.prototype.summary = function (
-  this: Envelope,
-  maxLength: number = 40
-): string {
+Envelope.prototype.summary = function (this: Envelope, maxLength: number = 40): string {
   const c = this.case();
 
   switch (c.type) {
-    case 'node':
-      return 'NODE';
-    case 'leaf': {
+    case "node":
+      return "NODE";
+    case "leaf": {
       // Try to extract a readable value
       try {
         const text = this.asText();
         if (text !== undefined) {
-          const truncated =
-            text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+          const truncated = text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
           return JSON.stringify(truncated);
         }
       } catch {
@@ -129,7 +122,7 @@ Envelope.prototype.summary = function (
 
       try {
         this.extractNull();
-        return 'null';
+        return "null";
       } catch {
         // Fall through
       }
@@ -138,38 +131,35 @@ Envelope.prototype.summary = function (
       const bytes = this.asByteString();
       if (bytes && bytes.length <= 16) {
         const hex = Array.from(bytes)
-          .map((b) => b.toString(16).padStart(2, '0'))
-          .join('');
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
         return `h'${hex}'`;
       }
 
-      return 'LEAF';
+      return "LEAF";
     }
-    case 'wrapped':
-      return 'WRAPPED';
-    case 'assertion':
-      return 'ASSERTION';
-    case 'elided':
-      return 'ELIDED';
-    case 'encrypted':
-      return 'ENCRYPTED';
-    case 'compressed':
-      return 'COMPRESSED';
-    case 'knownValue':
-      return 'KNOWN_VALUE';
+    case "wrapped":
+      return "WRAPPED";
+    case "assertion":
+      return "ASSERTION";
+    case "elided":
+      return "ELIDED";
+    case "encrypted":
+      return "ENCRYPTED";
+    case "compressed":
+      return "COMPRESSED";
+    case "knownValue":
+      return "KNOWN_VALUE";
     default:
-      return 'UNKNOWN';
+      return "UNKNOWN";
   }
 };
 
 /// Implementation of treeFormat()
-Envelope.prototype.treeFormat = function (
-  this: Envelope,
-  options: TreeFormatOptions = {}
-): string {
+Envelope.prototype.treeFormat = function (this: Envelope, options: TreeFormatOptions = {}): string {
   const hideNodes = options.hideNodes ?? false;
   const highlightDigests = options.highlightDigests ?? new Set<string>();
-  const digestDisplay = options.digestDisplay ?? 'short';
+  const digestDisplay = options.digestDisplay ?? "short";
 
   const elements: TreeElement[] = [];
 
@@ -194,7 +184,7 @@ Envelope.prototype.treeFormat = function (
     const parts: string[] = [];
 
     if (elem.isHighlighted) {
-      parts.push('*');
+      parts.push("*");
     }
 
     if (elem.showId) {
@@ -208,10 +198,10 @@ Envelope.prototype.treeFormat = function (
 
     parts.push(elem.envelope.summary(40));
 
-    const line = parts.join(' ');
-    const indent = ' '.repeat(elem.level * 4);
+    const line = parts.join(" ");
+    const indent = " ".repeat(elem.level * 4);
     return indent + line;
   });
 
-  return lines.join('\n');
+  return lines.join("\n");
 };

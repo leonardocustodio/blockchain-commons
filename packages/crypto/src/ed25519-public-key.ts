@@ -2,8 +2,8 @@
  * Ed25519 public key for EdDSA verification (32 bytes)
  */
 
-import { ed25519ph } from '@noble/curves/ed25519';
-import { CryptoError } from './error.js';
+import { ed25519ph } from "@noble/curves/ed25519";
+import { CryptoError } from "./error.js";
 
 const ED25519_PUBLIC_KEY_SIZE = 32;
 
@@ -29,7 +29,9 @@ export class Ed25519PublicKey {
    */
   static fromHex(hex: string): Ed25519PublicKey {
     if (hex.length !== 64) {
-      throw CryptoError.invalidFormat(`Ed25519 public key hex must be 64 characters, got ${hex.length}`);
+      throw CryptoError.invalidFormat(
+        `Ed25519 public key hex must be 64 characters, got ${hex.length}`,
+      );
     }
     const data = new Uint8Array(32);
     for (let i = 0; i < 32; i++) {
@@ -50,8 +52,8 @@ export class Ed25519PublicKey {
    */
   toHex(): string {
     return Array.from(this.data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
       .toUpperCase();
   }
 
@@ -59,7 +61,7 @@ export class Ed25519PublicKey {
    * Get base64 representation
    */
   toBase64(): string {
-    return Buffer.from(this.data).toString('base64');
+    return Buffer.from(this.data).toString("base64");
   }
 
   /**

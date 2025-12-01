@@ -2,7 +2,7 @@
  * X25519 public key for ECDH key agreement (32 bytes)
  */
 
-import { CryptoError } from './error.js';
+import { CryptoError } from "./error.js";
 
 const X25519_KEY_SIZE = 32;
 
@@ -28,7 +28,9 @@ export class X25519PublicKey {
    */
   static fromHex(hex: string): X25519PublicKey {
     if (hex.length !== 64) {
-      throw CryptoError.invalidFormat(`X25519 public key hex must be 64 characters, got ${hex.length}`);
+      throw CryptoError.invalidFormat(
+        `X25519 public key hex must be 64 characters, got ${hex.length}`,
+      );
     }
     const data = new Uint8Array(32);
     for (let i = 0; i < 32; i++) {
@@ -49,8 +51,8 @@ export class X25519PublicKey {
    */
   toHex(): string {
     return Array.from(this.data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
       .toUpperCase();
   }
 
@@ -58,7 +60,7 @@ export class X25519PublicKey {
    * Get base64 representation
    */
   toBase64(): string {
-    return Buffer.from(this.data).toString('base64');
+    return Buffer.from(this.data).toString("base64");
   }
 
   /**

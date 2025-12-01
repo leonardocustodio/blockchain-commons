@@ -14,8 +14,8 @@
  * @module byte-string
  */
 
-import { type Cbor, MajorType, cbor as toCbor } from './cbor';
-import { CborError } from './error';
+import { type Cbor, MajorType, cbor as toCbor } from "./cbor";
+import { CborError } from "./error";
 
 /**
  * Represents a CBOR byte string (major type 2).
@@ -82,7 +82,7 @@ export class ByteString {
    * ```
    */
   static from(data: Uint8Array | number[] | string): ByteString {
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       return new ByteString(new TextEncoder().encode(data));
     }
     return new ByteString(data);
@@ -260,7 +260,7 @@ export class ByteString {
    */
   static fromCbor(cbor: Cbor): ByteString {
     if (cbor.type !== MajorType.ByteString) {
-      throw new CborError({ type: 'WrongType' });
+      throw new CborError({ type: "WrongType" });
     }
     return new ByteString(cbor.value);
   }

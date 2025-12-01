@@ -7,7 +7,7 @@
  * @module stdlib
  */
 
-import { CborError } from './error';
+import { CborError } from "./error";
 
 /**
  * Concatenate multiple byte arrays into one.
@@ -44,7 +44,7 @@ export const lexicographicallyCompareBytes = (a: Uint8Array, b: Uint8Array): num
     const aVal = a[i];
     const bVal = b[i];
     if (aVal === undefined || bVal === undefined) {
-      throw new CborError({ type: 'Custom', message: 'Unexpected undefined byte in array' });
+      throw new CborError({ type: "Custom", message: "Unexpected undefined byte in array" });
     }
     if (aVal < bVal) return -1;
     if (aVal > bVal) return 1;

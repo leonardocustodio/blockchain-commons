@@ -1,5 +1,5 @@
-import { Envelope, EnvelopeEncodableValue } from '../base/envelope';
-import { EnvelopeError } from '../base/error';
+import { Envelope, EnvelopeEncodableValue } from "../base/envelope";
+import { EnvelopeError } from "../base/error";
 
 /// Extension for envelope expressions.
 ///
@@ -46,28 +46,28 @@ export const CBOR_TAG_REPLACEMENT = 40009;
 
 /// Well-known function identifiers (numeric)
 export const FUNCTION_IDS = {
-  ADD: 1,       // addition
-  SUB: 2,       // subtraction
-  MUL: 3,       // multiplication
-  DIV: 4,       // division
-  NEG: 5,       // unary negation
-  LT: 6,        // less than
-  LE: 7,        // less than or equal
-  GT: 8,        // greater than
-  GE: 9,        // greater than or equal
-  EQ: 10,       // equal to
-  NE: 11,       // not equal to
-  AND: 12,      // logical and
-  OR: 13,       // logical or
-  XOR: 14,      // logical xor
-  NOT: 15,      // logical not
+  ADD: 1, // addition
+  SUB: 2, // subtraction
+  MUL: 3, // multiplication
+  DIV: 4, // division
+  NEG: 5, // unary negation
+  LT: 6, // less than
+  LE: 7, // less than or equal
+  GT: 8, // greater than
+  GE: 9, // greater than or equal
+  EQ: 10, // equal to
+  NE: 11, // not equal to
+  AND: 12, // logical and
+  OR: 13, // logical or
+  XOR: 14, // logical xor
+  NOT: 15, // logical not
 } as const;
 
 /// Well-known parameter identifiers (numeric)
 export const PARAMETER_IDS = {
-  BLANK: 1,     // blank/implicit parameter (_)
-  LHS: 2,       // left-hand side
-  RHS: 3,       // right-hand side
+  BLANK: 1, // blank/implicit parameter (_)
+  LHS: 2, // left-hand side
+  RHS: 3, // right-hand side
 } as const;
 
 /// Type for function identifier (number or string)
@@ -91,21 +91,19 @@ export class Function {
 
   /// Returns true if this is a numeric function ID
   isNumeric(): boolean {
-    return typeof this.#id === 'number';
+    return typeof this.#id === "number";
   }
 
   /// Returns true if this is a string function ID
   isString(): boolean {
-    return typeof this.#id === 'string';
+    return typeof this.#id === "string";
   }
 
   /// Creates an expression envelope with this function as the subject
   envelope(): Envelope {
     // For now, create a simple envelope with the function ID
     // In a full implementation, this would use CBOR tag 40006
-    const functionStr = typeof this.#id === 'number'
-      ? `«${this.#id}»`
-      : `«"${this.#id}"»`;
+    const functionStr = typeof this.#id === "number" ? `«${this.#id}»` : `«"${this.#id}"»`;
     return Envelope.new(functionStr);
   }
 
@@ -127,9 +125,7 @@ export class Function {
 
   /// Returns a string representation for display
   toString(): string {
-    return typeof this.#id === 'number'
-      ? `«${this.#id}»`
-      : `«"${this.#id}"»`;
+    return typeof this.#id === "number" ? `«${this.#id}»` : `«"${this.#id}"»`;
   }
 }
 
@@ -155,20 +151,18 @@ export class Parameter {
 
   /// Returns true if this is a numeric parameter ID
   isNumeric(): boolean {
-    return typeof this.#id === 'number';
+    return typeof this.#id === "number";
   }
 
   /// Returns true if this is a string parameter ID
   isString(): boolean {
-    return typeof this.#id === 'string';
+    return typeof this.#id === "string";
   }
 
   /// Creates a parameter envelope
   /// In a full implementation, this would use CBOR tag 40007
   envelope(): Envelope {
-    const paramStr = typeof this.#id === 'number'
-      ? `❰${this.#id}❱`
-      : `❰"${this.#id}"❱`;
+    const paramStr = typeof this.#id === "number" ? `❰${this.#id}❱` : `❰"${this.#id}"❱`;
     return Envelope.newAssertion(paramStr, this.#value);
   }
 
@@ -187,9 +181,7 @@ export class Parameter {
 
   /// Returns a string representation for display
   toString(): string {
-    const idStr = typeof this.#id === 'number'
-      ? `❰${this.#id}❱`
-      : `❰"${this.#id}"❱`;
+    const idStr = typeof this.#id === "number" ? `❰${this.#id}❱` : `❰"${this.#id}"❱`;
     return `${idStr}: ${this.#value.asText()}`;
   }
 }
@@ -216,7 +208,7 @@ export class Expression {
 
   /// Adds a parameter to the expression
   withParameter(param: ParameterID, value: EnvelopeEncodableValue): Expression {
-    const key = typeof param === 'number' ? param.toString() : param;
+    const key = typeof param === "number" ? param.toString() : param;
     this.#parameters.set(key, new Parameter(param, value));
     this.#envelope = null; // Invalidate cached envelope
     return this;
@@ -232,13 +224,13 @@ export class Expression {
 
   /// Gets a parameter value by ID
   getParameter(param: ParameterID): Envelope | undefined {
-    const key = typeof param === 'number' ? param.toString() : param;
+    const key = typeof param === "number" ? param.toString() : param;
     return this.#parameters.get(key)?.value();
   }
 
   /// Checks if a parameter exists
   hasParameter(param: ParameterID): boolean {
-    const key = typeof param === 'number' ? param.toString() : param;
+    const key = typeof param === "number" ? param.toString() : param;
     return this.#parameters.has(key);
   }
 
@@ -278,7 +270,7 @@ export class Expression {
 
     // Parse function identifier
     let funcId: FunctionID;
-    if (subjectText.startsWith('«') && subjectText.endsWith('»')) {
+    if (subjectText.startsWith("«") && subjectText.endsWith("»")) {
       const inner = subjectText.slice(1, -1);
       if (inner.startsWith('"') && inner.endsWith('"')) {
         funcId = inner.slice(1, -1); // String function
@@ -286,7 +278,7 @@ export class Expression {
         funcId = parseInt(inner, 10); // Numeric function
       }
     } else {
-      throw EnvelopeError.general('Not a valid function envelope');
+      throw EnvelopeError.general("Not a valid function envelope");
     }
 
     const func = new Function(funcId);
@@ -300,7 +292,7 @@ export class Expression {
 
         if (pred && obj) {
           const predText = pred.asText();
-          if (predText.startsWith('❰') && predText.endsWith('❱')) {
+          if (predText.startsWith("❰") && predText.endsWith("❱")) {
             const inner = predText.slice(1, -1);
             let paramId: ParameterID;
             if (inner.startsWith('"') && inner.endsWith('"')) {
@@ -323,8 +315,8 @@ export class Expression {
   /// Returns a string representation for display
   toString(): string {
     const params = Array.from(this.#parameters.values())
-      .map(p => p.toString())
-      .join(', ');
+      .map((p) => p.toString())
+      .join(", ");
     return `${this.#function.toString()} [${params}]`;
   }
 }
@@ -361,8 +353,7 @@ export function div(lhs: EnvelopeEncodableValue, rhs: EnvelopeEncodableValue): E
 
 /// Creates a negation expression: -value
 export function neg(value: EnvelopeEncodableValue): Expression {
-  return Function.fromNumeric(FUNCTION_IDS.NEG)
-    .withParameter(PARAMETER_IDS.BLANK, value);
+  return Function.fromNumeric(FUNCTION_IDS.NEG).withParameter(PARAMETER_IDS.BLANK, value);
 }
 
 /// Creates a less-than expression: lhs < rhs
@@ -402,8 +393,7 @@ export function or(lhs: EnvelopeEncodableValue, rhs: EnvelopeEncodableValue): Ex
 
 /// Creates a logical NOT expression: !value
 export function not(value: EnvelopeEncodableValue): Expression {
-  return Function.fromNumeric(FUNCTION_IDS.NOT)
-    .withParameter(PARAMETER_IDS.BLANK, value);
+  return Function.fromNumeric(FUNCTION_IDS.NOT).withParameter(PARAMETER_IDS.BLANK, value);
 }
 
 // Export types and classes

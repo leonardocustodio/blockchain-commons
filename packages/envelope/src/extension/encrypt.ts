@@ -1,7 +1,7 @@
-import { Envelope } from '../base/envelope';
-import { EnvelopeError } from '../base/error';
-import { Digest } from '../base/digest';
-import sodium from 'libsodium-wrappers';
+import { Envelope } from "../base/envelope";
+import { EnvelopeError } from "../base/error";
+import { Digest } from "../base/digest";
+import sodium from "libsodium-wrappers";
 
 /// Extension for encrypting and decrypting envelopes using symmetric encryption.
 ///
@@ -44,7 +44,7 @@ export class SymmetricKey {
 
   constructor(key: Uint8Array) {
     if (key.length !== 32) {
-      throw new Error('Symmetric key must be 32 bytes');
+      throw new Error("Symmetric key must be 32 bytes");
     }
     this.#key = key;
   }
@@ -67,16 +67,11 @@ export class SymmetricKey {
   }
 
   /// Encrypts data with associated digest (AAD)
-  async encrypt(
-    plaintext: Uint8Array,
-    digest: Digest
-  ): Promise<EncryptedMessage> {
+  async encrypt(plaintext: Uint8Array, digest: Digest): Promise<EncryptedMessage> {
     await sodium.ready;
 
     // Generate a random nonce (24 bytes for XChaCha20-Poly1305)
-    const nonce = sodium.randombytes_buf(
-      sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
-    );
+    const nonce = sodium.randombytes_buf(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
 
     // Use digest as additional authenticated data (AAD)
     const aad = digest.data();
@@ -87,7 +82,7 @@ export class SymmetricKey {
       aad,
       null, // no secret nonce
       nonce,
-      this.#key
+      this.#key,
     );
 
     return new EncryptedMessage(ciphertext, nonce, digest);
@@ -99,7 +94,7 @@ export class SymmetricKey {
 
     const digest = message.aadDigest();
     if (!digest) {
-      throw EnvelopeError.general('Missing digest in encrypted message');
+      throw EnvelopeError.general("Missing digest in encrypted message");
     }
 
     const aad = digest.data();
@@ -110,14 +105,12 @@ export class SymmetricKey {
         message.ciphertext(),
         aad,
         message.nonce(),
-        this.#key
+        this.#key,
       );
 
       return plaintext;
     } catch (error) {
-      throw EnvelopeError.general(
-        'Decryption failed: invalid key or corrupted data'
-      );
+      throw EnvelopeError.general("Decryption failed: invalid key or corrupted data");
     }
   }
 }
@@ -128,11 +121,7 @@ export class EncryptedMessage {
   readonly #nonce: Uint8Array;
   readonly #aadDigest?: Digest;
 
-  constructor(
-    ciphertext: Uint8Array,
-    nonce: Uint8Array,
-    aadDigest?: Digest
-  ) {
+  constructor(ciphertext: Uint8Array, nonce: Uint8Array, aadDigest?: Digest) {
     this.#ciphertext = ciphertext;
     this.#nonce = nonce;
     this.#aadDigest = aadDigest;
@@ -156,13 +145,13 @@ export class EncryptedMessage {
   /// Returns the digest of this encrypted message (the AAD digest)
   digest(): Digest {
     if (!this.#aadDigest) {
-      throw new Error('Encrypted message missing AAD digest');
+      throw new Error("Encrypted message missing AAD digest");
     }
     return this.#aadDigest;
   }
 }
 
-declare module '../base/envelope' {
+declare module "../base/envelope" {
   interface Envelope {
     /// Returns a new envelope with its subject encrypted.
     ///
@@ -247,26 +236,26 @@ declare module '../base/envelope' {
 /// Implementation of encryptSubject()
 Envelope.prototype.encryptSubject = async function (
   this: Envelope,
-  key: SymmetricKey
+  key: SymmetricKey,
 ): Promise<Envelope> {
   const c = this.case();
 
   // Can't encrypt if already encrypted or elided
-  if (c.type === 'encrypted') {
-    throw EnvelopeError.general('Envelope is already encrypted');
+  if (c.type === "encrypted") {
+    throw EnvelopeError.general("Envelope is already encrypted");
   }
-  if (c.type === 'elided') {
-    throw EnvelopeError.general('Cannot encrypt elided envelope');
+  if (c.type === "elided") {
+    throw EnvelopeError.general("Cannot encrypt elided envelope");
   }
 
   // For node case, encrypt just the subject
-  if (c.type === 'node') {
+  if (c.type === "node") {
     if (c.subject.isEncrypted()) {
-      throw EnvelopeError.general('Subject is already encrypted');
+      throw EnvelopeError.general("Subject is already encrypted");
     }
 
     // Get the subject's CBOR data
-    const { cborData } = require('@leonardocustodio/dcbor');
+    const { cborData } = require("@leonardocustodio/dcbor");
     const subjectCbor = c.subject.taggedCbor();
     const encodedCbor = cborData(subjectCbor);
     const subjectDigest = c.subject.digest();
@@ -276,7 +265,7 @@ Envelope.prototype.encryptSubject = async function (
 
     // Create encrypted envelope
     const encryptedSubject = Envelope.fromCase({
-      type: 'encrypted',
+      type: "encrypted",
       message: encryptedMessage,
     });
 
@@ -285,7 +274,7 @@ Envelope.prototype.encryptSubject = async function (
   }
 
   // For other cases, encrypt the entire envelope
-  const { cborData } = require('@leonardocustodio/dcbor');
+  const { cborData } = require("@leonardocustodio/dcbor");
   const cbor = this.taggedCbor();
   const encodedCbor = cborData(cbor);
   const digest = this.digest();
@@ -293,7 +282,7 @@ Envelope.prototype.encryptSubject = async function (
   const encryptedMessage = await key.encrypt(encodedCbor, digest);
 
   return Envelope.fromCase({
-    type: 'encrypted',
+    type: "encrypted",
     message: encryptedMessage,
   });
 };
@@ -301,41 +290,41 @@ Envelope.prototype.encryptSubject = async function (
 /// Implementation of decryptSubject()
 Envelope.prototype.decryptSubject = async function (
   this: Envelope,
-  key: SymmetricKey
+  key: SymmetricKey,
 ): Promise<Envelope> {
   const subjectCase = this.subject().case();
 
-  if (subjectCase.type !== 'encrypted') {
-    throw EnvelopeError.general('Subject is not encrypted');
+  if (subjectCase.type !== "encrypted") {
+    throw EnvelopeError.general("Subject is not encrypted");
   }
 
   const message = subjectCase.message;
   const subjectDigest = message.aadDigest();
 
   if (!subjectDigest) {
-    throw EnvelopeError.general('Missing digest in encrypted message');
+    throw EnvelopeError.general("Missing digest in encrypted message");
   }
 
   // Decrypt the subject
   const decryptedData = await key.decrypt(message);
 
   // Parse back to envelope
-  const { decodeCbor } = require('@leonardocustodio/dcbor');
+  const { decodeCbor } = require("@leonardocustodio/dcbor");
   const cbor = decodeCbor(decryptedData);
   const resultSubject = Envelope.fromTaggedCbor(cbor);
 
   // Verify digest
   if (!resultSubject.digest().equals(subjectDigest)) {
-    throw EnvelopeError.general('Invalid digest after decryption');
+    throw EnvelopeError.general("Invalid digest after decryption");
   }
 
   const c = this.case();
 
   // If this is a node, rebuild with decrypted subject
-  if (c.type === 'node') {
+  if (c.type === "node") {
     const result = Envelope.newWithAssertions(resultSubject, c.assertions);
     if (!result.digest().equals(c.digest)) {
-      throw EnvelopeError.general('Invalid envelope digest after decryption');
+      throw EnvelopeError.general("Invalid envelope digest after decryption");
     }
     return result;
   }
@@ -345,23 +334,17 @@ Envelope.prototype.decryptSubject = async function (
 };
 
 /// Implementation of encrypt() - convenience method
-Envelope.prototype.encrypt = async function (
-  this: Envelope,
-  key: SymmetricKey
-): Promise<Envelope> {
+Envelope.prototype.encrypt = async function (this: Envelope, key: SymmetricKey): Promise<Envelope> {
   return this.wrap().encryptSubject(key);
 };
 
 /// Implementation of decrypt() - convenience method
-Envelope.prototype.decrypt = async function (
-  this: Envelope,
-  key: SymmetricKey
-): Promise<Envelope> {
+Envelope.prototype.decrypt = async function (this: Envelope, key: SymmetricKey): Promise<Envelope> {
   const decrypted = await this.decryptSubject(key);
   return decrypted.unwrap();
 };
 
 /// Implementation of isEncrypted()
 Envelope.prototype.isEncrypted = function (this: Envelope): boolean {
-  return this.case().type === 'encrypted';
+  return this.case().type === "encrypted";
 };

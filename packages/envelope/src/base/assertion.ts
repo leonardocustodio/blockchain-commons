@@ -1,9 +1,9 @@
-import { Digest, DigestProvider } from './digest';
-import { Envelope } from './envelope';
-import { EnvelopeEncodable } from './envelope-encodable';
-import { EnvelopeError } from './error';
-import type { Cbor } from '@leonardocustodio/dcbor';
-import { CborMap } from '@leonardocustodio/dcbor';
+import { Digest, DigestProvider } from "./digest";
+import { Envelope } from "./envelope";
+import { EnvelopeEncodable } from "./envelope-encodable";
+import { EnvelopeError } from "./error";
+import type { Cbor } from "@leonardocustodio/dcbor";
+import { CborMap } from "@leonardocustodio/dcbor";
 
 /// A predicate-object relationship representing an assertion about a subject.
 ///
@@ -56,17 +56,10 @@ export class Assertion implements DigestProvider {
   /// // Or create and add an assertion to a subject
   /// const person = Envelope.new("person").addAssertion("name", "Alice");
   /// ```
-  constructor(
-    predicate: EnvelopeEncodable | Envelope,
-    object: EnvelopeEncodable | Envelope
-  ) {
-    this.#predicate =
-      predicate instanceof Envelope ? predicate : Envelope.new(predicate);
+  constructor(predicate: EnvelopeEncodable | Envelope, object: EnvelopeEncodable | Envelope) {
+    this.#predicate = predicate instanceof Envelope ? predicate : Envelope.new(predicate);
     this.#object = object instanceof Envelope ? object : Envelope.new(object);
-    this.#digest = Digest.fromDigests([
-      this.#predicate.digest(),
-      this.#object.digest(),
-    ]);
+    this.#digest = Digest.fromDigests([this.#predicate.digest(), this.#object.digest()]);
   }
 
   /// Returns the predicate of the assertion.

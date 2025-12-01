@@ -9,16 +9,16 @@
 /// @module bc-envelope
 
 // Re-export everything from the base module
-export * from './base';
+export * from "./base";
 
 // Re-export everything from the extension module
-export * from './extension';
+export * from "./extension";
 
 // Re-export everything from the format module
-export * from './format';
+export * from "./format";
 
 // Re-export everything from the utils module
-export * from './utils';
+export * from "./utils";
 
 // Version information
-export const VERSION = '0.37.0';
+export const VERSION = "0.37.0";

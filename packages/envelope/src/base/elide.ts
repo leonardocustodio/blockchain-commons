@@ -1,22 +1,22 @@
-import { Digest, type DigestProvider } from './digest';
-import { Envelope } from './envelope';
-import { Assertion } from './assertion';
-import { EnvelopeError } from './error';
+import { Digest, type DigestProvider } from "./digest";
+import { Envelope } from "./envelope";
+import { Assertion } from "./assertion";
+import { EnvelopeError } from "./error";
 
 /// Types of obscuration that can be applied to envelope elements.
 ///
 /// This enum identifies the different ways an envelope element can be obscured.
 export enum ObscureType {
   /// The element has been elided, showing only its digest.
-  Elided = 'elided',
+  Elided = "elided",
 
   /// The element has been encrypted using symmetric encryption.
   /// TODO: Implement when encrypt feature is added
-  Encrypted = 'encrypted',
+  Encrypted = "encrypted",
 
   /// The element has been compressed to reduce its size.
   /// TODO: Implement when compress feature is added
-  Compressed = 'compressed',
+  Compressed = "compressed",
 }
 
 /// Actions that can be performed on parts of an envelope to obscure them.
@@ -24,17 +24,17 @@ export enum ObscureType {
 /// Gordian Envelope supports several ways to obscure parts of an envelope while
 /// maintaining its semantic integrity and digest tree.
 export type ObscureAction =
-  | { type: 'elide' }
-  | { type: 'encrypt'; key: unknown } // TODO: SymmetricKey type
-  | { type: 'compress' };
+  | { type: "elide" }
+  | { type: "encrypt"; key: unknown } // TODO: SymmetricKey type
+  | { type: "compress" };
 
 /// Helper to create elide action
 export function elideAction(): ObscureAction {
-  return { type: 'elide' };
+  return { type: "elide" };
 }
 
 /// Support for eliding elements from envelopes.
-declare module './envelope' {
+declare module "./envelope" {
   interface Envelope {
     /// Returns the elided variant of this envelope.
     ///
@@ -50,10 +50,7 @@ declare module './envelope' {
     /// @param target - The set of digests that identify elements to be obscured
     /// @param action - The action to perform on the targeted elements
     /// @returns The modified envelope
-    elideRemovingSetWithAction(
-      target: Set<Digest>,
-      action: ObscureAction
-    ): Envelope;
+    elideRemovingSetWithAction(target: Set<Digest>, action: ObscureAction): Envelope;
 
     /// Returns a version of this envelope with elements in the target set
     /// elided.
@@ -68,10 +65,7 @@ declare module './envelope' {
     /// @param target - An array of DigestProviders
     /// @param action - The action to perform
     /// @returns The modified envelope
-    elideRemovingArrayWithAction(
-      target: DigestProvider[],
-      action: ObscureAction
-    ): Envelope;
+    elideRemovingArrayWithAction(target: DigestProvider[], action: ObscureAction): Envelope;
 
     /// Returns a version of this envelope with elements in the target array
     /// elided.
@@ -85,10 +79,7 @@ declare module './envelope' {
     /// @param target - A DigestProvider
     /// @param action - The action to perform
     /// @returns The modified envelope
-    elideRemovingTargetWithAction(
-      target: DigestProvider,
-      action: ObscureAction
-    ): Envelope;
+    elideRemovingTargetWithAction(target: DigestProvider, action: ObscureAction): Envelope;
 
     /// Returns a version of this envelope with the target element elided.
     ///
@@ -102,10 +93,7 @@ declare module './envelope' {
     /// @param target - The set of digests that identify elements to be revealed
     /// @param action - The action to perform on other elements
     /// @returns The modified envelope
-    elideRevealingSetWithAction(
-      target: Set<Digest>,
-      action: ObscureAction
-    ): Envelope;
+    elideRevealingSetWithAction(target: Set<Digest>, action: ObscureAction): Envelope;
 
     /// Returns a version of this envelope with only elements in the target set
     /// revealed.
@@ -120,10 +108,7 @@ declare module './envelope' {
     /// @param target - An array of DigestProviders
     /// @param action - The action to perform
     /// @returns The modified envelope
-    elideRevealingArrayWithAction(
-      target: DigestProvider[],
-      action: ObscureAction
-    ): Envelope;
+    elideRevealingArrayWithAction(target: DigestProvider[], action: ObscureAction): Envelope;
 
     /// Returns a version of this envelope with elements not in the target array
     /// elided.
@@ -138,10 +123,7 @@ declare module './envelope' {
     /// @param target - A DigestProvider
     /// @param action - The action to perform
     /// @returns The modified envelope
-    elideRevealingTargetWithAction(
-      target: DigestProvider,
-      action: ObscureAction
-    ): Envelope;
+    elideRevealingTargetWithAction(target: DigestProvider, action: ObscureAction): Envelope;
 
     /// Returns a version of this envelope with all elements except the target
     /// element elided.
@@ -163,10 +145,7 @@ declare module './envelope' {
     /// @param targetDigests - Optional set of digests to filter by
     /// @param obscureTypes - Array of ObscureType values to match against
     /// @returns A Set of matching digests
-    nodesMatching(
-      targetDigests: Set<Digest> | undefined,
-      obscureTypes: ObscureType[]
-    ): Set<Digest>;
+    nodesMatching(targetDigests: Set<Digest> | undefined, obscureTypes: ObscureType[]): Set<Digest>;
 
     /// Returns a new envelope with elided nodes restored from the provided set.
     ///
@@ -193,7 +172,7 @@ declare module './envelope' {
 /// Implementation of elide()
 Envelope.prototype.elide = function (this: Envelope): Envelope {
   const c = this.case();
-  if (c.type === 'elided') {
+  if (c.type === "elided") {
     return this;
   }
   return Envelope.newElided(this.digest());
@@ -204,7 +183,7 @@ function elideSetWithAction(
   envelope: Envelope,
   target: Set<Digest>,
   isRevealing: boolean,
-  action: ObscureAction
+  action: ObscureAction,
 ): Envelope {
   const selfDigest = envelope.digest();
   const targetContainsSelf = Array.from(target).some((d) => d.equals(selfDigest));
@@ -217,56 +196,33 @@ function elideSetWithAction(
 
   if (targetContainsSelf !== isRevealing) {
     // Should obscure this envelope
-    if (action.type === 'elide') {
+    if (action.type === "elide") {
       return envelope.elide();
-    } else if (action.type === 'encrypt') {
+    } else if (action.type === "encrypt") {
       // TODO: Implement encryption
-      throw new Error('Encryption not yet implemented');
-    } else if (action.type === 'compress') {
+      throw new Error("Encryption not yet implemented");
+    } else if (action.type === "compress") {
       // TODO: Implement compression
-      throw new Error('Compression not yet implemented');
+      throw new Error("Compression not yet implemented");
     }
   }
 
   const c = envelope.case();
 
   // Recursively process structure
-  if (c.type === 'assertion') {
-    const predicate = elideSetWithAction(
-      c.assertion.predicate(),
-      target,
-      isRevealing,
-      action
-    );
-    const object = elideSetWithAction(
-      c.assertion.object(),
-      target,
-      isRevealing,
-      action
-    );
+  if (c.type === "assertion") {
+    const predicate = elideSetWithAction(c.assertion.predicate(), target, isRevealing, action);
+    const object = elideSetWithAction(c.assertion.object(), target, isRevealing, action);
     const elidedAssertion = new Assertion(predicate, object);
     return Envelope.newWithAssertion(elidedAssertion);
-  } else if (c.type === 'node') {
-    const elidedSubject = elideSetWithAction(
-      c.subject,
-      target,
-      isRevealing,
-      action
-    );
+  } else if (c.type === "node") {
+    const elidedSubject = elideSetWithAction(c.subject, target, isRevealing, action);
     const elidedAssertions = c.assertions.map((a) =>
-      elideSetWithAction(a, target, isRevealing, action)
+      elideSetWithAction(a, target, isRevealing, action),
     );
-    return Envelope.newWithUncheckedAssertions(
-      elidedSubject,
-      elidedAssertions
-    );
-  } else if (c.type === 'wrapped') {
-    const elidedEnvelope = elideSetWithAction(
-      c.envelope,
-      target,
-      isRevealing,
-      action
-    );
+    return Envelope.newWithUncheckedAssertions(elidedSubject, elidedAssertions);
+  } else if (c.type === "wrapped") {
+    const elidedEnvelope = elideSetWithAction(c.envelope, target, isRevealing, action);
     return Envelope.newWrapped(elidedEnvelope);
   }
 
@@ -277,16 +233,13 @@ function elideSetWithAction(
 Envelope.prototype.elideRemovingSetWithAction = function (
   this: Envelope,
   target: Set<Digest>,
-  action: ObscureAction
+  action: ObscureAction,
 ): Envelope {
   return elideSetWithAction(this, target, false, action);
 };
 
 /// Implementation of elideRemovingSet
-Envelope.prototype.elideRemovingSet = function (
-  this: Envelope,
-  target: Set<Digest>
-): Envelope {
+Envelope.prototype.elideRemovingSet = function (this: Envelope, target: Set<Digest>): Envelope {
   return elideSetWithAction(this, target, false, elideAction());
 };
 
@@ -294,7 +247,7 @@ Envelope.prototype.elideRemovingSet = function (
 Envelope.prototype.elideRemovingArrayWithAction = function (
   this: Envelope,
   target: DigestProvider[],
-  action: ObscureAction
+  action: ObscureAction,
 ): Envelope {
   const targetSet = new Set(target.map((p) => p.digest()));
   return elideSetWithAction(this, targetSet, false, action);
@@ -303,7 +256,7 @@ Envelope.prototype.elideRemovingArrayWithAction = function (
 /// Implementation of elideRemovingArray
 Envelope.prototype.elideRemovingArray = function (
   this: Envelope,
-  target: DigestProvider[]
+  target: DigestProvider[],
 ): Envelope {
   const targetSet = new Set(target.map((p) => p.digest()));
   return elideSetWithAction(this, targetSet, false, elideAction());
@@ -313,7 +266,7 @@ Envelope.prototype.elideRemovingArray = function (
 Envelope.prototype.elideRemovingTargetWithAction = function (
   this: Envelope,
   target: DigestProvider,
-  action: ObscureAction
+  action: ObscureAction,
 ): Envelope {
   return this.elideRemovingArrayWithAction([target], action);
 };
@@ -321,7 +274,7 @@ Envelope.prototype.elideRemovingTargetWithAction = function (
 /// Implementation of elideRemovingTarget
 Envelope.prototype.elideRemovingTarget = function (
   this: Envelope,
-  target: DigestProvider
+  target: DigestProvider,
 ): Envelope {
   return this.elideRemovingArray([target]);
 };
@@ -330,16 +283,13 @@ Envelope.prototype.elideRemovingTarget = function (
 Envelope.prototype.elideRevealingSetWithAction = function (
   this: Envelope,
   target: Set<Digest>,
-  action: ObscureAction
+  action: ObscureAction,
 ): Envelope {
   return elideSetWithAction(this, target, true, action);
 };
 
 /// Implementation of elideRevealingSet
-Envelope.prototype.elideRevealingSet = function (
-  this: Envelope,
-  target: Set<Digest>
-): Envelope {
+Envelope.prototype.elideRevealingSet = function (this: Envelope, target: Set<Digest>): Envelope {
   return elideSetWithAction(this, target, true, elideAction());
 };
 
@@ -347,7 +297,7 @@ Envelope.prototype.elideRevealingSet = function (
 Envelope.prototype.elideRevealingArrayWithAction = function (
   this: Envelope,
   target: DigestProvider[],
-  action: ObscureAction
+  action: ObscureAction,
 ): Envelope {
   const targetSet = new Set(target.map((p) => p.digest()));
   return elideSetWithAction(this, targetSet, true, action);
@@ -356,7 +306,7 @@ Envelope.prototype.elideRevealingArrayWithAction = function (
 /// Implementation of elideRevealingArray
 Envelope.prototype.elideRevealingArray = function (
   this: Envelope,
-  target: DigestProvider[]
+  target: DigestProvider[],
 ): Envelope {
   const targetSet = new Set(target.map((p) => p.digest()));
   return elideSetWithAction(this, targetSet, true, elideAction());
@@ -366,7 +316,7 @@ Envelope.prototype.elideRevealingArray = function (
 Envelope.prototype.elideRevealingTargetWithAction = function (
   this: Envelope,
   target: DigestProvider,
-  action: ObscureAction
+  action: ObscureAction,
 ): Envelope {
   return this.elideRevealingArrayWithAction([target], action);
 };
@@ -374,16 +324,13 @@ Envelope.prototype.elideRevealingTargetWithAction = function (
 /// Implementation of elideRevealingTarget
 Envelope.prototype.elideRevealingTarget = function (
   this: Envelope,
-  target: DigestProvider
+  target: DigestProvider,
 ): Envelope {
   return this.elideRevealingArray([target]);
 };
 
 /// Implementation of unelide
-Envelope.prototype.unelide = function (
-  this: Envelope,
-  envelope: Envelope
-): Envelope {
+Envelope.prototype.unelide = function (this: Envelope, envelope: Envelope): Envelope {
   if (this.digest().equals(envelope.digest())) {
     return envelope;
   }
@@ -394,15 +341,14 @@ Envelope.prototype.unelide = function (
 Envelope.prototype.nodesMatching = function (
   this: Envelope,
   targetDigests: Set<Digest> | undefined,
-  obscureTypes: ObscureType[]
+  obscureTypes: ObscureType[],
 ): Set<Digest> {
   const result = new Set<Digest>();
 
   const visitor = (envelope: Envelope): void => {
     // Check if this node matches the target digests
     const digestMatches =
-      !targetDigests ||
-      Array.from(targetDigests).some((d) => d.equals(envelope.digest()));
+      !targetDigests || Array.from(targetDigests).some((d) => d.equals(envelope.digest()));
 
     if (!digestMatches) {
       return;
@@ -417,13 +363,13 @@ Envelope.prototype.nodesMatching = function (
     // Check if this node matches any of the specified obscure types
     const c = envelope.case();
     const typeMatches = obscureTypes.some((obscureType) => {
-      if (obscureType === ObscureType.Elided && c.type === 'elided') {
+      if (obscureType === ObscureType.Elided && c.type === "elided") {
         return true;
       }
-      if (obscureType === ObscureType.Encrypted && c.type === 'encrypted') {
+      if (obscureType === ObscureType.Encrypted && c.type === "encrypted") {
         return true;
       }
-      if (obscureType === ObscureType.Compressed && c.type === 'compressed') {
+      if (obscureType === ObscureType.Compressed && c.type === "compressed") {
         return true;
       }
       return false;
@@ -445,24 +391,21 @@ function walkEnvelope(envelope: Envelope, visitor: (e: Envelope) => void): void 
   visitor(envelope);
 
   const c = envelope.case();
-  if (c.type === 'node') {
+  if (c.type === "node") {
     walkEnvelope(c.subject, visitor);
     for (const assertion of c.assertions) {
       walkEnvelope(assertion, visitor);
     }
-  } else if (c.type === 'assertion') {
+  } else if (c.type === "assertion") {
     walkEnvelope(c.assertion.predicate(), visitor);
     walkEnvelope(c.assertion.object(), visitor);
-  } else if (c.type === 'wrapped') {
+  } else if (c.type === "wrapped") {
     walkEnvelope(c.envelope, visitor);
   }
 }
 
 /// Implementation of walkUnelide
-Envelope.prototype.walkUnelide = function (
-  this: Envelope,
-  envelopes: Envelope[]
-): Envelope {
+Envelope.prototype.walkUnelide = function (this: Envelope, envelopes: Envelope[]): Envelope {
   // Build a lookup map of digest -> envelope
   const envelopeMap = new Map<string, Envelope>();
   for (const env of envelopes) {
@@ -473,23 +416,18 @@ Envelope.prototype.walkUnelide = function (
 };
 
 /// Helper for walkUnelide with map
-function walkUnelideWithMap(
-  envelope: Envelope,
-  envelopeMap: Map<string, Envelope>
-): Envelope {
+function walkUnelideWithMap(envelope: Envelope, envelopeMap: Map<string, Envelope>): Envelope {
   const c = envelope.case();
 
-  if (c.type === 'elided') {
+  if (c.type === "elided") {
     // Try to find a matching envelope to restore
     const replacement = envelopeMap.get(envelope.digest().hex());
     return replacement || envelope;
   }
 
-  if (c.type === 'node') {
+  if (c.type === "node") {
     const newSubject = walkUnelideWithMap(c.subject, envelopeMap);
-    const newAssertions = c.assertions.map((a) =>
-      walkUnelideWithMap(a, envelopeMap)
-    );
+    const newAssertions = c.assertions.map((a) => walkUnelideWithMap(a, envelopeMap));
 
     if (
       newSubject.isIdenticalTo(c.subject) &&
@@ -501,7 +439,7 @@ function walkUnelideWithMap(
     return Envelope.newWithUncheckedAssertions(newSubject, newAssertions);
   }
 
-  if (c.type === 'wrapped') {
+  if (c.type === "wrapped") {
     const newEnvelope = walkUnelideWithMap(c.envelope, envelopeMap);
     if (newEnvelope.isIdenticalTo(c.envelope)) {
       return envelope;
@@ -509,11 +447,8 @@ function walkUnelideWithMap(
     return Envelope.newWrapped(newEnvelope);
   }
 
-  if (c.type === 'assertion') {
-    const newPredicate = walkUnelideWithMap(
-      c.assertion.predicate(),
-      envelopeMap
-    );
+  if (c.type === "assertion") {
+    const newPredicate = walkUnelideWithMap(c.assertion.predicate(), envelopeMap);
     const newObject = walkUnelideWithMap(c.assertion.object(), envelopeMap);
 
     if (
@@ -533,7 +468,7 @@ function walkUnelideWithMap(
 Envelope.prototype.walkReplace = function (
   this: Envelope,
   target: Set<Digest>,
-  replacement: Envelope
+  replacement: Envelope,
 ): Envelope {
   // Check if this node matches the target
   if (Array.from(target).some((d) => d.equals(this.digest()))) {
@@ -542,11 +477,9 @@ Envelope.prototype.walkReplace = function (
 
   const c = this.case();
 
-  if (c.type === 'node') {
+  if (c.type === "node") {
     const newSubject = c.subject.walkReplace(target, replacement);
-    const newAssertions = c.assertions.map((a) =>
-      a.walkReplace(target, replacement)
-    );
+    const newAssertions = c.assertions.map((a) => a.walkReplace(target, replacement));
 
     if (
       newSubject.isIdenticalTo(c.subject) &&
@@ -559,7 +492,7 @@ Envelope.prototype.walkReplace = function (
     return Envelope.newWithAssertions(newSubject, newAssertions);
   }
 
-  if (c.type === 'wrapped') {
+  if (c.type === "wrapped") {
     const newEnvelope = c.envelope.walkReplace(target, replacement);
     if (newEnvelope.isIdenticalTo(c.envelope)) {
       return this;
@@ -567,10 +500,8 @@ Envelope.prototype.walkReplace = function (
     return Envelope.newWrapped(newEnvelope);
   }
 
-  if (c.type === 'assertion') {
-    const newPredicate = c.assertion
-      .predicate()
-      .walkReplace(target, replacement);
+  if (c.type === "assertion") {
+    const newPredicate = c.assertion.predicate().walkReplace(target, replacement);
     const newObject = c.assertion.object().walkReplace(target, replacement);
 
     if (
@@ -587,14 +518,8 @@ Envelope.prototype.walkReplace = function (
 };
 
 /// Implementation of isIdenticalTo
-Envelope.prototype.isIdenticalTo = function (
-  this: Envelope,
-  other: Envelope
-): boolean {
+Envelope.prototype.isIdenticalTo = function (this: Envelope, other: Envelope): boolean {
   // Two envelopes are identical if they have the same digest
   // and the same case type (to handle wrapped vs unwrapped with same content)
-  return (
-    this.digest().equals(other.digest()) &&
-    this.case().type === other.case().type
-  );
+  return this.digest().equals(other.digest()) && this.case().type === other.case().type;
 };

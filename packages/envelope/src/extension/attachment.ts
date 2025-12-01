@@ -13,25 +13,25 @@
  * See BCR-2023-006: https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2023-006-envelope-attachment.md
  */
 
-import { Envelope } from '../base/envelope';
-import { Digest } from '../base/digest';
-import { EnvelopeError } from '../base/error';
-import type { EnvelopeEncodableValue } from '../base/envelope-encodable';
+import { Envelope } from "../base/envelope";
+import { Digest } from "../base/digest";
+import { EnvelopeError } from "../base/error";
+import type { EnvelopeEncodableValue } from "../base/envelope-encodable";
 
 /**
  * Known value for the 'attachment' predicate.
  */
-export const ATTACHMENT = 'attachment';
+export const ATTACHMENT = "attachment";
 
 /**
  * Known value for the 'vendor' predicate.
  */
-export const VENDOR = 'vendor';
+export const VENDOR = "vendor";
 
 /**
  * Known value for the 'conformsTo' predicate.
  */
-export const CONFORMS_TO = 'conformsTo';
+export const CONFORMS_TO = "conformsTo";
 
 /**
  * A container for vendor-specific metadata attachments.
@@ -54,11 +54,7 @@ export class Attachments {
    * @param vendor - A string identifying the entity that defined the attachment format
    * @param conformsTo - Optional URI identifying the structure the payload conforms to
    */
-  add(
-    payload: EnvelopeEncodableValue,
-    vendor: string,
-    conformsTo?: string
-  ): void {
+  add(payload: EnvelopeEncodableValue, vendor: string, conformsTo?: string): void {
     const attachment = Envelope.newAttachment(payload, vendor, conformsTo);
     this.#envelopes.set(attachment.digest().hex(), attachment);
   }
@@ -134,7 +130,7 @@ export class Attachments {
 /**
  * Support for attachments in envelopes.
  */
-declare module '../base/envelope' {
+declare module "../base/envelope" {
   interface Envelope {
     /**
      * Creates a new envelope with an attachment as its subject.
@@ -160,11 +156,7 @@ declare module '../base/envelope' {
      * );
      * ```
      */
-    addAttachment(
-      payload: EnvelopeEncodableValue,
-      vendor: string,
-      conformsTo?: string
-    ): Envelope;
+    addAttachment(payload: EnvelopeEncodableValue, vendor: string, conformsTo?: string): Envelope;
 
     /**
      * Returns the payload of an attachment envelope.
@@ -204,10 +196,7 @@ declare module '../base/envelope' {
      * @param conformsTo - Optional conformsTo URI to match
      * @returns Array of matching attachment envelopes
      */
-    attachmentsWithVendorAndConformsTo(
-      vendor?: string,
-      conformsTo?: string
-    ): Envelope[];
+    attachmentsWithVendorAndConformsTo(vendor?: string, conformsTo?: string): Envelope[];
   }
 
   namespace Envelope {
@@ -222,7 +211,7 @@ declare module '../base/envelope' {
     function newAttachment(
       payload: EnvelopeEncodableValue,
       vendor: string,
-      conformsTo?: string
+      conformsTo?: string,
     ): Envelope;
   }
 }
@@ -235,12 +224,10 @@ declare module '../base/envelope' {
 Envelope.newAttachment = function (
   payload: EnvelopeEncodableValue,
   vendor: string,
-  conformsTo?: string
+  conformsTo?: string,
 ): Envelope {
   // Create the payload envelope wrapped with vendor assertion
-  let attachmentObj = Envelope.new(payload)
-    .wrap()
-    .addAssertion(VENDOR, vendor);
+  let attachmentObj = Envelope.new(payload).wrap().addAssertion(VENDOR, vendor);
 
   // Add optional conformsTo
   if (conformsTo !== undefined) {
@@ -260,11 +247,9 @@ Envelope.prototype.addAttachment = function (
   this: Envelope,
   payload: EnvelopeEncodableValue,
   vendor: string,
-  conformsTo?: string
+  conformsTo?: string,
 ): Envelope {
-  let attachmentObj = Envelope.new(payload)
-    .wrap()
-    .addAssertion(VENDOR, vendor);
+  let attachmentObj = Envelope.new(payload).wrap().addAssertion(VENDOR, vendor);
 
   if (conformsTo !== undefined) {
     attachmentObj = attachmentObj.addAssertion(CONFORMS_TO, conformsTo);
@@ -278,8 +263,8 @@ Envelope.prototype.addAttachment = function (
  */
 Envelope.prototype.attachmentPayload = function (this: Envelope): Envelope {
   const c = this.case();
-  if (c.type !== 'assertion') {
-    throw EnvelopeError.general('Envelope is not an attachment assertion');
+  if (c.type !== "assertion") {
+    throw EnvelopeError.general("Envelope is not an attachment assertion");
   }
 
   const obj = c.assertion.object();
@@ -291,8 +276,8 @@ Envelope.prototype.attachmentPayload = function (this: Envelope): Envelope {
  */
 Envelope.prototype.attachmentVendor = function (this: Envelope): string {
   const c = this.case();
-  if (c.type !== 'assertion') {
-    throw EnvelopeError.general('Envelope is not an attachment assertion');
+  if (c.type !== "assertion") {
+    throw EnvelopeError.general("Envelope is not an attachment assertion");
   }
 
   const obj = c.assertion.object();
@@ -300,7 +285,7 @@ Envelope.prototype.attachmentVendor = function (this: Envelope): string {
   const vendor = vendorEnv.asText();
 
   if (!vendor) {
-    throw EnvelopeError.general('Attachment has no vendor');
+    throw EnvelopeError.general("Attachment has no vendor");
   }
 
   return vendor;
@@ -309,12 +294,10 @@ Envelope.prototype.attachmentVendor = function (this: Envelope): string {
 /**
  * Returns the conformsTo of an attachment envelope.
  */
-Envelope.prototype.attachmentConformsTo = function (
-  this: Envelope
-): string | undefined {
+Envelope.prototype.attachmentConformsTo = function (this: Envelope): string | undefined {
   const c = this.case();
-  if (c.type !== 'assertion') {
-    throw EnvelopeError.general('Envelope is not an attachment assertion');
+  if (c.type !== "assertion") {
+    throw EnvelopeError.general("Envelope is not an attachment assertion");
   }
 
   const obj = c.assertion.object();
@@ -333,10 +316,10 @@ Envelope.prototype.attachmentConformsTo = function (
 Envelope.prototype.attachments = function (this: Envelope): Envelope[] {
   return this.assertionsWithPredicate(ATTACHMENT).map((a) => {
     const c = a.case();
-    if (c.type === 'assertion') {
+    if (c.type === "assertion") {
       return c.assertion.object();
     }
-    throw EnvelopeError.general('Invalid attachment assertion');
+    throw EnvelopeError.general("Invalid attachment assertion");
   });
 };
 
@@ -346,7 +329,7 @@ Envelope.prototype.attachments = function (this: Envelope): Envelope[] {
 Envelope.prototype.attachmentsWithVendorAndConformsTo = function (
   this: Envelope,
   vendor?: string,
-  conformsTo?: string
+  conformsTo?: string,
 ): Envelope[] {
   const allAttachments = this.attachments();
 

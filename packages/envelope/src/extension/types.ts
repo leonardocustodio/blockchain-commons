@@ -1,6 +1,6 @@
-import { Envelope } from '../base/envelope';
-import { EnvelopeEncodableValue } from '../base/envelope-encodable';
-import { EnvelopeError } from '../base/error';
+import { Envelope } from "../base/envelope";
+import { EnvelopeEncodableValue } from "../base/envelope-encodable";
+import { EnvelopeError } from "../base/error";
 
 /// Type system for Gordian Envelopes.
 ///
@@ -51,9 +51,9 @@ import { EnvelopeError } from '../base/error';
 ///    ```
 
 /// The standard predicate for type assertions
-export const IS_A = 'isA';
+export const IS_A = "isA";
 
-declare module '../base/envelope' {
+declare module "../base/envelope" {
   interface Envelope {
     /// Adds a type assertion to the envelope using the `'isA'` predicate.
     ///
@@ -184,10 +184,7 @@ declare module '../base/envelope' {
 }
 
 /// Implementation of addType()
-Envelope.prototype.addType = function (
-  this: Envelope,
-  object: EnvelopeEncodableValue
-): Envelope {
+Envelope.prototype.addType = function (this: Envelope, object: EnvelopeEncodableValue): Envelope {
   return this.addAssertion(IS_A, object);
 };
 
@@ -209,19 +206,13 @@ Envelope.prototype.getType = function (this: Envelope): Envelope {
 };
 
 /// Implementation of hasType()
-Envelope.prototype.hasType = function (
-  this: Envelope,
-  t: EnvelopeEncodableValue
-): boolean {
+Envelope.prototype.hasType = function (this: Envelope, t: EnvelopeEncodableValue): boolean {
   const e = Envelope.new(t);
   return this.types().some((x) => x.digest().equals(e.digest()));
 };
 
 /// Implementation of checkType()
-Envelope.prototype.checkType = function (
-  this: Envelope,
-  t: EnvelopeEncodableValue
-): void {
+Envelope.prototype.checkType = function (this: Envelope, t: EnvelopeEncodableValue): void {
   if (!this.hasType(t)) {
     throw EnvelopeError.invalidType();
   }

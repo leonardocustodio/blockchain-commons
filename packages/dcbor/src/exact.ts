@@ -11,7 +11,7 @@
  * @module exact
  */
 
-import { binary16ToNumber, binary32ToNumber, numberToBinary16, numberToBinary32 } from './float';
+import { binary16ToNumber, binary32ToNumber, numberToBinary16, numberToBinary32 } from "./float";
 
 // TypeScript doesn't have native integer types with overflow, so we use number for most operations
 // and bigint for values that exceed Number.MAX_SAFE_INTEGER
@@ -50,13 +50,13 @@ export class ExactI16 {
   }
 
   static exactFromU64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     if (n > 32767) return undefined;
     return n;
   }
 
   static exactFromI64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     if (n < -32768 || n > 32767) return undefined;
     return n;
   }
@@ -101,13 +101,13 @@ export class ExactI32 {
   }
 
   static exactFromU64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     if (n > 2147483647) return undefined;
     return n;
   }
 
   static exactFromI64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     if (n < -2147483648 || n > 2147483647) return undefined;
     return n;
   }
@@ -142,7 +142,9 @@ export class ExactI64 {
     if (source <= -9223373136366403584.0 || source >= 9223372036854775808.0) return undefined;
     if (hasFract(source)) return undefined;
     const result = Math.trunc(source);
-    return result > Number.MAX_SAFE_INTEGER || result < Number.MIN_SAFE_INTEGER ? BigInt(result) : result;
+    return result > Number.MAX_SAFE_INTEGER || result < Number.MIN_SAFE_INTEGER
+      ? BigInt(result)
+      : result;
   }
 
   static exactFromF64(source: number): number | bigint | undefined {
@@ -150,11 +152,13 @@ export class ExactI64 {
     if (source <= -9223372036854777856.0 || source >= 9223372036854775808.0) return undefined;
     if (hasFract(source)) return undefined;
     const result = Math.trunc(source);
-    return result > Number.MAX_SAFE_INTEGER || result < Number.MIN_SAFE_INTEGER ? BigInt(result) : result;
+    return result > Number.MAX_SAFE_INTEGER || result < Number.MIN_SAFE_INTEGER
+      ? BigInt(result)
+      : result;
   }
 
   static exactFromU64(source: number | bigint): number | bigint | undefined {
-    const n = typeof source === 'bigint' ? source : BigInt(source);
+    const n = typeof source === "bigint" ? source : BigInt(source);
     if (n > 9223372036854775807n) return undefined;
     return n <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(n) : n;
   }
@@ -171,7 +175,9 @@ export class ExactI64 {
 
   static exactFromI128(source: bigint): number | bigint | undefined {
     if (source < -9223372036854775808n || source > 9223372036854775807n) return undefined;
-    return source <= BigInt(Number.MAX_SAFE_INTEGER) && source >= BigInt(Number.MIN_SAFE_INTEGER) ? Number(source) : source;
+    return source <= BigInt(Number.MAX_SAFE_INTEGER) && source >= BigInt(Number.MIN_SAFE_INTEGER)
+      ? Number(source)
+      : source;
   }
 }
 
@@ -253,13 +259,13 @@ export class ExactU16 {
   }
 
   static exactFromU64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     if (n > 65535) return undefined;
     return n;
   }
 
   static exactFromI64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     if (n < 0 || n > 65535) return undefined;
     return n;
   }
@@ -305,13 +311,13 @@ export class ExactU32 {
   }
 
   static exactFromU64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     if (n > 4294967295) return undefined;
     return n;
   }
 
   static exactFromI64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     if (n < 0 || n > 4294967295) return undefined;
     return n;
   }
@@ -364,7 +370,7 @@ export class ExactU64 {
   }
 
   static exactFromI64(source: number | bigint): number | bigint | undefined {
-    const n = typeof source === 'bigint' ? source : BigInt(source);
+    const n = typeof source === "bigint" ? source : BigInt(source);
     if (n < 0n) return undefined;
     return source;
   }
@@ -413,7 +419,7 @@ export class ExactU128 {
   }
 
   static exactFromI64(source: number | bigint): bigint | undefined {
-    const n = typeof source === 'bigint' ? source : BigInt(source);
+    const n = typeof source === "bigint" ? source : BigInt(source);
     if (n < 0n) return undefined;
     return n;
   }
@@ -460,20 +466,20 @@ export class ExactF16 {
   }
 
   static exactFromU64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     const f16Bytes = numberToBinary16(n);
     const f = binary16ToNumber(f16Bytes);
     if (!Number.isFinite(f)) return undefined;
-    const roundTrip = typeof source === 'bigint' ? BigInt(Math.trunc(f)) : Math.trunc(f);
+    const roundTrip = typeof source === "bigint" ? BigInt(Math.trunc(f)) : Math.trunc(f);
     return roundTrip === source ? f : undefined;
   }
 
   static exactFromI64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     const f16Bytes = numberToBinary16(n);
     const f = binary16ToNumber(f16Bytes);
     if (!Number.isFinite(f)) return undefined;
-    const roundTrip = typeof source === 'bigint' ? BigInt(Math.trunc(f)) : Math.trunc(f);
+    const roundTrip = typeof source === "bigint" ? BigInt(Math.trunc(f)) : Math.trunc(f);
     return roundTrip === source ? f : undefined;
   }
 
@@ -519,18 +525,18 @@ export class ExactF32 {
   }
 
   static exactFromU64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     const f32Bytes = numberToBinary32(n);
     const f = binary32ToNumber(f32Bytes);
-    const roundTrip = typeof source === 'bigint' ? BigInt(Math.trunc(f)) : Math.trunc(f);
+    const roundTrip = typeof source === "bigint" ? BigInt(Math.trunc(f)) : Math.trunc(f);
     return roundTrip === source ? f : undefined;
   }
 
   static exactFromI64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
+    const n = typeof source === "bigint" ? Number(source) : source;
     const f32Bytes = numberToBinary32(n);
     const f = binary32ToNumber(f32Bytes);
-    const roundTrip = typeof source === 'bigint' ? BigInt(Math.trunc(f)) : Math.trunc(f);
+    const roundTrip = typeof source === "bigint" ? BigInt(Math.trunc(f)) : Math.trunc(f);
     return roundTrip === source ? f : undefined;
   }
 
@@ -545,12 +551,12 @@ export class ExactF32 {
 
   static exactFromI128(source: bigint): number | undefined {
     // Check the range
-    if (source < -0x8000_0000n || source > 0x7FFF_FFFFn) return undefined;
+    if (source < -0x8000_0000n || source > 0x7fff_ffffn) return undefined;
 
     const absSource = source < 0n ? -source : source;
 
     // Check the magnitude
-    if (absSource <= 0xFF_FFFFn) {
+    if (absSource <= 0xff_ffffn) {
       return Number(source);
     }
 
@@ -584,14 +590,14 @@ export class ExactF64 {
   }
 
   static exactFromU64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
-    const roundTrip = typeof source === 'bigint' ? BigInt(Math.trunc(n)) : Math.trunc(n);
+    const n = typeof source === "bigint" ? Number(source) : source;
+    const roundTrip = typeof source === "bigint" ? BigInt(Math.trunc(n)) : Math.trunc(n);
     return roundTrip === source ? n : undefined;
   }
 
   static exactFromI64(source: number | bigint): number | undefined {
-    const n = typeof source === 'bigint' ? Number(source) : source;
-    const roundTrip = typeof source === 'bigint' ? BigInt(Math.trunc(n)) : Math.trunc(n);
+    const n = typeof source === "bigint" ? Number(source) : source;
+    const roundTrip = typeof source === "bigint" ? BigInt(Math.trunc(n)) : Math.trunc(n);
     return roundTrip === source ? n : undefined;
   }
 
@@ -603,14 +609,14 @@ export class ExactF64 {
 
   static exactFromI128(source: bigint): number | undefined {
     // Check the range
-    if (source < -0x8000_0000_0000_0000n || source > 0x7FFF_FFFF_FFFF_FFFFn) {
+    if (source < -0x8000_0000_0000_0000n || source > 0x7fff_ffff_ffff_ffffn) {
       return undefined;
     }
 
     const absSource = source < 0n ? -source : source;
 
     // Check the magnitude
-    if (absSource <= 0xF_FFFF_FFFF_FFFFn) {
+    if (absSource <= 0xf_ffff_ffff_ffffn) {
       return Number(source);
     }
 
@@ -639,7 +645,7 @@ const countTrailingZeros = (n: bigint): number => {
 // CBOR Type Extraction Utilities
 // ============================================================================
 
-import { type Cbor, MajorType } from './cbor';
+import { type Cbor, MajorType } from "./cbor";
 
 /**
  * Extract exact unsigned integer value.
@@ -658,7 +664,7 @@ export const exactUnsigned = (cbor: Cbor): number | bigint | undefined => {
  */
 export const exactNegative = (cbor: Cbor): number | bigint | undefined => {
   if (cbor.type === MajorType.Negative) {
-    if (typeof cbor.value === 'bigint') {
+    if (typeof cbor.value === "bigint") {
       return -(cbor.value + 1n);
     }
     return -(cbor.value + 1);

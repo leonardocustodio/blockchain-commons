@@ -10,62 +10,62 @@
 
 export enum ErrorCode {
   // Base Specification
-  ALREADY_ELIDED = 'ALREADY_ELIDED',
-  AMBIGUOUS_PREDICATE = 'AMBIGUOUS_PREDICATE',
-  INVALID_DIGEST = 'INVALID_DIGEST',
-  INVALID_FORMAT = 'INVALID_FORMAT',
-  MISSING_DIGEST = 'MISSING_DIGEST',
-  NONEXISTENT_PREDICATE = 'NONEXISTENT_PREDICATE',
-  NOT_WRAPPED = 'NOT_WRAPPED',
-  NOT_LEAF = 'NOT_LEAF',
-  NOT_ASSERTION = 'NOT_ASSERTION',
-  INVALID_ASSERTION = 'INVALID_ASSERTION',
+  ALREADY_ELIDED = "ALREADY_ELIDED",
+  AMBIGUOUS_PREDICATE = "AMBIGUOUS_PREDICATE",
+  INVALID_DIGEST = "INVALID_DIGEST",
+  INVALID_FORMAT = "INVALID_FORMAT",
+  MISSING_DIGEST = "MISSING_DIGEST",
+  NONEXISTENT_PREDICATE = "NONEXISTENT_PREDICATE",
+  NOT_WRAPPED = "NOT_WRAPPED",
+  NOT_LEAF = "NOT_LEAF",
+  NOT_ASSERTION = "NOT_ASSERTION",
+  INVALID_ASSERTION = "INVALID_ASSERTION",
 
   // Attachments Extension
-  INVALID_ATTACHMENT = 'INVALID_ATTACHMENT',
-  NONEXISTENT_ATTACHMENT = 'NONEXISTENT_ATTACHMENT',
-  AMBIGUOUS_ATTACHMENT = 'AMBIGUOUS_ATTACHMENT',
+  INVALID_ATTACHMENT = "INVALID_ATTACHMENT",
+  NONEXISTENT_ATTACHMENT = "NONEXISTENT_ATTACHMENT",
+  AMBIGUOUS_ATTACHMENT = "AMBIGUOUS_ATTACHMENT",
 
   // Compression Extension
-  ALREADY_COMPRESSED = 'ALREADY_COMPRESSED',
-  NOT_COMPRESSED = 'NOT_COMPRESSED',
+  ALREADY_COMPRESSED = "ALREADY_COMPRESSED",
+  NOT_COMPRESSED = "NOT_COMPRESSED",
 
   // Symmetric Encryption Extension
-  ALREADY_ENCRYPTED = 'ALREADY_ENCRYPTED',
-  NOT_ENCRYPTED = 'NOT_ENCRYPTED',
+  ALREADY_ENCRYPTED = "ALREADY_ENCRYPTED",
+  NOT_ENCRYPTED = "NOT_ENCRYPTED",
 
   // Known Values Extension
-  NOT_KNOWN_VALUE = 'NOT_KNOWN_VALUE',
+  NOT_KNOWN_VALUE = "NOT_KNOWN_VALUE",
 
   // Public Key Encryption Extension
-  UNKNOWN_RECIPIENT = 'UNKNOWN_RECIPIENT',
+  UNKNOWN_RECIPIENT = "UNKNOWN_RECIPIENT",
 
   // Encrypted Key Extension
-  UNKNOWN_SECRET = 'UNKNOWN_SECRET',
+  UNKNOWN_SECRET = "UNKNOWN_SECRET",
 
   // Public Key Signing Extension
-  UNVERIFIED_SIGNATURE = 'UNVERIFIED_SIGNATURE',
-  INVALID_OUTER_SIGNATURE_TYPE = 'INVALID_OUTER_SIGNATURE_TYPE',
-  INVALID_INNER_SIGNATURE_TYPE = 'INVALID_INNER_SIGNATURE_TYPE',
-  UNVERIFIED_INNER_SIGNATURE = 'UNVERIFIED_INNER_SIGNATURE',
-  INVALID_SIGNATURE_TYPE = 'INVALID_SIGNATURE_TYPE',
+  UNVERIFIED_SIGNATURE = "UNVERIFIED_SIGNATURE",
+  INVALID_OUTER_SIGNATURE_TYPE = "INVALID_OUTER_SIGNATURE_TYPE",
+  INVALID_INNER_SIGNATURE_TYPE = "INVALID_INNER_SIGNATURE_TYPE",
+  UNVERIFIED_INNER_SIGNATURE = "UNVERIFIED_INNER_SIGNATURE",
+  INVALID_SIGNATURE_TYPE = "INVALID_SIGNATURE_TYPE",
 
   // SSKR Extension
-  INVALID_SHARES = 'INVALID_SHARES',
-  SSKR = 'SSKR',
+  INVALID_SHARES = "INVALID_SHARES",
+  SSKR = "SSKR",
 
   // Types Extension
-  INVALID_TYPE = 'INVALID_TYPE',
-  AMBIGUOUS_TYPE = 'AMBIGUOUS_TYPE',
+  INVALID_TYPE = "INVALID_TYPE",
+  AMBIGUOUS_TYPE = "AMBIGUOUS_TYPE",
 
   // Expressions Extension
-  UNEXPECTED_RESPONSE_ID = 'UNEXPECTED_RESPONSE_ID',
-  INVALID_RESPONSE = 'INVALID_RESPONSE',
+  UNEXPECTED_RESPONSE_ID = "UNEXPECTED_RESPONSE_ID",
+  INVALID_RESPONSE = "INVALID_RESPONSE",
 
   // External errors
-  CBOR = 'CBOR',
-  COMPONENTS = 'COMPONENTS',
-  GENERAL = 'GENERAL',
+  CBOR = "CBOR",
+  COMPONENTS = "COMPONENTS",
+  GENERAL = "GENERAL",
 }
 
 export class EnvelopeError extends Error {
@@ -74,7 +74,7 @@ export class EnvelopeError extends Error {
 
   constructor(code: ErrorCode, message: string, cause?: Error) {
     super(message);
-    this.name = 'EnvelopeError';
+    this.name = "EnvelopeError";
     this.code = code;
     this.cause = cause;
 
@@ -95,7 +95,7 @@ export class EnvelopeError extends Error {
   static alreadyElided(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.ALREADY_ELIDED,
-      'envelope was elided, so it cannot be compressed or encrypted'
+      "envelope was elided, so it cannot be compressed or encrypted",
     );
   }
 
@@ -108,7 +108,7 @@ export class EnvelopeError extends Error {
   static ambiguousPredicate(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.AMBIGUOUS_PREDICATE,
-      'more than one assertion matches the predicate'
+      "more than one assertion matches the predicate",
     );
   }
 
@@ -117,7 +117,7 @@ export class EnvelopeError extends Error {
   /// This can occur when unwrapping an envelope, verifying signatures, or
   /// other operations that rely on the integrity of envelope digests.
   static invalidDigest(): EnvelopeError {
-    return new EnvelopeError(ErrorCode.INVALID_DIGEST, 'digest did not match');
+    return new EnvelopeError(ErrorCode.INVALID_DIGEST, "digest did not match");
   }
 
   /// Returned when an envelope's format is invalid.
@@ -125,7 +125,7 @@ export class EnvelopeError extends Error {
   /// This typically occurs during parsing or decoding of an envelope from
   /// CBOR.
   static invalidFormat(): EnvelopeError {
-    return new EnvelopeError(ErrorCode.INVALID_FORMAT, 'invalid format');
+    return new EnvelopeError(ErrorCode.INVALID_FORMAT, "invalid format");
   }
 
   /// Returned when a digest is expected but not found.
@@ -133,10 +133,7 @@ export class EnvelopeError extends Error {
   /// This can occur when working with envelope structures that require digest
   /// information, such as when working with elided envelopes.
   static missingDigest(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.MISSING_DIGEST,
-      'a digest was expected but not found'
-    );
+    return new EnvelopeError(ErrorCode.MISSING_DIGEST, "a digest was expected but not found");
   }
 
   /// Returned when attempting to retrieve an assertion by predicate, but no
@@ -145,10 +142,7 @@ export class EnvelopeError extends Error {
   /// This error occurs with functions like `objectForPredicate` when the
   /// specified predicate doesn't match any assertion in the envelope.
   static nonexistentPredicate(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.NONEXISTENT_PREDICATE,
-      'no assertion matches the predicate'
-    );
+    return new EnvelopeError(ErrorCode.NONEXISTENT_PREDICATE, "no assertion matches the predicate");
   }
 
   /// Returned when attempting to unwrap an envelope that wasn't wrapped.
@@ -158,7 +152,7 @@ export class EnvelopeError extends Error {
   static notWrapped(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.NOT_WRAPPED,
-      'cannot unwrap an envelope that was not wrapped'
+      "cannot unwrap an envelope that was not wrapped",
     );
   }
 
@@ -168,10 +162,7 @@ export class EnvelopeError extends Error {
   /// This error occurs when calling methods that require access to a leaf
   /// value but the envelope's subject is an assertion, node, or elided.
   static notLeaf(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.NOT_LEAF,
-      "the envelope's subject is not a leaf"
-    );
+    return new EnvelopeError(ErrorCode.NOT_LEAF, "the envelope's subject is not a leaf");
   }
 
   /// Returned when expecting an envelope's subject to be an assertion, but it
@@ -180,17 +171,14 @@ export class EnvelopeError extends Error {
   /// This error occurs when calling methods that require an assertion
   /// structure but the envelope's subject has a different format.
   static notAssertion(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.NOT_ASSERTION,
-      "the envelope's subject is not an assertion"
-    );
+    return new EnvelopeError(ErrorCode.NOT_ASSERTION, "the envelope's subject is not an assertion");
   }
 
   /// Returned when assertion is invalid
   static invalidAssertion(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.INVALID_ASSERTION,
-      'assertion must be a map with exactly one element'
+      "assertion must be a map with exactly one element",
     );
   }
 
@@ -202,10 +190,7 @@ export class EnvelopeError extends Error {
   /// invalid structure according to the Envelope Attachment specification
   /// (BCR-2023-006).
   static invalidAttachment(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.INVALID_ATTACHMENT,
-      'invalid attachment'
-    );
+    return new EnvelopeError(ErrorCode.INVALID_ATTACHMENT, "invalid attachment");
   }
 
   /// Returned when an attachment is requested but does not exist.
@@ -213,10 +198,7 @@ export class EnvelopeError extends Error {
   /// This error occurs when attempting to retrieve an attachment by ID that
   /// doesn't exist in the envelope.
   static nonexistentAttachment(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.NONEXISTENT_ATTACHMENT,
-      'nonexistent attachment'
-    );
+    return new EnvelopeError(ErrorCode.NONEXISTENT_ATTACHMENT, "nonexistent attachment");
   }
 
   /// Returned when multiple attachments match a single query.
@@ -224,10 +206,7 @@ export class EnvelopeError extends Error {
   /// This error occurs when multiple attachments have the same ID, making
   /// it ambiguous which attachment should be returned.
   static ambiguousAttachment(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.AMBIGUOUS_ATTACHMENT,
-      'ambiguous attachment'
-    );
+    return new EnvelopeError(ErrorCode.AMBIGUOUS_ATTACHMENT, "ambiguous attachment");
   }
 
   //
@@ -238,10 +217,7 @@ export class EnvelopeError extends Error {
   /// This error occurs when calling compression functions on an envelope that
   /// already has compressed content, as defined in BCR-2023-005.
   static alreadyCompressed(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.ALREADY_COMPRESSED,
-      'envelope was already compressed'
-    );
+    return new EnvelopeError(ErrorCode.ALREADY_COMPRESSED, "envelope was already compressed");
   }
 
   /// Returned when attempting to decompress an envelope that is not
@@ -252,7 +228,7 @@ export class EnvelopeError extends Error {
   static notCompressed(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.NOT_COMPRESSED,
-      'cannot decompress an envelope that was not compressed'
+      "cannot decompress an envelope that was not compressed",
     );
   }
 
@@ -267,7 +243,7 @@ export class EnvelopeError extends Error {
   static alreadyEncrypted(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.ALREADY_ENCRYPTED,
-      'envelope was already encrypted or compressed, so it cannot be encrypted'
+      "envelope was already encrypted or compressed, so it cannot be encrypted",
     );
   }
 
@@ -278,7 +254,7 @@ export class EnvelopeError extends Error {
   static notEncrypted(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.NOT_ENCRYPTED,
-      'cannot decrypt an envelope that was not encrypted'
+      "cannot decrypt an envelope that was not encrypted",
     );
   }
 
@@ -293,7 +269,7 @@ export class EnvelopeError extends Error {
   static notKnownValue(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.NOT_KNOWN_VALUE,
-      "the envelope's subject is not a known value"
+      "the envelope's subject is not a known value",
     );
   }
 
@@ -305,7 +281,7 @@ export class EnvelopeError extends Error {
   /// This error occurs when trying to use a private key to decrypt an
   /// envelope that wasn't encrypted for the corresponding public key.
   static unknownRecipient(): EnvelopeError {
-    return new EnvelopeError(ErrorCode.UNKNOWN_RECIPIENT, 'unknown recipient');
+    return new EnvelopeError(ErrorCode.UNKNOWN_RECIPIENT, "unknown recipient");
   }
 
   //
@@ -316,7 +292,7 @@ export class EnvelopeError extends Error {
   /// This error occurs when trying to use a secret that does not correspond
   /// to the expected recipient, preventing successful decryption.
   static unknownSecret(): EnvelopeError {
-    return new EnvelopeError(ErrorCode.UNKNOWN_SECRET, 'secret not found');
+    return new EnvelopeError(ErrorCode.UNKNOWN_SECRET, "secret not found");
   }
 
   //
@@ -326,17 +302,14 @@ export class EnvelopeError extends Error {
   /// This error occurs when a signature does not validate against its
   /// purported public key.
   static unverifiedSignature(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.UNVERIFIED_SIGNATURE,
-      'could not verify a signature'
-    );
+    return new EnvelopeError(ErrorCode.UNVERIFIED_SIGNATURE, "could not verify a signature");
   }
 
   /// Returned when the outer signature object type is not `Signature`.
   static invalidOuterSignatureType(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.INVALID_OUTER_SIGNATURE_TYPE,
-      'unexpected outer signature object type'
+      "unexpected outer signature object type",
     );
   }
 
@@ -344,7 +317,7 @@ export class EnvelopeError extends Error {
   static invalidInnerSignatureType(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.INVALID_INNER_SIGNATURE_TYPE,
-      'unexpected inner signature object type'
+      "unexpected inner signature object type",
     );
   }
 
@@ -353,16 +326,13 @@ export class EnvelopeError extends Error {
   static unverifiedInnerSignature(): EnvelopeError {
     return new EnvelopeError(
       ErrorCode.UNVERIFIED_INNER_SIGNATURE,
-      'inner signature not made with same key as outer signature'
+      "inner signature not made with same key as outer signature",
     );
   }
 
   /// Returned when the signature object is not a `Signature`.
   static invalidSignatureType(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.INVALID_SIGNATURE_TYPE,
-      'unexpected signature object type'
-    );
+    return new EnvelopeError(ErrorCode.INVALID_SIGNATURE_TYPE, "unexpected signature object type");
   }
 
   //
@@ -374,7 +344,7 @@ export class EnvelopeError extends Error {
   /// malformed, from different splits, or insufficient to meet the
   /// recovery threshold.
   static invalidShares(): EnvelopeError {
-    return new EnvelopeError(ErrorCode.INVALID_SHARES, 'invalid SSKR shares');
+    return new EnvelopeError(ErrorCode.INVALID_SHARES, "invalid SSKR shares");
   }
 
   /// SSKR error wrapper
@@ -389,7 +359,7 @@ export class EnvelopeError extends Error {
   /// This error occurs when an envelope's type information doesn't match
   /// the expected format or value.
   static invalidType(): EnvelopeError {
-    return new EnvelopeError(ErrorCode.INVALID_TYPE, 'invalid type');
+    return new EnvelopeError(ErrorCode.INVALID_TYPE, "invalid type");
   }
 
   /// Returned when an envelope contains ambiguous type information.
@@ -397,7 +367,7 @@ export class EnvelopeError extends Error {
   /// This error occurs when multiple type assertions exist that conflict
   /// with each other or create ambiguity about the envelope's type.
   static ambiguousType(): EnvelopeError {
-    return new EnvelopeError(ErrorCode.AMBIGUOUS_TYPE, 'ambiguous type');
+    return new EnvelopeError(ErrorCode.AMBIGUOUS_TYPE, "ambiguous type");
   }
 
   //
@@ -407,15 +377,12 @@ export class EnvelopeError extends Error {
   /// This error occurs when processing a response envelope and the ID doesn't
   /// match the expected request ID, as defined in BCR-2023-012.
   static unexpectedResponseId(): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.UNEXPECTED_RESPONSE_ID,
-      'unexpected response ID'
-    );
+    return new EnvelopeError(ErrorCode.UNEXPECTED_RESPONSE_ID, "unexpected response ID");
   }
 
   /// Returned when a response envelope is invalid.
   static invalidResponse(): EnvelopeError {
-    return new EnvelopeError(ErrorCode.INVALID_RESPONSE, 'invalid response');
+    return new EnvelopeError(ErrorCode.INVALID_RESPONSE, "invalid response");
   }
 
   //
@@ -427,20 +394,12 @@ export class EnvelopeError extends Error {
 
   /// Components error wrapper
   static components(message: string, cause?: Error): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.COMPONENTS,
-      `components error: ${message}`,
-      cause
-    );
+    return new EnvelopeError(ErrorCode.COMPONENTS, `components error: ${message}`, cause);
   }
 
   /// General error wrapper
   static general(message: string, cause?: Error): EnvelopeError {
-    return new EnvelopeError(
-      ErrorCode.GENERAL,
-      `general error: ${message}`,
-      cause
-    );
+    return new EnvelopeError(ErrorCode.GENERAL, `general error: ${message}`, cause);
   }
 
   /// Create error with custom message (equivalent to Rust's Error::msg)

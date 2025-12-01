@@ -1,6 +1,6 @@
-import { Envelope } from './envelope';
-import type { EnvelopeEncodableValue } from './envelope-encodable';
-import { EnvelopeError } from './error';
+import { Envelope } from "./envelope";
+import type { EnvelopeEncodableValue } from "./envelope-encodable";
+import { EnvelopeError } from "./error";
 
 /// Support for adding assertions.
 ///
@@ -11,7 +11,7 @@ import { EnvelopeError } from './error';
 /// These methods extend the Envelope class to provide a rich API for
 /// working with assertions, matching the Rust bc-envelope implementation.
 
-declare module './envelope' {
+declare module "./envelope" {
   interface Envelope {
     /// Returns a new envelope with multiple assertion envelopes added.
     ///
@@ -55,7 +55,7 @@ declare module './envelope' {
     ///   provided, or the original envelope if no object was provided
     addOptionalAssertion(
       predicate: EnvelopeEncodableValue,
-      object: EnvelopeEncodableValue | undefined
+      object: EnvelopeEncodableValue | undefined,
     ): Envelope;
 
     /// Adds an assertion with the given predicate and string value, but only if
@@ -70,10 +70,7 @@ declare module './envelope' {
     /// @param str - The string value for the assertion
     /// @returns A new envelope with the assertion added if the string is
     ///   non-empty, or the original envelope if the string is empty
-    addNonemptyStringAssertion(
-      predicate: EnvelopeEncodableValue,
-      str: string
-    ): Envelope;
+    addNonemptyStringAssertion(predicate: EnvelopeEncodableValue, str: string): Envelope;
 
     /// Returns a new envelope with the given array of assertions added.
     ///
@@ -99,7 +96,7 @@ declare module './envelope' {
     addAssertionIf(
       condition: boolean,
       predicate: EnvelopeEncodableValue,
-      object: EnvelopeEncodableValue
+      object: EnvelopeEncodableValue,
     ): Envelope;
 
     /// Adds an assertion envelope only if the provided condition is true.
@@ -115,10 +112,7 @@ declare module './envelope' {
     ///   true, or the original envelope if the condition is false
     /// @throws {EnvelopeError} If the provided envelope is not a valid assertion
     ///   envelope or an obscured variant and the condition is true
-    addAssertionEnvelopeIf(
-      condition: boolean,
-      assertionEnvelope: Envelope
-    ): Envelope;
+    addAssertionEnvelopeIf(condition: boolean, assertionEnvelope: Envelope): Envelope;
 
     /// Returns a new envelope with the given assertion removed.
     ///
@@ -171,7 +165,7 @@ declare module './envelope' {
 /// Implementation of addAssertionEnvelopes
 Envelope.prototype.addAssertionEnvelopes = function (
   this: Envelope,
-  assertions: Envelope[]
+  assertions: Envelope[],
 ): Envelope {
   let e = this;
   for (const assertion of assertions) {
@@ -183,7 +177,7 @@ Envelope.prototype.addAssertionEnvelopes = function (
 /// Implementation of addOptionalAssertionEnvelope
 Envelope.prototype.addOptionalAssertionEnvelope = function (
   this: Envelope,
-  assertion: Envelope | undefined
+  assertion: Envelope | undefined,
 ): Envelope {
   if (!assertion) {
     return this;
@@ -197,20 +191,15 @@ Envelope.prototype.addOptionalAssertionEnvelope = function (
   const c = this.case();
 
   // Check if this is already a node
-  if (c.type === 'node') {
+  if (c.type === "node") {
     // Check for duplicate assertions
-    const isDuplicate = c.assertions.some((a) =>
-      a.digest().equals(assertion.digest())
-    );
+    const isDuplicate = c.assertions.some((a) => a.digest().equals(assertion.digest()));
     if (isDuplicate) {
       return this;
     }
 
     // Add the new assertion
-    return Envelope.newWithUncheckedAssertions(c.subject, [
-      ...c.assertions,
-      assertion,
-    ]);
+    return Envelope.newWithUncheckedAssertions(c.subject, [...c.assertions, assertion]);
   }
 
   // Otherwise, create a new node with this envelope as subject
@@ -221,7 +210,7 @@ Envelope.prototype.addOptionalAssertionEnvelope = function (
 Envelope.prototype.addOptionalAssertion = function (
   this: Envelope,
   predicate: EnvelopeEncodableValue,
-  object: EnvelopeEncodableValue | undefined
+  object: EnvelopeEncodableValue | undefined,
 ): Envelope {
   if (object === undefined || object === null) {
     return this;
@@ -233,7 +222,7 @@ Envelope.prototype.addOptionalAssertion = function (
 Envelope.prototype.addNonemptyStringAssertion = function (
   this: Envelope,
   predicate: EnvelopeEncodableValue,
-  str: string
+  str: string,
 ): Envelope {
   if (str.length === 0) {
     return this;
@@ -242,10 +231,7 @@ Envelope.prototype.addNonemptyStringAssertion = function (
 };
 
 /// Implementation of addAssertions
-Envelope.prototype.addAssertions = function (
-  this: Envelope,
-  envelopes: Envelope[]
-): Envelope {
+Envelope.prototype.addAssertions = function (this: Envelope, envelopes: Envelope[]): Envelope {
   let e = this;
   for (const envelope of envelopes) {
     e = e.addAssertionEnvelope(envelope);
@@ -258,7 +244,7 @@ Envelope.prototype.addAssertionIf = function (
   this: Envelope,
   condition: boolean,
   predicate: EnvelopeEncodableValue,
-  object: EnvelopeEncodableValue
+  object: EnvelopeEncodableValue,
 ): Envelope {
   if (condition) {
     return this.addAssertion(predicate, object);
@@ -270,7 +256,7 @@ Envelope.prototype.addAssertionIf = function (
 Envelope.prototype.addAssertionEnvelopeIf = function (
   this: Envelope,
   condition: boolean,
-  assertionEnvelope: Envelope
+  assertionEnvelope: Envelope,
 ): Envelope {
   if (condition) {
     return this.addAssertionEnvelope(assertionEnvelope);
@@ -279,10 +265,7 @@ Envelope.prototype.addAssertionEnvelopeIf = function (
 };
 
 /// Implementation of removeAssertion
-Envelope.prototype.removeAssertion = function (
-  this: Envelope,
-  target: Envelope
-): Envelope {
+Envelope.prototype.removeAssertion = function (this: Envelope, target: Envelope): Envelope {
   const assertions = this.assertions();
   const targetDigest = target.digest();
 
@@ -294,10 +277,7 @@ Envelope.prototype.removeAssertion = function (
   }
 
   // Remove the assertion
-  const newAssertions = [
-    ...assertions.slice(0, index),
-    ...assertions.slice(index + 1),
-  ];
+  const newAssertions = [...assertions.slice(0, index), ...assertions.slice(index + 1)];
 
   if (newAssertions.length === 0) {
     // No assertions left, return just the subject
@@ -312,26 +292,20 @@ Envelope.prototype.removeAssertion = function (
 Envelope.prototype.replaceAssertion = function (
   this: Envelope,
   assertion: Envelope,
-  newAssertion: Envelope
+  newAssertion: Envelope,
 ): Envelope {
   return this.removeAssertion(assertion).addAssertionEnvelope(newAssertion);
 };
 
 /// Implementation of replaceSubject
-Envelope.prototype.replaceSubject = function (
-  this: Envelope,
-  subject: Envelope
-): Envelope {
-  return this.assertions().reduce(
-    (e, a) => e.addAssertionEnvelope(a),
-    subject
-  );
+Envelope.prototype.replaceSubject = function (this: Envelope, subject: Envelope): Envelope {
+  return this.assertions().reduce((e, a) => e.addAssertionEnvelope(a), subject);
 };
 
 /// Implementation of assertions
 Envelope.prototype.assertions = function (this: Envelope): Envelope[] {
   const c = this.case();
-  if (c.type === 'node') {
+  if (c.type === "node") {
     return c.assertions;
   }
   return [];

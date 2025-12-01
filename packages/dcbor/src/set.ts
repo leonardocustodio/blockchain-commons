@@ -7,20 +7,20 @@
  * @module set
  */
 
-import { type Cbor, MajorType, type CborInput } from './cbor';
-import { cbor, cborData } from './cbor';
-import { CborMap } from './map';
-import { createTag, type Tag } from './tag';
-import { TAG_SET } from './tags';
+import { type Cbor, MajorType, type CborInput } from "./cbor";
+import { cbor, cborData } from "./cbor";
+import { CborMap } from "./map";
+import { createTag, type Tag } from "./tag";
+import { TAG_SET } from "./tags";
 import {
   type CborTaggedEncodable,
   type CborTaggedDecodable,
   createTaggedCbor,
   validateTag,
-  extractTaggedContent
-} from './cbor-tagged';
-import { extractCbor } from './conveniences';
-import { CborError } from './error';
+  extractTaggedContent,
+} from "./cbor-tagged";
+import { extractCbor } from "./conveniences";
+import { CborError } from "./error";
 
 /**
  * CBOR Set type with tag(258) encoding.
@@ -357,7 +357,7 @@ export class CborSet implements CborTaggedEncodable, CborTaggedDecodable<CborSet
   // =========================================================================
 
   cborTags(): Tag[] {
-    return [createTag(TAG_SET, 'set')];
+    return [createTag(TAG_SET, "set")];
   }
 
   untaggedCbor(): Cbor {
@@ -372,7 +372,7 @@ export class CborSet implements CborTaggedEncodable, CborTaggedDecodable<CborSet
 
   fromUntaggedCbor(c: Cbor): CborSet {
     if (c.type !== MajorType.Array) {
-      throw new CborError({ type: 'WrongType' });
+      throw new CborError({ type: "WrongType" });
     }
 
     this.clear();
@@ -467,13 +467,15 @@ export class CborSet implements CborTaggedEncodable, CborTaggedDecodable<CborSet
    * ```
    */
   get diagnostic(): string {
-    const items = this.values().map(v => {
-      const extracted = extractCbor(v);
-      if (typeof extracted === 'string') {
-        return `"${extracted}"`;
-      }
-      return String(extracted);
-    }).join(', ');
+    const items = this.values()
+      .map((v) => {
+        const extracted = extractCbor(v);
+        if (typeof extracted === "string") {
+          return `"${extracted}"`;
+        }
+        return String(extracted);
+      })
+      .join(", ");
     return `[${items}]`;
   }
 
@@ -506,7 +508,7 @@ export class CborSet implements CborTaggedEncodable, CborTaggedDecodable<CborSet
  * @internal
  */
 function encodeCborValue(value: CborInput): Cbor {
-  if (typeof value === 'object' && value !== null && 'isCbor' in value && value.isCbor === true) {
+  if (typeof value === "object" && value !== null && "isCbor" in value && value.isCbor === true) {
     return value as Cbor;
   }
   return cbor(value);

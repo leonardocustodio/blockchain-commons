@@ -17,7 +17,7 @@
  * @module cbor-codable
  */
 
-import type { Cbor } from './cbor';
+import type { Cbor } from "./cbor";
 
 /**
  * Interface for types that can be encoded to CBOR.

@@ -40,11 +40,7 @@ declare global {
 }
 
 // Extend String prototype with flankedBy method
-String.prototype.flankedBy = function (
-  this: string,
-  left: string,
-  right: string
-): string {
+String.prototype.flankedBy = function (this: string, left: string, right: string): string {
   return flanked(this, left, right);
 };
 

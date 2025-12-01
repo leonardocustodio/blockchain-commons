@@ -2,9 +2,9 @@
  * X25519 private key for ECDH key agreement (32 bytes)
  */
 
-import { x25519 } from '@noble/curves/ed25519';
-import { CryptoError } from './error.js';
-import { X25519PublicKey } from './x25519-public-key.js';
+import { x25519 } from "@noble/curves/ed25519";
+import { CryptoError } from "./error.js";
+import { X25519PublicKey } from "./x25519-public-key.js";
 
 const X25519_KEY_SIZE = 32;
 
@@ -31,7 +31,9 @@ export class X25519PrivateKey {
    */
   static fromHex(hex: string): X25519PrivateKey {
     if (hex.length !== 64) {
-      throw CryptoError.invalidFormat(`X25519 private key hex must be 64 characters, got ${hex.length}`);
+      throw CryptoError.invalidFormat(
+        `X25519 private key hex must be 64 characters, got ${hex.length}`,
+      );
     }
     const data = new Uint8Array(32);
     for (let i = 0; i < 32; i++) {
@@ -45,11 +47,11 @@ export class X25519PrivateKey {
    */
   static random(): X25519PrivateKey {
     const data = new Uint8Array(X25519_KEY_SIZE);
-    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+    if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
       globalThis.crypto.getRandomValues(data);
     } else {
       // Fallback for Node.js
-      const { randomBytes } = require('crypto');
+      const { randomBytes } = require("crypto");
       const buf = randomBytes(X25519_KEY_SIZE);
       data.set(buf);
     }
@@ -68,8 +70,8 @@ export class X25519PrivateKey {
    */
   toHex(): string {
     return Array.from(this.data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
       .toUpperCase();
   }
 
@@ -77,7 +79,7 @@ export class X25519PrivateKey {
    * Get base64 representation
    */
   toBase64(): string {
-    return Buffer.from(this.data).toString('base64');
+    return Buffer.from(this.data).toString("base64");
   }
 
   /**

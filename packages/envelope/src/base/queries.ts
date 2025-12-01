@@ -1,7 +1,7 @@
-import type { Cbor } from '@leonardocustodio/dcbor';
-import { Envelope } from './envelope';
-import type { EnvelopeEncodableValue } from './envelope-encodable';
-import { EnvelopeError } from './error';
+import type { Cbor } from "@leonardocustodio/dcbor";
+import { Envelope } from "./envelope";
+import type { EnvelopeEncodableValue } from "./envelope-encodable";
+import { EnvelopeError } from "./error";
 
 /// Provides methods for querying envelope structure and extracting data.
 ///
@@ -19,7 +19,7 @@ import { EnvelopeError } from './error';
 /// These methods enable traversal and inspection of envelope hierarchies,
 /// allowing for flexible manipulation and access to envelope data structures.
 
-declare module './envelope' {
+declare module "./envelope" {
   interface Envelope {
     /// Returns true if the envelope has at least one assertion.
     ///
@@ -117,9 +117,7 @@ declare module './envelope' {
     /// @param predicate - The predicate to search for
     /// @returns The matching assertion envelope or undefined
     /// @throws {EnvelopeError} If multiple assertions match
-    optionalAssertionWithPredicate(
-      predicate: EnvelopeEncodableValue
-    ): Envelope | undefined;
+    optionalAssertionWithPredicate(predicate: EnvelopeEncodableValue): Envelope | undefined;
 
     /// Returns the object of the assertion with the given predicate.
     ///
@@ -134,9 +132,7 @@ declare module './envelope' {
     /// @param predicate - The predicate to search for
     /// @returns The object envelope or undefined
     /// @throws {EnvelopeError} If multiple assertions match
-    optionalObjectForPredicate(
-      predicate: EnvelopeEncodableValue
-    ): Envelope | undefined;
+    optionalObjectForPredicate(predicate: EnvelopeEncodableValue): Envelope | undefined;
 
     /// Returns the objects of all assertions with the matching predicate.
     ///
@@ -156,15 +152,13 @@ declare module './envelope' {
 /// Implementation of hasAssertions()
 Envelope.prototype.hasAssertions = function (this: Envelope): boolean {
   const c = this.case();
-  return c.type === 'node' && c.assertions.length > 0;
+  return c.type === "node" && c.assertions.length > 0;
 };
 
 /// Implementation of asAssertion()
-Envelope.prototype.asAssertion = function (
-  this: Envelope
-): Envelope | undefined {
+Envelope.prototype.asAssertion = function (this: Envelope): Envelope | undefined {
   const c = this.case();
-  return c.type === 'assertion' ? this : undefined;
+  return c.type === "assertion" ? this : undefined;
 };
 
 /// Implementation of tryAssertion()
@@ -177,14 +171,12 @@ Envelope.prototype.tryAssertion = function (this: Envelope): Envelope {
 };
 
 /// Implementation of asPredicate()
-Envelope.prototype.asPredicate = function (
-  this: Envelope
-): Envelope | undefined {
+Envelope.prototype.asPredicate = function (this: Envelope): Envelope | undefined {
   // Refer to subject in case the assertion is a node and therefore has
   // its own assertions
   const subj = this.subject();
   const c = subj.case();
-  if (c.type === 'assertion') {
+  if (c.type === "assertion") {
     return c.assertion.predicate();
   }
   return undefined;
@@ -205,7 +197,7 @@ Envelope.prototype.asObject = function (this: Envelope): Envelope | undefined {
   // its own assertions
   const subj = this.subject();
   const c = subj.case();
-  if (c.type === 'assertion') {
+  if (c.type === "assertion") {
     return c.assertion.object();
   }
   return undefined;
@@ -222,45 +214,45 @@ Envelope.prototype.tryObject = function (this: Envelope): Envelope {
 
 /// Implementation of isAssertion()
 Envelope.prototype.isAssertion = function (this: Envelope): boolean {
-  return this.case().type === 'assertion';
+  return this.case().type === "assertion";
 };
 
 /// Implementation of isElided()
 Envelope.prototype.isElided = function (this: Envelope): boolean {
-  return this.case().type === 'elided';
+  return this.case().type === "elided";
 };
 
 /// Implementation of isLeaf()
 Envelope.prototype.isLeaf = function (this: Envelope): boolean {
-  return this.case().type === 'leaf';
+  return this.case().type === "leaf";
 };
 
 /// Implementation of isNode()
 Envelope.prototype.isNode = function (this: Envelope): boolean {
-  return this.case().type === 'node';
+  return this.case().type === "node";
 };
 
 /// Implementation of isWrapped()
 Envelope.prototype.isWrapped = function (this: Envelope): boolean {
-  return this.case().type === 'wrapped';
+  return this.case().type === "wrapped";
 };
 
 /// Implementation of isInternal()
 Envelope.prototype.isInternal = function (this: Envelope): boolean {
   const type = this.case().type;
-  return type === 'node' || type === 'wrapped' || type === 'assertion';
+  return type === "node" || type === "wrapped" || type === "assertion";
 };
 
 /// Implementation of isObscured()
 Envelope.prototype.isObscured = function (this: Envelope): boolean {
   const type = this.case().type;
-  return type === 'elided' || type === 'encrypted' || type === 'compressed';
+  return type === "elided" || type === "encrypted" || type === "compressed";
 };
 
 /// Implementation of assertionsWithPredicate()
 Envelope.prototype.assertionsWithPredicate = function (
   this: Envelope,
-  predicate: EnvelopeEncodableValue
+  predicate: EnvelopeEncodableValue,
 ): Envelope[] {
   const predicateEnv = Envelope.new(predicate);
   const predicateDigest = predicateEnv.digest();
@@ -274,7 +266,7 @@ Envelope.prototype.assertionsWithPredicate = function (
 /// Implementation of assertionWithPredicate()
 Envelope.prototype.assertionWithPredicate = function (
   this: Envelope,
-  predicate: EnvelopeEncodableValue
+  predicate: EnvelopeEncodableValue,
 ): Envelope {
   const matches = this.assertionsWithPredicate(predicate);
 
@@ -291,7 +283,7 @@ Envelope.prototype.assertionWithPredicate = function (
 /// Implementation of optionalAssertionWithPredicate()
 Envelope.prototype.optionalAssertionWithPredicate = function (
   this: Envelope,
-  predicate: EnvelopeEncodableValue
+  predicate: EnvelopeEncodableValue,
 ): Envelope | undefined {
   const matches = this.assertionsWithPredicate(predicate);
 
@@ -308,7 +300,7 @@ Envelope.prototype.optionalAssertionWithPredicate = function (
 /// Implementation of objectForPredicate()
 Envelope.prototype.objectForPredicate = function (
   this: Envelope,
-  predicate: EnvelopeEncodableValue
+  predicate: EnvelopeEncodableValue,
 ): Envelope {
   const assertion = this.assertionWithPredicate(predicate);
   const obj = assertion.asObject();
@@ -321,7 +313,7 @@ Envelope.prototype.objectForPredicate = function (
 /// Implementation of optionalObjectForPredicate()
 Envelope.prototype.optionalObjectForPredicate = function (
   this: Envelope,
-  predicate: EnvelopeEncodableValue
+  predicate: EnvelopeEncodableValue,
 ): Envelope | undefined {
   const matches = this.assertionsWithPredicate(predicate);
 
@@ -339,7 +331,7 @@ Envelope.prototype.optionalObjectForPredicate = function (
 /// Implementation of objectsForPredicate()
 Envelope.prototype.objectsForPredicate = function (
   this: Envelope,
-  predicate: EnvelopeEncodableValue
+  predicate: EnvelopeEncodableValue,
 ): Envelope[] {
   return this.assertionsWithPredicate(predicate).map((assertion) => {
     const obj = assertion.asObject();
@@ -356,17 +348,17 @@ Envelope.prototype.elementsCount = function (this: Envelope): number {
 
   const c = this.case();
   switch (c.type) {
-    case 'node':
+    case "node":
       count += c.subject.elementsCount();
       for (const assertion of c.assertions) {
         count += assertion.elementsCount();
       }
       break;
-    case 'assertion':
+    case "assertion":
       count += c.assertion.predicate().elementsCount();
       count += c.assertion.object().elementsCount();
       break;
-    case 'wrapped':
+    case "wrapped":
       count += c.envelope.elementsCount();
       break;
   }

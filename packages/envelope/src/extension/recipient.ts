@@ -1,8 +1,8 @@
-import { Envelope, EnvelopeEncodableValue } from '../base/envelope';
-import { EnvelopeError } from '../base/error';
-import { Digest } from '../base/digest';
-import { SymmetricKey } from './encrypt';
-import sodium from 'libsodium-wrappers';
+import { Envelope, EnvelopeEncodableValue } from "../base/envelope";
+import { EnvelopeError } from "../base/error";
+import { Digest } from "../base/digest";
+import { SymmetricKey } from "./encrypt";
+import sodium from "libsodium-wrappers";
 
 /// Extension for public-key encryption to specific recipients.
 ///
@@ -43,7 +43,7 @@ import sodium from 'libsodium-wrappers';
 /// ```
 
 /// Predicate constant for recipient assertions
-export const HAS_RECIPIENT = 'hasRecipient';
+export const HAS_RECIPIENT = "hasRecipient";
 
 /// Represents an X25519 public key for encryption
 export class PublicKeyBase {
@@ -51,7 +51,7 @@ export class PublicKeyBase {
 
   constructor(publicKey: Uint8Array) {
     if (publicKey.length !== 32) {
-      throw new Error('Public key must be 32 bytes');
+      throw new Error("Public key must be 32 bytes");
     }
     this.#publicKey = publicKey;
   }
@@ -64,14 +64,14 @@ export class PublicKeyBase {
   /// Returns the public key as a hex string
   hex(): string {
     return Array.from(this.#publicKey)
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   /// Creates a public key from hex string
   static fromHex(hex: string): PublicKeyBase {
     if (hex.length !== 64) {
-      throw new Error('Hex string must be 64 characters (32 bytes)');
+      throw new Error("Hex string must be 64 characters (32 bytes)");
     }
     const bytes = new Uint8Array(32);
     for (let i = 0; i < 32; i++) {
@@ -99,24 +99,18 @@ export class PrivateKeyBase {
   }
 
   /// Creates a private key from existing bytes
-  static async fromBytes(
-    privateKey: Uint8Array,
-    publicKey: Uint8Array
-  ): Promise<PrivateKeyBase> {
+  static async fromBytes(privateKey: Uint8Array, publicKey: Uint8Array): Promise<PrivateKeyBase> {
     if (privateKey.length !== 32) {
-      throw new Error('Private key must be 32 bytes');
+      throw new Error("Private key must be 32 bytes");
     }
     if (publicKey.length !== 32) {
-      throw new Error('Public key must be 32 bytes');
+      throw new Error("Public key must be 32 bytes");
     }
     return new PrivateKeyBase(privateKey, publicKey);
   }
 
   /// Creates a private key from hex strings
-  static async fromHex(
-    privateHex: string,
-    publicHex: string
-  ): Promise<PrivateKeyBase> {
+  static async fromHex(privateHex: string, publicHex: string): Promise<PrivateKeyBase> {
     const privateBytes = new Uint8Array(32);
     const publicBytes = new Uint8Array(32);
 
@@ -141,8 +135,8 @@ export class PrivateKeyBase {
   /// Returns the private key as hex string
   hex(): string {
     return Array.from(this.#privateKey)
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   /// Decrypts a sealed message to get the content key
@@ -153,12 +147,12 @@ export class PrivateKeyBase {
       const decrypted = sodium.crypto_box_seal_open(
         sealedMessage.data(),
         this.#publicKey.data(),
-        this.#privateKey
+        this.#privateKey,
       );
 
       return SymmetricKey.from(decrypted);
     } catch (error) {
-      throw EnvelopeError.general('Failed to unseal message: not a recipient');
+      throw EnvelopeError.general("Failed to unseal message: not a recipient");
     }
   }
 }
@@ -175,16 +169,13 @@ export class SealedMessage {
   /// Creates a sealed message by encrypting a symmetric key to a recipient's public key
   static async seal(
     contentKey: SymmetricKey,
-    recipientPublicKey: PublicKeyBase
+    recipientPublicKey: PublicKeyBase,
   ): Promise<SealedMessage> {
     await sodium.ready;
 
     // Use libsodium's sealed box to encrypt the content key
     // This creates an ephemeral key pair internally and discards the private key
-    const sealed = sodium.crypto_box_seal(
-      contentKey.data(),
-      recipientPublicKey.data()
-    );
+    const sealed = sodium.crypto_box_seal(contentKey.data(), recipientPublicKey.data());
 
     return new SealedMessage(sealed);
   }
@@ -197,8 +188,8 @@ export class SealedMessage {
   /// Returns the sealed message as hex string
   hex(): string {
     return Array.from(this.#data)
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   /// Creates a sealed message from hex string
@@ -211,7 +202,7 @@ export class SealedMessage {
   }
 }
 
-declare module '../base/envelope' {
+declare module "../base/envelope" {
   interface Envelope {
     /// Encrypts the envelope's subject to a single recipient.
     ///
@@ -227,9 +218,7 @@ declare module '../base/envelope' {
     /// const bob = await PrivateKeyBase.generate();
     /// const encrypted = await envelope.encryptSubjectToRecipient(bob.publicKeys());
     /// ```
-    encryptSubjectToRecipient(
-      recipientPublicKey: PublicKeyBase
-    ): Promise<Envelope>;
+    encryptSubjectToRecipient(recipientPublicKey: PublicKeyBase): Promise<Envelope>;
 
     /// Encrypts the envelope's subject to multiple recipients.
     ///
@@ -248,9 +237,7 @@ declare module '../base/envelope' {
     ///   charlie.publicKeys()
     /// ]);
     /// ```
-    encryptSubjectToRecipients(
-      recipients: PublicKeyBase[]
-    ): Promise<Envelope>;
+    encryptSubjectToRecipients(recipients: PublicKeyBase[]): Promise<Envelope>;
 
     /// Adds a recipient to an already encrypted envelope.
     ///
@@ -267,10 +254,7 @@ declare module '../base/envelope' {
     /// const dave = await PrivateKeyBase.generate();
     /// const withDave = await encrypted.addRecipient(dave.publicKeys(), contentKey);
     /// ```
-    addRecipient(
-      recipientPublicKey: PublicKeyBase,
-      contentKey: SymmetricKey
-    ): Promise<Envelope>;
+    addRecipient(recipientPublicKey: PublicKeyBase, contentKey: SymmetricKey): Promise<Envelope>;
 
     /// Decrypts an envelope's subject using a recipient's private key.
     ///
@@ -285,9 +269,7 @@ declare module '../base/envelope' {
     /// ```typescript
     /// const decrypted = await encrypted.decryptSubjectToRecipient(bob);
     /// ```
-    decryptSubjectToRecipient(
-      recipientPrivateKey: PrivateKeyBase
-    ): Promise<Envelope>;
+    decryptSubjectToRecipient(recipientPrivateKey: PrivateKeyBase): Promise<Envelope>;
 
     /// Convenience method to decrypt and unwrap an envelope.
     ///
@@ -340,7 +322,7 @@ declare module '../base/envelope' {
 /// Implementation of encryptSubjectToRecipient()
 Envelope.prototype.encryptSubjectToRecipient = async function (
   this: Envelope,
-  recipientPublicKey: PublicKeyBase
+  recipientPublicKey: PublicKeyBase,
 ): Promise<Envelope> {
   // Generate a random content key
   const contentKey = await SymmetricKey.generate();
@@ -355,10 +337,10 @@ Envelope.prototype.encryptSubjectToRecipient = async function (
 /// Implementation of encryptSubjectToRecipients()
 Envelope.prototype.encryptSubjectToRecipients = async function (
   this: Envelope,
-  recipients: PublicKeyBase[]
+  recipients: PublicKeyBase[],
 ): Promise<Envelope> {
   if (recipients.length === 0) {
-    throw EnvelopeError.general('Must provide at least one recipient');
+    throw EnvelopeError.general("Must provide at least one recipient");
   }
 
   // Generate a random content key
@@ -379,7 +361,7 @@ Envelope.prototype.encryptSubjectToRecipients = async function (
 Envelope.prototype.addRecipient = async function (
   this: Envelope,
   recipientPublicKey: PublicKeyBase,
-  contentKey: SymmetricKey
+  contentKey: SymmetricKey,
 ): Promise<Envelope> {
   // Create a sealed message with the content key
   const sealedMessage = await SealedMessage.seal(contentKey, recipientPublicKey);
@@ -391,12 +373,12 @@ Envelope.prototype.addRecipient = async function (
 /// Implementation of decryptSubjectToRecipient()
 Envelope.prototype.decryptSubjectToRecipient = async function (
   this: Envelope,
-  recipientPrivateKey: PrivateKeyBase
+  recipientPrivateKey: PrivateKeyBase,
 ): Promise<Envelope> {
   // Check that the subject is encrypted
   const subjectCase = this.subject().case();
-  if (subjectCase.type !== 'encrypted') {
-    throw EnvelopeError.general('Subject is not encrypted');
+  if (subjectCase.type !== "encrypted") {
+    throw EnvelopeError.general("Subject is not encrypted");
   }
 
   // Get all recipient assertions
@@ -411,7 +393,7 @@ Envelope.prototype.decryptSubjectToRecipient = async function (
   });
 
   if (recipientAssertions.length === 0) {
-    throw EnvelopeError.general('No recipients found');
+    throw EnvelopeError.general("No recipients found");
   }
 
   // Try each recipient assertion until one unseals successfully
@@ -434,7 +416,7 @@ Envelope.prototype.decryptSubjectToRecipient = async function (
   }
 
   if (!contentKey) {
-    throw EnvelopeError.general('Not a valid recipient');
+    throw EnvelopeError.general("Not a valid recipient");
   }
 
   // Decrypt the subject using the content key
@@ -444,7 +426,7 @@ Envelope.prototype.decryptSubjectToRecipient = async function (
 /// Implementation of decryptToRecipient()
 Envelope.prototype.decryptToRecipient = async function (
   this: Envelope,
-  recipientPrivateKey: PrivateKeyBase
+  recipientPrivateKey: PrivateKeyBase,
 ): Promise<Envelope> {
   const decrypted = await this.decryptSubjectToRecipient(recipientPrivateKey);
   return decrypted.unwrap();
@@ -453,7 +435,7 @@ Envelope.prototype.decryptToRecipient = async function (
 /// Implementation of encryptToRecipients()
 Envelope.prototype.encryptToRecipients = async function (
   this: Envelope,
-  recipients: PublicKeyBase[]
+  recipients: PublicKeyBase[],
 ): Promise<Envelope> {
   return this.wrap().encryptSubjectToRecipients(recipients);
 };
@@ -473,7 +455,7 @@ Envelope.prototype.recipients = function (this: Envelope): SealedMessage[] {
   return recipientAssertions.map((assertion) => {
     const obj = assertion.subject().asObject();
     if (!obj) {
-      throw EnvelopeError.general('Invalid recipient assertion');
+      throw EnvelopeError.general("Invalid recipient assertion");
     }
     const sealedData = obj.asByteString();
     return new SealedMessage(sealedData);

@@ -2,8 +2,8 @@
  * SHA-256 cryptographic digest (32 bytes)
  */
 
-import { sha256 } from '@noble/hashes/sha256';
-import { CryptoError } from './error.js';
+import { sha256 } from "@noble/hashes/sha256";
+import { CryptoError } from "./error.js";
 
 const DIGEST_SIZE = 32;
 
@@ -55,15 +55,15 @@ export class Digest {
    */
   toHex(): string {
     return Array.from(this.data)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   /**
    * Get base64 representation
    */
   toBase64(): string {
-    return Buffer.from(this.data).toString('base64');
+    return Buffer.from(this.data).toString("base64");
   }
 
   /**

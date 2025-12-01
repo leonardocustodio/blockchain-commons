@@ -7,41 +7,42 @@
  * Port of: bc-dcbor-rust/examples/walk_demo.rs
  */
 
-import { CborMap } from '../src/map';
-import { cbor, MajorType } from '../src/cbor';
-import { walk, EdgeType, WalkElement } from '../src/walk';
-import { diagnosticFlat } from '../src/diag';
+import { CborMap } from "../src/map";
+import { cbor, MajorType } from "../src/cbor";
+import { walk, EdgeType, WalkElement } from "../src/walk";
+import { diagnosticFlat } from "../src/diag";
 
 function main() {
   // Create a complex CBOR structure
   const map = new CborMap();
-  map.set('name', 'Alice');
-  map.set('age', 30);
-  map.set('hobbies', ['reading', 'coding', 'hiking']);
+  map.set("name", "Alice");
+  map.set("age", 30);
+  map.set("hobbies", ["reading", "coding", "hiking"]);
 
   const nestedMap = new CborMap();
-  nestedMap.set('city', 'San Francisco');
-  nestedMap.set('zip', 94102);
-  map.set('address', nestedMap);
+  nestedMap.set("city", "San Francisco");
+  nestedMap.set("zip", 94102);
+  map.set("address", nestedMap);
 
   const cborData = cbor(map);
 
   console.log(`CBOR structure (flat diagnostic): ${diagnosticFlat(cborData)}`);
-  console.log('\nWalking the CBOR tree:');
+  console.log("\nWalking the CBOR tree:");
 
   // Walk the structure and print each element
   const visitor = (
     element: WalkElement,
     level: number,
     edge: { type: EdgeType; index?: number },
-    _state: void
+    _state: void,
   ): [void, boolean] => {
-    const indent = '  '.repeat(level);
-    const edgeLabel = edge.type === EdgeType.ArrayElement
-      ? `ArrayElement(${edge.index})`
-      : edge.type === EdgeType.None
-      ? 'root'
-      : edge.type;
+    const indent = "  ".repeat(level);
+    const edgeLabel =
+      edge.type === EdgeType.ArrayElement
+        ? `ArrayElement(${edge.index})`
+        : edge.type === EdgeType.None
+          ? "root"
+          : edge.type;
 
     console.log(`${indent}[${edgeLabel}] ${diagnosticFlat(element)}`);
     return [undefined, false]; // Continue traversal
@@ -50,7 +51,7 @@ function main() {
   walk(cborData, undefined, visitor);
 
   // Example: Count different types of elements
-  console.log('\nCounting elements by type:');
+  console.log("\nCounting elements by type:");
 
   interface Counter {
     total: number;
@@ -65,12 +66,12 @@ function main() {
     element: WalkElement,
     _level: number,
     _edge: { type: EdgeType; index?: number },
-    state: Counter
+    state: Counter,
   ): [Counter, boolean] => {
     const newState = { ...state };
     newState.total += 1;
 
-    if (element.type === 'keyvalue') {
+    if (element.type === "keyvalue") {
       newState.keyValuePairs += 1;
     } else {
       // element.type === 'single'
@@ -94,14 +95,18 @@ function main() {
     return [newState, false];
   };
 
-  const finalCount = walk(cborData, {
-    total: 0,
-    maps: 0,
-    arrays: 0,
-    strings: 0,
-    numbers: 0,
-    keyValuePairs: 0
-  }, counterVisitor);
+  const finalCount = walk(
+    cborData,
+    {
+      total: 0,
+      maps: 0,
+      arrays: 0,
+      strings: 0,
+      numbers: 0,
+      keyValuePairs: 0,
+    },
+    counterVisitor,
+  );
 
   console.log(`Total elements: ${finalCount.total}`);
   console.log(`Maps: ${finalCount.maps}`);
