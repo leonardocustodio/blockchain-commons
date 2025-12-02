@@ -6,7 +6,7 @@ describe("Attachment Extension", () => {
       const attachment = Envelope.newAttachment(
         "Custom data",
         "com.example",
-        "https://example.com/format/v1"
+        "https://example.com/format/v1",
       );
 
       expect(attachment.attachmentPayload().asText()).toBe("Custom data");
@@ -22,7 +22,7 @@ describe("Attachment Extension", () => {
         .addAttachment(
           "Vendor-specific metadata",
           "com.example",
-          "https://example.com/metadata/v1"
+          "https://example.com/metadata/v1",
         );
 
       expect(document.subject().asText()).toBe("User data");
@@ -66,7 +66,7 @@ describe("Attachment Extension", () => {
 
       const v1Attachments = envelope.attachmentsWithVendorAndConformsTo(
         undefined,
-        "https://example.com/v1"
+        "https://example.com/v1",
       );
       expect(v1Attachments.length).toBe(1);
     });
@@ -79,7 +79,7 @@ describe("Attachment Extension", () => {
 
       const specificAttachments = envelope.attachmentsWithVendorAndConformsTo(
         "com.example",
-        "https://example.com/v2"
+        "https://example.com/v2",
       );
       expect(specificAttachments.length).toBe(1);
     });
@@ -126,8 +126,11 @@ describe("Attachment Extension", () => {
         .addAssertion("version", "2.0")
         .addAssertion("timestamp", "2024-01-15T10:30:00Z");
 
-      const complexAttachment = Envelope.new("Document")
-        .addAttachment(complexPayload, "com.complex", "https://complex.com/v2");
+      const complexAttachment = Envelope.new("Document").addAttachment(
+        complexPayload,
+        "com.complex",
+        "https://complex.com/v2",
+      );
 
       const attachments = complexAttachment.attachments();
       expect(attachments.length).toBe(1);

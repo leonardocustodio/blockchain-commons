@@ -122,8 +122,7 @@ describe("Encryption Extension", () => {
 
   describe("Nested envelopes", () => {
     it("should encrypt nested envelopes", async () => {
-      const nested = Envelope.new("Outer")
-        .addAssertion("inner", Envelope.new("Inner secret"));
+      const nested = Envelope.new("Outer").addAssertion("inner", Envelope.new("Inner secret"));
       const key = await SymmetricKey.generate();
 
       const encrypted = await nested.encryptSubject(key);

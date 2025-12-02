@@ -133,7 +133,7 @@ export class KnownValue implements CborTaggedEncodable, CborTaggedDecodable<Know
   value(): number {
     if (this._value > BigInt(Number.MAX_SAFE_INTEGER)) {
       throw new RangeError(
-        `KnownValue ${this._value} exceeds MAX_SAFE_INTEGER. Use valueBigInt() instead.`
+        `KnownValue ${this._value} exceeds MAX_SAFE_INTEGER. Use valueBigInt() instead.`,
       );
     }
     return Number(this._value);
@@ -348,9 +348,7 @@ export class KnownValue implements CborTaggedEncodable, CborTaggedDecodable<Know
    */
   static fromUntaggedCbor(cborValue: Cbor): KnownValue {
     if (cborValue.type !== MajorType.Unsigned) {
-      throw new Error(
-        `Expected unsigned integer for KnownValue, got major type ${cborValue.type}`
-      );
+      throw new Error(`Expected unsigned integer for KnownValue, got major type ${cborValue.type}`);
     }
     const numValue = cborValue.value as number | bigint;
     return new KnownValue(typeof numValue === "bigint" ? numValue : BigInt(numValue));

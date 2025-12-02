@@ -103,9 +103,7 @@ describe("Signature Extension", () => {
   describe("Signature preservation", () => {
     it("should preserve signature through operations", () => {
       const alice = SigningPrivateKey.generate();
-      const original = Envelope.new("Alice")
-        .addAssertion("age", 30)
-        .addSignature(alice);
+      const original = Envelope.new("Alice").addAssertion("age", 30).addSignature(alice);
 
       expect(original.hasSignatureFrom(alice.publicKey())).toBe(true);
 

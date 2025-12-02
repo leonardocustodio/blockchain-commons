@@ -115,8 +115,7 @@ describe("Proofs (Inclusion Proofs)", () => {
 
   describe("Proof of subject", () => {
     it("should create proof for subject", () => {
-      const credential = Envelope.new("Credential")
-        .addAssertion("firstName", "John");
+      const credential = Envelope.new("Credential").addAssertion("firstName", "John");
 
       const root = credential.elideRevealingSet(new Set());
       const subjectProof = credential.proofContainsTarget(Envelope.new("Credential"));
@@ -144,8 +143,7 @@ describe("Proofs (Inclusion Proofs)", () => {
 
   describe("Proof digest consistency", () => {
     it("should have consistent digests", () => {
-      const aliceFriends = Envelope.new("Alice")
-        .addAssertion("knows", "Bob");
+      const aliceFriends = Envelope.new("Alice").addAssertion("knows", "Bob");
 
       const root = aliceFriends.elideRevealingSet(new Set());
       const knowsBob = Envelope.newAssertion("knows", "Bob");
@@ -160,8 +158,7 @@ describe("Proofs (Inclusion Proofs)", () => {
 
   describe("Empty target set", () => {
     it("should handle empty target set", () => {
-      const aliceFriends = Envelope.new("Alice")
-        .addAssertion("knows", "Bob");
+      const aliceFriends = Envelope.new("Alice").addAssertion("knows", "Bob");
 
       const root = aliceFriends.elideRevealingSet(new Set());
       const emptySet = new Set<ReturnType<typeof Envelope.prototype.digest>>();
@@ -176,8 +173,7 @@ describe("Proofs (Inclusion Proofs)", () => {
 
   describe("Proof verification with mismatched root", () => {
     it("should fail verification with different root", () => {
-      const aliceFriends = Envelope.new("Alice")
-        .addAssertion("knows", "Bob");
+      const aliceFriends = Envelope.new("Alice").addAssertion("knows", "Bob");
 
       const differentRoot = Envelope.new("Bob").elideRevealingSet(new Set());
       const knowsBob = Envelope.newAssertion("knows", "Bob");

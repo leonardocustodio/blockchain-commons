@@ -216,7 +216,7 @@ export class KnownValuesStore {
    */
   static knownValueForRawValue(
     rawValue: KnownValueInput,
-    knownValues?: KnownValuesStore
+    knownValues?: KnownValuesStore,
   ): KnownValue {
     if (knownValues !== undefined) {
       const value = knownValues.knownValueForValue(rawValue);

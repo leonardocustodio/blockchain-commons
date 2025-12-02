@@ -115,10 +115,7 @@ describe("Recipient (Public-Key Encryption)", () => {
 
       const document = Envelope.new("Contract terms and conditions");
 
-      const encrypted = await document.encryptToRecipients([
-        alice.publicKeys(),
-        bob.publicKeys(),
-      ]);
+      const encrypted = await document.encryptToRecipients([alice.publicKeys(), bob.publicKeys()]);
 
       expect(encrypted.recipients().length).toBe(2);
 

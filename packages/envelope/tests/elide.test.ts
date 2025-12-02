@@ -67,10 +67,7 @@ describe("Elision Extension", () => {
       });
 
       if (nameAssertion) {
-        const revealSet = new Set([
-          person.subject().digest(),
-          nameAssertion.digest(),
-        ]);
+        const revealSet = new Set([person.subject().digest(), nameAssertion.digest()]);
 
         const selective = person.elideRevealingSet(revealSet);
 
@@ -122,9 +119,7 @@ describe("Elision Extension", () => {
         .addAssertion("name", "ACME Corp")
         .addAssertion(
           "CEO",
-          Envelope.new("Bob")
-            .addAssertion("age", 45)
-            .addAssertion("email", "bob@acme.com")
+          Envelope.new("Bob").addAssertion("age", 45).addAssertion("email", "bob@acme.com"),
         );
 
       const ceoAssertion = company.assertions().find((a) => {

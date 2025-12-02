@@ -1,9 +1,4 @@
-export {
-  KnownValue,
-  TAG_KNOWN_VALUE,
-  KNOWN_VALUE_TAG,
-  type KnownValueInput,
-} from "./known-value";
+export { KnownValue, TAG_KNOWN_VALUE, KNOWN_VALUE_TAG, type KnownValueInput } from "./known-value";
 export { KnownValuesStore } from "./known-values-store";
 export {
   // General

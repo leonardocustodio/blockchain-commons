@@ -199,12 +199,11 @@ describe("Expression (Gordian Envelope Expressions)", () => {
 
   describe("Expression.withParameters bulk add", () => {
     it("should add multiple parameters at once", () => {
-      const expr = new Expression(Function.fromString("calculate"))
-        .withParameters({
-          x: 10,
-          y: 20,
-          z: 30,
-        });
+      const expr = new Expression(Function.fromString("calculate")).withParameters({
+        x: 10,
+        y: 20,
+        z: 30,
+      });
 
       expect(expr.parameters().length).toBe(3);
       expect(expr.hasParameter("x")).toBe(true);
@@ -238,13 +237,25 @@ describe("Expression (Gordian Envelope Expressions)", () => {
   describe("All function IDs present", () => {
     it("should have all expected functions", () => {
       const expectedFunctions = [
-        "ADD", "SUB", "MUL", "DIV", "NEG",
-        "LT", "LE", "GT", "GE", "EQ", "NE",
-        "AND", "OR", "XOR", "NOT",
+        "ADD",
+        "SUB",
+        "MUL",
+        "DIV",
+        "NEG",
+        "LT",
+        "LE",
+        "GT",
+        "GE",
+        "EQ",
+        "NE",
+        "AND",
+        "OR",
+        "XOR",
+        "NOT",
       ];
 
       const allPresent = expectedFunctions.every(
-        (name) => FUNCTION_IDS[name as keyof typeof FUNCTION_IDS] !== undefined
+        (name) => FUNCTION_IDS[name as keyof typeof FUNCTION_IDS] !== undefined,
       );
 
       expect(allPresent).toBe(true);
@@ -256,7 +267,7 @@ describe("Expression (Gordian Envelope Expressions)", () => {
       const expectedParams = ["BLANK", "LHS", "RHS"];
 
       const allPresent = expectedParams.every(
-        (name) => PARAMETER_IDS[name as keyof typeof PARAMETER_IDS] !== undefined
+        (name) => PARAMETER_IDS[name as keyof typeof PARAMETER_IDS] !== undefined,
       );
 
       expect(allPresent).toBe(true);

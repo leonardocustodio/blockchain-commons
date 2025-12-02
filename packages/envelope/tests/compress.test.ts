@@ -3,7 +3,10 @@ import { Envelope } from "../src";
 describe("Compression Extension", () => {
   describe("Basic compression", () => {
     it("should compress large text content", () => {
-      const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ".repeat(5);
+      const lorem =
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ".repeat(
+          5,
+        );
       const envelope = Envelope.new(lorem);
       const originalSize = envelope.cborBytes().length;
 
@@ -18,7 +21,10 @@ describe("Compression Extension", () => {
 
   describe("Decompression", () => {
     it("should decompress to original content", () => {
-      const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ".repeat(5);
+      const lorem =
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ".repeat(
+          5,
+        );
       const envelope = Envelope.new(lorem);
 
       const compressed = envelope.compress();
@@ -72,8 +78,7 @@ describe("Compression Extension", () => {
 
   describe("Subject decompression", () => {
     it("should decompress subject", () => {
-      const largeSubject = Envelope.new("X".repeat(200))
-        .addAssertion("note", "Small metadata");
+      const largeSubject = Envelope.new("X".repeat(200)).addAssertion("note", "Small metadata");
 
       const subjectCompressed = largeSubject.compressSubject();
       const subjectDecompressed = subjectCompressed.decompressSubject();
@@ -96,8 +101,7 @@ describe("Compression Extension", () => {
       const nested = Envelope.new("Alice")
         .addAssertion(
           "profile",
-          Envelope.new("Profile data: " + "Y".repeat(100))
-            .addAssertion("bio", "Z".repeat(100))
+          Envelope.new("Profile data: " + "Y".repeat(100)).addAssertion("bio", "Z".repeat(100)),
         )
         .addAssertion("settings", "W".repeat(100));
 
