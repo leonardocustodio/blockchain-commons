@@ -172,7 +172,7 @@ onMounted(() => {
     <div class="flex flex-1 overflow-hidden">
       <ExamplesSidebar @select="handleExampleSelect" />
 
-      <main class="flex-1 flex flex-col lg:flex-row min-h-0">
+      <main class="flex-1 flex flex-col lg:flex-row min-h-0 min-w-0 overflow-hidden">
         <!-- Error Display (Top Bar) -->
         <div v-if="error" class="p-4 lg:hidden">
           <UAlert
@@ -183,7 +183,7 @@ onMounted(() => {
         </div>
 
         <!-- Left Panel: Input -->
-        <div class="w-full lg:w-1/3 flex-shrink-0 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col">
+        <div class="w-full lg:basis-1/3 lg:grow-0 lg:shrink-0 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col overflow-hidden">
           <!-- Header -->
           <div class="flex items-center justify-between px-4 h-12 border-b border-gray-200 dark:border-gray-800 bg-blue-50 dark:bg-blue-950/30">
             <div class="flex items-center gap-2">
@@ -213,26 +213,27 @@ onMounted(() => {
               class="w-full"
             />
           </div>
-          <div class="flex-1 px-4 pb-4 min-h-0">
+          <div class="flex-1 px-4 pb-4 min-h-0 min-w-0 overflow-hidden">
             <textarea
               v-model="hexInput"
               :placeholder="inputFormat === 'ur' ? 'Enter UR string (e.g., ur:link3/...)' :
                             inputFormat === 'bytewords' ? 'Enter bytewords (e.g., able acid also...)' :
                             inputFormat === 'hex' ? 'Enter hex data (e.g., a2626964...)' :
                             'Enter data in any format (hex, UR, or bytewords)'"
-              class="w-full h-full resize-none font-mono text-xs bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              class="w-full h-full resize-none font-mono text-xs bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent overflow-auto"
+              style="word-break: break-all;"
             />
           </div>
         </div>
 
         <!-- Right Panel: Output -->
-        <div class="flex-1 flex flex-col min-h-0 bg-gray-50 dark:bg-gray-900">
-          <div v-if="parsedCbor" class="flex-1 flex flex-col min-h-0">
+        <div class="w-full lg:basis-2/3 lg:grow-0 lg:shrink-0 flex flex-col min-h-0 min-w-0 overflow-hidden bg-gray-50 dark:bg-gray-900">
+          <div v-if="parsedCbor" class="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
             <!-- Header with Toggle -->
-            <div class="flex items-center justify-between px-4 h-12 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-              <div class="flex items-center gap-2">
-                <UIcon name="i-heroicons-arrow-up-tray" class="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <h2 class="font-semibold text-sm text-gray-900 dark:text-gray-100">Output</h2>
+            <div class="flex items-center justify-between px-4 h-12 flex-shrink-0 border-b border-gray-200 dark:border-gray-800 bg-green-50 dark:bg-green-950/30">
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <UIcon name="i-heroicons-arrow-up-tray" class="w-4 h-4 text-green-600 dark:text-green-400" />
+                <h2 class="font-semibold text-sm text-green-900 dark:text-green-300">Output</h2>
               </div>
               <UTabs
                 :items="[
@@ -241,15 +242,16 @@ onMounted(() => {
                 ]"
                 :model-value="outputView"
                 size="xs"
-                class="w-auto"
+                class="w-auto flex-shrink-0"
+                :ui="{ root: 'gap-0', list: 'p-0.5' }"
                 @update:model-value="outputView = $event as OutputView"
               />
             </div>
 
             <!-- Content -->
-            <div class="flex-1 overflow-auto p-4">
-              <pre v-if="outputView === 'hex'" class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200">{{ annotatedHex }}</pre>
-              <pre v-else class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200">{{ diagnosticNotation }}</pre>
+            <div class="flex-1 min-h-0 min-w-0 overflow-auto p-4">
+              <pre v-if="outputView === 'hex'" class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200 max-w-full">{{ annotatedHex }}</pre>
+              <pre v-else class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200 max-w-full">{{ diagnosticNotation }}</pre>
             </div>
           </div>
 

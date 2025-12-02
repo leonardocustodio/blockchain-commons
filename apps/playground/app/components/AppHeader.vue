@@ -10,6 +10,7 @@
             to="https://github.com/leonardocustodio/blockchain-commons"
             target="_blank"
             variant="ghost"
+            color="neutral"
             size="sm"
             icon="i-simple-icons-github"
           />
