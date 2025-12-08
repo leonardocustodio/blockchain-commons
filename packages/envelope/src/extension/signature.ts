@@ -109,6 +109,7 @@ export class SigningPrivateKey implements Signer {
    * Generates a new random private key.
    */
   static generate(): SigningPrivateKey {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const privateKey: Uint8Array = secp256k1.utils.randomPrivateKey();
     return new SigningPrivateKey(privateKey);
   }
@@ -137,6 +138,7 @@ export class SigningPrivateKey implements Signer {
    */
   sign(data: Uint8Array): Signature {
     const signature = secp256k1.sign(data, this.#privateKey);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const signatureBytes: Uint8Array = signature.toCompactRawBytes();
     return new Signature(signatureBytes);
   }
@@ -178,7 +180,9 @@ export class SigningPublicKey implements Verifier {
    */
   verify(data: Uint8Array, signature: Signature): boolean {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
       const sig = secp256k1.Signature.fromCompact(signature.data());
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return secp256k1.verify(
         sig,
         data,
@@ -210,12 +214,12 @@ export class SigningPublicKey implements Verifier {
  * Metadata that can be attached to a signature.
  */
 export class SignatureMetadata {
-  readonly #assertions: [string, any][] = [];
+  readonly #assertions: [string, unknown][] = [];
 
   /**
    * Adds an assertion to the metadata.
    */
-  withAssertion(predicate: string, object: any): SignatureMetadata {
+  withAssertion(predicate: string, object: unknown): SignatureMetadata {
     const metadata = new SignatureMetadata();
     metadata.#assertions.push(...this.#assertions);
     metadata.#assertions.push([predicate, object]);
@@ -225,7 +229,7 @@ export class SignatureMetadata {
   /**
    * Returns all assertions in the metadata.
    */
-  assertions(): [string, any][] {
+  assertions(): [string, unknown][] {
     return this.#assertions;
   }
 
@@ -317,10 +321,10 @@ Envelope.prototype.addSignatureWithMetadata = function (
   const signature = signer.sign(digest.data());
   let signatureEnvelope = Envelope.new(signature.data());
 
-  if (metadata?.hasAssertions()) {
+  if (metadata?.hasAssertions() === true) {
     // Add metadata assertions to the signature
     for (const [predicate, object] of metadata.assertions()) {
-      signatureEnvelope = signatureEnvelope.addAssertion(predicate, object);
+      signatureEnvelope = signatureEnvelope.addAssertion(predicate, object as string | number | boolean);
     }
 
     // Wrap the signature with metadata
@@ -349,7 +353,7 @@ Envelope.prototype.hasSignatureFrom = function (this: Envelope, verifier: Verifi
       // Simple signature - verify directly
       try {
         const sigData = sigEnvelope.asByteString();
-        if (sigData) {
+        if (sigData !== undefined) {
           const signature = new Signature(sigData);
           if (verifier.verify(subjectDigest.data(), signature)) {
             return true;
@@ -381,7 +385,7 @@ Envelope.prototype.hasSignatureFrom = function (this: Envelope, verifier: Verifi
           const outerSigObj = outerSigCase.assertion.object();
           try {
             const outerSigData = outerSigObj.asByteString();
-            if (outerSigData) {
+            if (outerSigData !== undefined) {
               const outerSignature = new Signature(outerSigData);
 
               // The subject of this node should be a wrapped envelope
@@ -397,7 +401,7 @@ Envelope.prototype.hasSignatureFrom = function (this: Envelope, verifier: Verifi
                 const wrapped = nodeSubjectCase.envelope;
                 const innerSig = wrapped.subject();
                 const innerSigData = innerSig.asByteString();
-                if (innerSigData) {
+                if (innerSigData !== undefined) {
                   const innerSignature = new Signature(innerSigData);
                   if (verifier.verify(subjectDigest.data(), innerSignature)) {
                     return true;

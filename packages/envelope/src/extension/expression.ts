@@ -134,9 +134,9 @@ export class Parameter {
   readonly #id: ParameterID;
   readonly #value: Envelope;
 
-  constructor(id: ParameterID, value: EnvelopeEncodableValue | Envelope) {
+  constructor(id: ParameterID, value: Envelope) {
     this.#id = id;
-    this.#value = value instanceof Envelope ? value : Envelope.new(value);
+    this.#value = value;
   }
 
   /// Returns the parameter identifier
@@ -236,7 +236,7 @@ export class Expression {
 
   /// Converts the expression to an envelope
   envelope(): Envelope {
-    if (this.#envelope) {
+    if (this.#envelope !== undefined) {
       return this.#envelope;
     }
 
@@ -248,10 +248,10 @@ export class Expression {
       const paramEnv = param.envelope();
       // Extract the assertion from the parameter envelope
       const assertion = paramEnv.assertions()[0];
-      if (assertion) {
+      if (assertion !== undefined) {
         const predicate = assertion.subject().asPredicate();
         const object = assertion.subject().asObject();
-        if (predicate && object) {
+        if (predicate !== undefined && object !== undefined) {
           env = env.addAssertion(predicate.asText(), object);
         }
       }
@@ -290,7 +290,7 @@ export class Expression {
         const pred = assertion.subject().asPredicate();
         const obj = assertion.subject().asObject();
 
-        if (pred && obj) {
+        if (pred !== undefined && obj !== undefined) {
           const predText = pred.asText();
           if (predText.startsWith("❰") && predText.endsWith("❱")) {
             const inner = predText.slice(1, -1);

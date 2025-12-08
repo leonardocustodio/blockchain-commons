@@ -36,13 +36,17 @@ const DEFAULT_SALT_RANGE = { min: 8, max: 16 };
 
 /// Generates random bytes using crypto
 function generateRandomBytes(length: number): Uint8Array {
-  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+  const cryptoObj = globalThis.crypto as Crypto | undefined;
+  if (cryptoObj !== undefined && cryptoObj.getRandomValues !== undefined) {
     // Browser or Node.js 19+ with global crypto
-    return crypto.getRandomValues(new Uint8Array(length));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+    return cryptoObj.getRandomValues(new Uint8Array(length));
   } else {
-    // Node.js < 19 - use require
-    const nodeCrypto = require("crypto");
-    return new Uint8Array(nodeCrypto.randomBytes(length));
+    // Node.js < 19 - use dynamic import
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-call
+    const nodeCrypto = require("crypto") as { randomBytes: (size: number) => Uint8Array };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return nodeCrypto.randomBytes(length);
   }
 }
 
