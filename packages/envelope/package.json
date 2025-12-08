@@ -72,7 +72,7 @@
   "dependencies": {
     "@blockchain-commons/dcbor": "workspace:*",
     "@noble/curves": "^2.0.1",
-    "@noble/hashes": "^2.0.1",
+    "@noble/hashes": "^1.8.0",
     "libsodium-wrappers": "^0.7.13",
     "pako": "^2.1.0"
   }
