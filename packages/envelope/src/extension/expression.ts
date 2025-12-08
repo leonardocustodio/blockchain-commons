@@ -168,15 +168,18 @@ export class Parameter {
 
   /// Creates a parameter from known IDs
   static blank(value: EnvelopeEncodableValue): Parameter {
-    return new Parameter(PARAMETER_IDS.BLANK, value);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return new Parameter(PARAMETER_IDS.BLANK, Envelope.new(value));
   }
 
   static lhs(value: EnvelopeEncodableValue): Parameter {
-    return new Parameter(PARAMETER_IDS.LHS, value);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return new Parameter(PARAMETER_IDS.LHS, Envelope.new(value));
   }
 
   static rhs(value: EnvelopeEncodableValue): Parameter {
-    return new Parameter(PARAMETER_IDS.RHS, value);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return new Parameter(PARAMETER_IDS.RHS, Envelope.new(value));
   }
 
   /// Returns a string representation for display
@@ -209,7 +212,8 @@ export class Expression {
   /// Adds a parameter to the expression
   withParameter(param: ParameterID, value: EnvelopeEncodableValue): Expression {
     const key = typeof param === "number" ? param.toString() : param;
-    this.#parameters.set(key, new Parameter(param, value));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    this.#parameters.set(key, new Parameter(param, Envelope.new(value)));
     this.#envelope = null; // Invalidate cached envelope
     return this;
   }

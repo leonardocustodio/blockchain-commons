@@ -146,7 +146,8 @@ export class Assertion implements DigestProvider {
       throw EnvelopeError.invalidAssertion();
     }
 
-    const entries = Array.from(map.entries()) as Array<[Cbor, Cbor]>;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const entries = Array.from(map.entries());
     const firstEntry = entries[0];
     if (firstEntry === undefined) {
       throw EnvelopeError.invalidAssertion();
@@ -163,7 +164,7 @@ export class Assertion implements DigestProvider {
   ///
   /// @returns A string representation
   toString(): string {
-    return `Assertion(${this.#predicate}: ${this.#object})`;
+    return `Assertion(${String(this.#predicate)}: ${String(this.#object)})`;
   }
 
   /// Creates a copy of this assertion.
