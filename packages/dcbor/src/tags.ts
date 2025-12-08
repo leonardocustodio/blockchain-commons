@@ -133,28 +133,39 @@ export const TAG_SET = 258;
 
 /**
  * Tag 200: Envelope (Blockchain Commons)
+ * IANA registered tag for Gordian Envelope
  */
 export const TAG_ENVELOPE = 200;
 
 /**
- * Tag 201: Known value (Blockchain Commons)
+ * Tag 201: Leaf (Blockchain Commons)
+ * IANA registered tag for dCBOR/Envelope Leaf
+ *
+ * Note: A previous version incorrectly used tag #6.24 (ENCODED_CBOR) for leaves.
+ * Tag #6.201 is the correct, IANA-registered tag for envelope leaves.
  */
-export const TAG_KNOWN_VALUE = 201;
+export const TAG_LEAF = 201;
 
 /**
  * Tag 203: Tagged CBOR (Blockchain Commons)
  */
 export const TAG_TAGGED_CBOR = 203;
 
-/**
- * Tag 204: Leaf (Blockchain Commons)
- */
-export const TAG_LEAF = 204;
+// ============================================================================
+// Blockchain Commons Extension Tags (First-Come-First-Served range 40000+)
+// ============================================================================
 
 /**
- * Tag 221: Compressed (Blockchain Commons)
+ * Tag 40000: Known value (Blockchain Commons)
+ * Moved from tag 201 to the FCFS range to avoid IANA specification requirements
  */
-export const TAG_COMPRESSED = 221;
+export const TAG_KNOWN_VALUE = 40000;
+
+/**
+ * Tag 40003: Compressed (Blockchain Commons)
+ * Moved from tag 221 to the FCFS range to avoid IANA specification requirements
+ */
+export const TAG_COMPRESSED = 40003;
 
 // ============================================================================
 // Self-describing CBOR

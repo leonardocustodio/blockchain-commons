@@ -18,9 +18,10 @@ import {
   tryExpectedTaggedValue,
 } from "@blockchain-commons/dcbor";
 
-/// TAG_ENCRYPTED is not exported by dcbor, so we define it here
-/// According to Gordian Envelope spec, encrypted envelope uses tag 201
-const TAG_ENCRYPTED = 201;
+/// Gordian Envelope extension tags (not in dcbor)
+/// These match the Rust reference implementation in bc-tags-rust
+/// See: https://github.com/BlockchainCommons/bc-components-rust/blob/master/src/tags.rs
+const TAG_ENCRYPTED = 40002;  // Encrypted envelope
 
 /// The core structural variants of a Gordian Envelope.
 ///
@@ -525,18 +526,17 @@ export class Envelope implements DigestProvider {
         // TODO: Implement known value encoding
         throw new Error("Known value encoding not yet implemented");
       case "encrypted": {
-        // Encrypted is tagged with TAG_ENCRYPTED (201)
+        // Encrypted is tagged with TAG_ENCRYPTED (40002)
         // Contains: [ciphertext, nonce, optional_digest]
         const message = c.message;
         const digest = message.aadDigest();
         const arr = digest !== undefined
           ? [message.ciphertext(), message.nonce(), digest.data()]
           : [message.ciphertext(), message.nonce()];
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return toTaggedValue(TAG_ENCRYPTED, Envelope.valueToCbor(arr));
       }
       case "compressed": {
-        // Compressed is tagged with TAG_COMPRESSED (206)
+        // Compressed is tagged with TAG_COMPRESSED (40003)
         // and contains an array: [compressed_data, optional_digest]
         const digest = c.value.digestOpt();
         const data = c.value.compressedData();

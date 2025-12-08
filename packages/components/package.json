@@ -1,5 +1,5 @@
 {
-  "name": "@blockchain-commons/crypto",
+  "name": "@blockchain-commons/components",
   "version": "1.0.0-alpha.1",
   "type": "module",
   "description": "A TypeScript implementation of Blockchain Commons cryptographic components. Supports key generation, signing, verification, encryption, and post-quantum cryptography.",
