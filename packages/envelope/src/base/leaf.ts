@@ -1,4 +1,5 @@
 import type { Cbor } from "@blockchain-commons/dcbor";
+import { isNumber, isNaN, asArray, asMap, asText } from "@blockchain-commons/dcbor";
 import { Envelope } from "./envelope";
 
 /// Provides methods for working with envelope leaf nodes,
@@ -134,7 +135,6 @@ Envelope.prototype.isNumber = function (this: Envelope): boolean {
     return false;
   }
 
-  const { isNumber } = require("@blockchain-commons/dcbor");
   return isNumber(leaf);
 };
 
@@ -150,7 +150,6 @@ Envelope.prototype.isNaN = function (this: Envelope): boolean {
     return false;
   }
 
-  const { isNaN } = require("@blockchain-commons/dcbor");
   return isNaN(leaf);
 };
 
@@ -190,7 +189,6 @@ Envelope.prototype.asArray = function (this: Envelope): Cbor[] | undefined {
     return undefined;
   }
 
-  const { asArray } = require("@blockchain-commons/dcbor");
   return asArray(leaf);
 };
 
@@ -201,7 +199,6 @@ Envelope.prototype.asMap = function (this: Envelope) {
     return undefined;
   }
 
-  const { asMap } = require("@blockchain-commons/dcbor");
   return asMap(leaf);
 };
 
@@ -212,7 +209,6 @@ Envelope.prototype.asText = function (this: Envelope): string | undefined {
     return undefined;
   }
 
-  const { asText } = require("@blockchain-commons/dcbor");
   return asText(leaf);
 };
 

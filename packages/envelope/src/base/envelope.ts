@@ -1,8 +1,23 @@
-import { Digest, DigestProvider } from "./digest";
+import { Digest, type DigestProvider } from "./digest";
 import { Assertion } from "./assertion";
 import { EnvelopeError } from "./error";
-import type { EnvelopeEncodable, EnvelopeEncodableValue } from "./envelope-encodable";
+import type { EnvelopeEncodableValue } from "./envelope-encodable";
 import type { Cbor } from "@blockchain-commons/dcbor";
+import {
+  cbor,
+  cborData,
+  toTaggedValue,
+  TAG_ENVELOPE,
+  TAG_LEAF,
+  TAG_ENCODED_CBOR,
+  TAG_COMPRESSED,
+  TAG_ENCRYPTED,
+  asByteString,
+  asCborArray,
+  asCborMap,
+  asTaggedValue,
+  tryExpectedTaggedValue,
+} from "@blockchain-commons/dcbor";
 
 /// The core structural variants of a Gordian Envelope.
 ///
@@ -457,7 +472,7 @@ export class Envelope implements DigestProvider {
   /// @returns A CBOR representation
   private static valueToCbor(value: unknown): Cbor {
     // Import cbor function at runtime to avoid circular dependencies
-    const { cbor } = require("@blockchain-commons/dcbor");
+    
     return cbor(value);
   }
 
@@ -467,7 +482,7 @@ export class Envelope implements DigestProvider {
   /// @returns Byte representation
   private static cborToBytes(cbor: Cbor): Uint8Array {
     // Import cborData function at runtime to avoid circular dependencies
-    const { cborData } = require("@blockchain-commons/dcbor");
+    
     return cborData(cbor);
   }
 
@@ -475,13 +490,6 @@ export class Envelope implements DigestProvider {
   ///
   /// @returns The untagged CBOR
   untaggedCbor(): Cbor {
-    const {
-      toTaggedValue,
-      TAG_LEAF,
-      TAG_ENCODED_CBOR,
-      TAG_COMPRESSED,
-    } = require("@blockchain-commons/dcbor");
-
     const c = this.#case;
     switch (c.type) {
       case "node": {
@@ -515,7 +523,6 @@ export class Envelope implements DigestProvider {
         const arr = digest
           ? [message.ciphertext(), message.nonce(), digest.data()]
           : [message.ciphertext(), message.nonce()];
-        const { TAG_ENCRYPTED } = require("@blockchain-commons/dcbor");
         return toTaggedValue(TAG_ENCRYPTED, Envelope.valueToCbor(arr));
       }
       case "compressed": {
@@ -535,7 +542,6 @@ export class Envelope implements DigestProvider {
   ///
   /// @returns The tagged CBOR
   taggedCbor(): Cbor {
-    const { toTaggedValue, TAG_ENVELOPE } = require("@blockchain-commons/dcbor");
     return toTaggedValue(TAG_ENVELOPE, this.untaggedCbor());
   }
 
@@ -544,18 +550,6 @@ export class Envelope implements DigestProvider {
   /// @param cbor - The untagged CBOR value
   /// @returns A new envelope
   static fromUntaggedCbor(cbor: Cbor): Envelope {
-    const {
-      asTaggedValue,
-      asByteString,
-      asCborArray,
-      asCborMap,
-      TAG_LEAF,
-      TAG_ENCODED_CBOR,
-      TAG_ENVELOPE,
-      TAG_COMPRESSED,
-      TAG_ENCRYPTED,
-    } = require("@blockchain-commons/dcbor");
-
     // Check if it's a tagged value
     const tagged = asTaggedValue(cbor);
     if (tagged) {
@@ -583,7 +577,7 @@ export class Envelope implements DigestProvider {
           const digest = arr.length === 2 ? new Digest(asByteString(arr.get(1))!) : undefined;
 
           // Import Compressed class at runtime to avoid circular dependency
-          const { Compressed } = require("../extension/compress");
+          
           const compressed = new Compressed(compressedData, digest);
           return Envelope.fromCase({ type: "compressed", value: compressed });
         }
@@ -601,7 +595,7 @@ export class Envelope implements DigestProvider {
           const digest = arr.length === 3 ? new Digest(asByteString(arr.get(2))!) : undefined;
 
           // Import EncryptedMessage class at runtime to avoid circular dependency
-          const { EncryptedMessage } = require("../extension/encrypt");
+          
           const message = new EncryptedMessage(ciphertext, nonce, digest);
           return Envelope.fromCase({ type: "encrypted", message });
         }
@@ -650,7 +644,6 @@ export class Envelope implements DigestProvider {
   /// @param cbor - The tagged CBOR value (should have TAG_ENVELOPE)
   /// @returns A new envelope
   static fromTaggedCbor(cbor: Cbor): Envelope {
-    const { tryExpectedTaggedValue, TAG_ENVELOPE } = require("@blockchain-commons/dcbor");
 
     try {
       const untagged = tryExpectedTaggedValue(cbor, TAG_ENVELOPE);

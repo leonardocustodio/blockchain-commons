@@ -1,4 +1,4 @@
-import { Digest, type DigestProvider } from "./digest";
+import { type Digest, type DigestProvider } from "./digest";
 import { Envelope } from "./envelope";
 import { Assertion } from "./assertion";
 import { EnvelopeError } from "./error";
@@ -431,7 +431,7 @@ function walkUnelideWithMap(envelope: Envelope, envelopeMap: Map<string, Envelop
 
     if (
       newSubject.isIdenticalTo(c.subject) &&
-      newAssertions.every((a, i) => a.isIdenticalTo(c.assertions[i]!))
+      newAssertions.every((a, i) => a.isIdenticalTo(c.assertions[i]))
     ) {
       return envelope;
     }
@@ -483,7 +483,7 @@ Envelope.prototype.walkReplace = function (
 
     if (
       newSubject.isIdenticalTo(c.subject) &&
-      newAssertions.every((a, i) => a.isIdenticalTo(c.assertions[i]!))
+      newAssertions.every((a, i) => a.isIdenticalTo(c.assertions[i]))
     ) {
       return this;
     }

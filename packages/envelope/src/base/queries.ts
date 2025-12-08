@@ -259,7 +259,7 @@ Envelope.prototype.assertionsWithPredicate = function (
 
   return this.assertions().filter((assertion) => {
     const pred = assertion.subject().asPredicate();
-    return pred && pred.digest().equals(predicateDigest);
+    return pred?.digest().equals(predicateDigest);
   });
 };
 
@@ -277,7 +277,7 @@ Envelope.prototype.assertionWithPredicate = function (
     throw EnvelopeError.ambiguousPredicate();
   }
 
-  return matches[0]!;
+  return matches[0];
 };
 
 /// Implementation of optionalAssertionWithPredicate()
@@ -294,7 +294,7 @@ Envelope.prototype.optionalAssertionWithPredicate = function (
     throw EnvelopeError.ambiguousPredicate();
   }
 
-  return matches[0]!;
+  return matches[0];
 };
 
 /// Implementation of objectForPredicate()
@@ -324,7 +324,7 @@ Envelope.prototype.optionalObjectForPredicate = function (
     throw EnvelopeError.ambiguousPredicate();
   }
 
-  const obj = matches[0]!.subject().asObject();
+  const obj = matches[0].subject().asObject();
   return obj;
 };
 

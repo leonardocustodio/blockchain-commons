@@ -1,5 +1,5 @@
 import { Envelope } from "../base/envelope";
-import { EdgeType, edgeLabel } from "../base/walk";
+import { type EdgeType, edgeLabel } from "../base/walk";
 
 /// Tree formatting for Gordian Envelopes.
 ///
@@ -88,7 +88,7 @@ Envelope.prototype.shortId = function (this: Envelope, format: "short" | "full" 
 };
 
 /// Implementation of summary()
-Envelope.prototype.summary = function (this: Envelope, maxLength: number = 40): string {
+Envelope.prototype.summary = function (this: Envelope, maxLength = 40): string {
   const c = this.case();
 
   switch (c.type) {
@@ -99,7 +99,7 @@ Envelope.prototype.summary = function (this: Envelope, maxLength: number = 40): 
       try {
         const text = this.asText();
         if (text !== undefined) {
-          const truncated = text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+          const truncated = text.length > maxLength ? `${text.substring(0, maxLength)  }...` : text;
           return JSON.stringify(truncated);
         }
       } catch {

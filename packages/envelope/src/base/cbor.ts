@@ -5,6 +5,8 @@ import {
   type CBORTaggedDecodable,
   tagsForValues,
   TAG_ENVELOPE,
+  cborData,
+  decodeCbor,
 } from "@blockchain-commons/dcbor";
 import { Envelope } from "./envelope";
 
@@ -40,7 +42,7 @@ export class EnvelopeCBORTagged implements CBORTagged {
 ///
 /// Provides the untagged CBOR representation of an envelope.
 export class EnvelopeCBORTaggedEncodable implements CBORTaggedEncodable {
-  constructor(private envelope: Envelope) {}
+  constructor(private readonly envelope: Envelope) {}
 
   untaggedCbor(): Cbor {
     return this.envelope.untaggedCbor();
@@ -85,7 +87,6 @@ export function envelopeFromCbor(cbor: Cbor): Envelope {
 /// @param envelope - The envelope to encode
 /// @returns The CBOR bytes
 export function envelopeToBytes(envelope: Envelope): Uint8Array {
-  const { cborData } = require("@blockchain-commons/dcbor");
   return cborData(envelope.taggedCbor());
 }
 
@@ -94,7 +95,6 @@ export function envelopeToBytes(envelope: Envelope): Uint8Array {
 /// @param bytes - The CBOR bytes
 /// @returns A new Envelope
 export function envelopeFromBytes(bytes: Uint8Array): Envelope {
-  const { decodeCbor } = require("@blockchain-commons/dcbor");
   const cbor = decodeCbor(bytes);
   return Envelope.fromTaggedCbor(cbor);
 }

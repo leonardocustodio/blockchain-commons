@@ -29,7 +29,7 @@ declare module "../base/envelope" {
 }
 
 /// Converts a CBOR value to diagnostic notation
-function cborToDiagnostic(cbor: any, indent: number = 0): string {
+function cborToDiagnostic(cbor: any, indent = 0): string {
   // Handle tagged values (CBOR tags)
   if (typeof cbor === "object" && cbor !== null && "tag" in cbor && "value" in cbor) {
     return `${cbor.tag}(${cborToDiagnostic(cbor.value, indent)})`;

@@ -14,7 +14,7 @@
  */
 
 import { Envelope } from "../base/envelope";
-import { Digest } from "../base/digest";
+import { type Digest } from "../base/digest";
 import { EnvelopeError } from "../base/error";
 import type { EnvelopeEncodableValue } from "../base/envelope-encodable";
 
@@ -40,7 +40,7 @@ export const CONFORMS_TO = "conformsTo";
  * to envelopes without modifying their core structure.
  */
 export class Attachments {
-  readonly #envelopes: Map<string, Envelope> = new Map();
+  readonly #envelopes = new Map<string, Envelope>();
 
   /**
    * Creates a new empty attachments container.

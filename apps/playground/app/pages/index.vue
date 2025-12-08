@@ -2,6 +2,7 @@
 import { ref, shallowRef, computed, watch } from 'vue'
 import { decodeCbor, hexToBytes, hexOpt, diagnosticOpt, type Cbor } from '@blockchain-commons/dcbor'
 import { UR, decodeBytewords, encodeBytewords, BytewordsStyle } from '@blockchain-commons/uniform-resources'
+import { envelopeFromCbor } from '@blockchain-commons/envelope'
 
 useHead({
   title: 'dCBOR Playground | Blockchain Commons',
@@ -25,9 +26,11 @@ const error = ref<string | null>(null)
 const parsedCbor = shallowRef<Cbor | null>(null)
 const annotatedHex = ref<string>('')
 const diagnosticNotation = ref<string>('')
+const envelopeFormat = ref<string>('')
+const isEnvelopeInput = ref<boolean>(false)
 
 // Output view toggle
-type OutputView = 'hex' | 'diagnostic'
+type OutputView = 'hex' | 'diagnostic' | 'envelope'
 const outputView = ref<OutputView>('hex')
 
 // Input panel collapse state
@@ -139,6 +142,8 @@ function parseCbor() {
   parsedCbor.value = null
   annotatedHex.value = ''
   diagnosticNotation.value = ''
+  envelopeFormat.value = ''
+  isEnvelopeInput.value = false
 
   const input = hexInput.value.trim()
   if (!input) {
@@ -149,6 +154,10 @@ function parseCbor() {
   try {
     const cborBytes = parseInput(input, inputFormat.value)
 
+    // Check if input is an envelope UR
+    const trimmedInput = input.trim().toLowerCase()
+    isEnvelopeInput.value = trimmedInput.startsWith('ur:envelope/')
+
     // Parse CBOR
     const cbor = decodeCbor(cborBytes)
     parsedCbor.value = cbor
@@ -158,6 +167,17 @@ function parseCbor() {
 
     // Generate diagnostic notation
     diagnosticNotation.value = diagnosticOpt(cbor, { flat: false })
+
+    // Generate envelope format if this is an envelope
+    if (isEnvelopeInput.value) {
+      try {
+        const envelope = envelopeFromCbor(cbor)
+        envelopeFormat.value = envelope.treeFormat()
+      } catch (err) {
+        console.warn('Failed to parse as envelope:', err)
+        envelopeFormat.value = 'Error: Could not parse as Gordian Envelope'
+      }
+    }
   } catch (err) {
     error.value = err instanceof Error ? err.message : String(err)
   }
@@ -366,7 +386,8 @@ onMounted(() => {
             <UTabs
               :items="[
                 { label: 'Annotated Hex', value: 'hex' },
-                { label: 'Diagnostic', value: 'diagnostic' }
+                { label: 'Diagnostic', value: 'diagnostic' },
+                ...(isEnvelopeInput ? [{ label: 'Envelope', value: 'envelope' }] : [])
               ]"
               :model-value="outputView"
               size="xs"
@@ -379,7 +400,8 @@ onMounted(() => {
           <!-- Content -->
           <div v-if="parsedCbor" class="flex-1 min-h-0 min-w-0 overflow-auto p-4">
             <pre v-if="outputView === 'hex'" class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200 max-w-full">{{ annotatedHex }}</pre>
-            <pre v-else class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200 max-w-full">{{ diagnosticNotation }}</pre>
+            <pre v-else-if="outputView === 'diagnostic'" class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200 max-w-full">{{ diagnosticNotation }}</pre>
+            <pre v-else-if="outputView === 'envelope'" class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200 max-w-full">{{ envelopeFormat }}</pre>
           </div>
 
           <!-- Empty State -->

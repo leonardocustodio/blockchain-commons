@@ -1,7 +1,8 @@
 import { Envelope } from "../base/envelope";
 import { EnvelopeError } from "../base/error";
-import { Digest } from "../base/digest";
+import { type Digest } from "../base/digest";
 import sodium from "libsodium-wrappers";
+import { cborData, decodeCbor } from "@blockchain-commons/dcbor";
 
 /// Extension for encrypting and decrypting envelopes using symmetric encryption.
 ///
@@ -255,7 +256,7 @@ Envelope.prototype.encryptSubject = async function (
     }
 
     // Get the subject's CBOR data
-    const { cborData } = require("@blockchain-commons/dcbor");
+    
     const subjectCbor = c.subject.taggedCbor();
     const encodedCbor = cborData(subjectCbor);
     const subjectDigest = c.subject.digest();
@@ -274,7 +275,7 @@ Envelope.prototype.encryptSubject = async function (
   }
 
   // For other cases, encrypt the entire envelope
-  const { cborData } = require("@blockchain-commons/dcbor");
+  
   const cbor = this.taggedCbor();
   const encodedCbor = cborData(cbor);
   const digest = this.digest();
@@ -309,7 +310,7 @@ Envelope.prototype.decryptSubject = async function (
   const decryptedData = await key.decrypt(message);
 
   // Parse back to envelope
-  const { decodeCbor } = require("@blockchain-commons/dcbor");
+  
   const cbor = decodeCbor(decryptedData);
   const resultSubject = Envelope.fromTaggedCbor(cbor);
 

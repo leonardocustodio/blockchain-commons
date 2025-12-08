@@ -1,4 +1,4 @@
-import { Envelope, EnvelopeEncodableValue } from "../base/envelope";
+import { Envelope, type EnvelopeEncodableValue } from "../base/envelope";
 import { EnvelopeError } from "../base/error";
 
 /// Extension for envelope expressions.
@@ -189,7 +189,7 @@ export class Parameter {
 /// Represents a complete expression with function and parameters
 export class Expression {
   readonly #function: Function;
-  readonly #parameters: Map<string, Parameter> = new Map();
+  readonly #parameters = new Map<string, Parameter>();
   #envelope: Envelope | null = null;
 
   constructor(func: Function) {

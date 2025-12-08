@@ -1,6 +1,6 @@
-import { Digest, DigestProvider } from "./digest";
+import { Digest, type DigestProvider } from "./digest";
 import { Envelope } from "./envelope";
-import { EnvelopeEncodable } from "./envelope-encodable";
+import { type EnvelopeEncodable } from "./envelope-encodable";
 import { EnvelopeError } from "./error";
 import type { Cbor } from "@blockchain-commons/dcbor";
 import { CborMap } from "@blockchain-commons/dcbor";

@@ -11,7 +11,7 @@
  * - Support for multiple signatures on a single envelope
  */
 
-import { secp256k1 } from "@noble/curves/secp256k1";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { Envelope } from "../base/envelope";
 import { Digest } from "../base/digest";
 import { EnvelopeError } from "../base/error";
@@ -209,7 +209,7 @@ export class SigningPublicKey implements Verifier {
  * Metadata that can be attached to a signature.
  */
 export class SignatureMetadata {
-  readonly #assertions: Array<[string, any]> = [];
+  readonly #assertions: [string, any][] = [];
 
   /**
    * Adds an assertion to the metadata.
@@ -224,7 +224,7 @@ export class SignatureMetadata {
   /**
    * Returns all assertions in the metadata.
    */
-  assertions(): Array<[string, any]> {
+  assertions(): [string, any][] {
     return this.#assertions;
   }
 
@@ -316,7 +316,7 @@ Envelope.prototype.addSignatureWithMetadata = function (
   const signature = signer.sign(digest.data());
   let signatureEnvelope = Envelope.new(signature.data());
 
-  if (metadata && metadata.hasAssertions()) {
+  if (metadata?.hasAssertions()) {
     // Add metadata assertions to the signature
     for (const [predicate, object] of metadata.assertions()) {
       signatureEnvelope = signatureEnvelope.addAssertion(predicate, object);
