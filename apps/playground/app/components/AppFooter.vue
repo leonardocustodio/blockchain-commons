@@ -7,8 +7,8 @@
           <ULink to="https://github.com/leonardocustodio/blockchain-commons" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">
             @leonardocustodio/blockchain-commons
           </ULink>
-          • Powered by
-          <ULink to="https://github.com/BlockchainCommons" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">
+          • Specs by
+          <ULink to="https://developer.blockchaincommons.com/" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">
             Blockchain Commons
           </ULink>
           • Inspired by
