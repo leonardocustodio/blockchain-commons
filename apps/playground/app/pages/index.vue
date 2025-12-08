@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, shallowRef, computed, watch } from 'vue'
-import { decodeCbor, hexToBytes, hexOpt, diagnosticOpt, MajorType, type Cbor } from '@blockchain-commons/dcbor'
+import { decodeCbor, cborData, cbor, hexToBytes, hexOpt, diagnosticOpt, MajorType, type Cbor } from '@blockchain-commons/dcbor'
 import { UR, decodeBytewords, encodeBytewords, BytewordsStyle } from '@blockchain-commons/uniform-resources'
 import { envelopeFromCbor } from '@blockchain-commons/envelope'
 import { ENVELOPE } from '@blockchain-commons/tags'
@@ -76,25 +76,29 @@ function parseInput(input: string, format: InputFormat): Uint8Array {
         throw new Error('UR string must start with "ur:"')
       }
 
-      // For envelope URs, decode bytewords directly to preserve the envelope tag (200)
-      // The UR class decodes CBOR which strips the tag, but envelopes need the tag intact
-      const lowercased = input.toLowerCase()
-      const afterScheme = lowercased.substring(3) // Remove 'ur:'
-      const [urType, ...dataParts] = afterScheme.split('/')
-      const data = dataParts.join('/')
+      // Extract UR type and data efficiently without multiple string operations
+      // Format: ur:type/data where type is case-insensitive
+      const afterScheme = input.substring(3) // Remove 'ur:' prefix
+      const firstSlash = afterScheme.indexOf('/')
 
+      if (firstSlash === -1) {
+        throw new Error('Invalid UR format: missing type/data separator')
+      }
+
+      const urType = afterScheme.substring(0, firstSlash).toLowerCase()
+      const data = afterScheme.substring(firstSlash + 1) // Everything after first '/'
+
+      // Special handling for envelope URs to add the implied tag 200
       if (urType === 'envelope') {
         // For envelope URs, the bytewords-encoded data does NOT include tag 200
         // The UR type 'envelope' implies tag 200, so we need to add it
         // This matches the Rust bc-ur behavior where UR payloads use untagged CBOR
         // and the tag is implied by the UR type
         const untaggedBytes = decodeBytewords(data, BytewordsStyle.Minimal)
-        // Prepend envelope tag 200 (CBOR encoding: 0xd8 0xc8)
-        const taggedBytes = new Uint8Array(2 + untaggedBytes.length)
-        taggedBytes[0] = 0xd8 // Tag indicator for values 24-255
-        taggedBytes[1] = 0xc8 // 200 = envelope tag
-        taggedBytes.set(untaggedBytes, 2)
-        return taggedBytes
+        // Decode the untagged CBOR and wrap it with the envelope tag using dcbor
+        const untaggedCbor = decodeCbor(untaggedBytes)
+        const taggedCbor = cbor({ tag: ENVELOPE.value, value: untaggedCbor })
+        return cborData(taggedCbor)
       }
 
       // For other UR types, use the standard UR decoding
@@ -234,9 +238,19 @@ function parseCbor() {
         const envelope = envelopeFromCbor(freshCbor)
         envelopeFormat.value = envelope.treeFormat()
       } catch (err) {
-        console.error('Failed to parse as envelope:', err)
+        // Envelope parsing failed - CBOR structure is valid but envelope semantics are not
+        console.error('Failed to parse envelope structure:', err)
         const errorMsg = err instanceof Error ? err.message : String(err)
-        envelopeFormat.value = `Error parsing envelope:\n${errorMsg}\n\nNote: The envelope tag (200) is present and the hex/diagnostic views show the data correctly.`
+        envelopeFormat.value = [
+          '❌ Envelope Parsing Error',
+          '',
+          errorMsg,
+          '',
+          '⚠️  The CBOR data has the envelope tag (200) but does not conform to the Gordian Envelope specification.',
+          '',
+          '✓ The Annotated Hex and Diagnostic views show the underlying CBOR structure correctly.',
+          '✓ Use those views to inspect the raw data and identify structural issues.',
+        ].join('\n')
       }
     }
   } catch (err) {

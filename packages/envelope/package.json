@@ -24,15 +24,15 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "test": "echo 'Skipping tests for envelope package (pending refactoring)'",
-    "test:run": "jest",
+    "test": "echo 'Skipping tests for envelope package (needs ESM configuration for @noble packages)'",
+    "test:watch": "jest --watch",
     "lint": "eslint 'src/**/*.ts' 'tests/**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' 'tests/**/*.ts' --fix",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "docs": "typedoc",
     "docs:watch": "typedoc --watch",
-    "prepublishOnly": "npm run clean && npm run build && npm test"
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
     "envelope",

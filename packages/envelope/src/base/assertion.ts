@@ -146,7 +146,6 @@ export class Assertion implements DigestProvider {
       throw EnvelopeError.invalidAssertion();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const entries = Array.from(map.entries());
     const firstEntry = entries[0];
     if (firstEntry === undefined) {
@@ -154,9 +153,8 @@ export class Assertion implements DigestProvider {
     }
     const [predicateCbor, objectCbor] = firstEntry;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const predicate = Envelope.fromUntaggedCbor(predicateCbor);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     const object = Envelope.fromUntaggedCbor(objectCbor);
 
     return new Assertion(predicate, object);
