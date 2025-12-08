@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, shallowRef, computed, watch } from 'vue'
 import { decodeCbor, hexToBytes, hexOpt, diagnosticOpt, type Cbor } from '@blockchain-commons/dcbor'
-import { UR, decodeBytewords, BytewordsStyle } from '@blockchain-commons/uniform-resources'
+import { UR, decodeBytewords, encodeBytewords, BytewordsStyle } from '@blockchain-commons/uniform-resources'
 
 useHead({
-  title: 'CBOR Diagnostic Tool - Blockchain Commons',
-  meta: [{ name: 'description', content: 'Parse and visualize CBOR data with annotated hex and diagnostic notation' }],
+  title: 'dCBOR Playground | Blockchain Commons',
+  meta: [{ name: 'description', content: 'Parse and visualize dCBOR data with annotated hex and diagnostic notation' }],
 })
 
 // Input format options
@@ -30,6 +30,12 @@ const diagnosticNotation = ref<string>('')
 type OutputView = 'hex' | 'diagnostic'
 const outputView = ref<OutputView>('hex')
 
+// Input panel collapse state
+const isInputCollapsed = ref(false)
+
+// Sidebar state for mobile
+const isSidebarOpen = ref(false)
+
 // Detect input format automatically
 function detectFormat(input: string): InputFormat {
   const trimmed = input.trim().toLowerCase()
@@ -39,8 +45,11 @@ function detectFormat(input: string): InputFormat {
     return 'ur'
   }
 
-  // Check for hex (only hex characters)
-  const cleanHex = input.replace(/\s/g, '')
+  // Check for hex (only hex characters, optionally with 0x prefix)
+  let cleanHex = input.replace(/\s/g, '')
+  if (cleanHex.toLowerCase().startsWith('0x')) {
+    cleanHex = cleanHex.slice(2)
+  }
   if (/^[0-9a-fA-F]+$/.test(cleanHex)) {
     return 'hex'
   }
@@ -85,7 +94,11 @@ function parseInput(input: string, format: InputFormat): Uint8Array {
 
     case 'hex':
     default: {
-      const cleanHex = input.replace(/\s/g, '')
+      let cleanHex = input.replace(/\s/g, '')
+      // Remove 0x prefix if present
+      if (cleanHex.toLowerCase().startsWith('0x')) {
+        cleanHex = cleanHex.slice(2)
+      }
       if (!/^[0-9a-fA-F]*$/.test(cleanHex)) {
         throw new Error('Invalid hex characters')
       }
@@ -95,6 +108,29 @@ function parseInput(input: string, format: InputFormat): Uint8Array {
       return hexToBytes(cleanHex)
     }
   }
+}
+
+// Convert bytes to hex string
+function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+// Convert bytes to UR string
+function bytesToUR(bytes: Uint8Array): string {
+  try {
+    const cbor = decodeCbor(bytes)
+    const ur = UR.new('dcbor', cbor)
+    return ur.string()
+  } catch (err) {
+    throw new Error('Cannot convert to UR: bytes do not represent valid CBOR data')
+  }
+}
+
+// Convert bytes to bytewords string
+function bytesToBytewords(bytes: Uint8Array): string {
+  return encodeBytewords(bytes, BytewordsStyle.Standard)
 }
 
 // Parse CBOR from input
@@ -127,12 +163,78 @@ function parseCbor() {
   }
 }
 
-// Compute byte count from parsed CBOR
+// Compute byte count from raw input (regardless of validity)
 const byteCount = computed(() => {
-  if (parsedCbor.value) {
-    return parsedCbor.value.toData().length
+  const input = hexInput.value.trim()
+  if (!input) return 0
+
+  const effectiveFormat = inputFormat.value === 'auto' ? detectFormat(input) : inputFormat.value
+
+  // For hex, count raw bytes without validation
+  if (effectiveFormat === 'hex') {
+    let cleanHex = input.replace(/\s/g, '')
+    // Remove 0x prefix if present
+    if (cleanHex.toLowerCase().startsWith('0x')) {
+      cleanHex = cleanHex.slice(2)
+    }
+    return Math.ceil(cleanHex.length / 2)
   }
-  return 0
+
+  // For UR and bytewords, try to parse to get byte count
+  try {
+    const bytes = parseInput(input, inputFormat.value)
+    return bytes.length
+  } catch {
+    // If parsing fails, estimate based on input length
+    return Math.ceil(input.length / 2)
+  }
+})
+
+// Auto-convert input when format changes
+watch(inputFormat, (newFormat, oldFormat) => {
+  // Skip if no previous format (initial load)
+  if (!oldFormat) return
+
+  // Skip if switching TO 'auto' (keep input as-is for auto-detect)
+  if (newFormat === 'auto') return
+
+  // Skip if formats are the same
+  if (newFormat === oldFormat) return
+
+  const input = hexInput.value.trim()
+  if (!input) return
+
+  try {
+    // If switching FROM 'auto', detect the current format
+    const sourceFormat = oldFormat === 'auto' ? detectFormat(input) : oldFormat
+
+    // Skip if detected format is the same as target format
+    if (sourceFormat === newFormat) return
+
+    // Parse input with source format to get bytes
+    const bytes = parseInput(input, sourceFormat)
+
+    // Convert bytes to new format
+    let converted: string
+    switch (newFormat) {
+      case 'hex':
+        converted = bytesToHex(bytes)
+        break
+      case 'ur':
+        converted = bytesToUR(bytes)
+        break
+      case 'bytewords':
+        converted = bytesToBytewords(bytes)
+        break
+      default:
+        return
+    }
+
+    hexInput.value = converted
+  } catch (err) {
+    // If conversion fails, keep the original input
+    console.error('Format conversion failed:', err)
+  }
 })
 
 // Auto-parse when input or format changes (debounced)
@@ -166,93 +268,118 @@ onMounted(() => {
 
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-    <AppHeader />
+    <AppHeader @toggle-sidebar="isSidebarOpen = !isSidebarOpen" />
 
     <!-- Main Content with Sidebar -->
     <div class="flex flex-1 overflow-hidden">
-      <ExamplesSidebar @select="handleExampleSelect" />
+      <ExamplesSidebar
+        :is-open="isSidebarOpen"
+        @select="handleExampleSelect"
+        @close="isSidebarOpen = false"
+      />
 
-      <main class="flex-1 flex flex-col lg:flex-row min-h-0 min-w-0 overflow-hidden">
+      <main class="flex-1 flex flex-col lg:flex-row min-h-0 min-w-0 overflow-hidden relative">
         <!-- Error Display (Top Bar) -->
-        <div v-if="error" class="p-4 lg:hidden">
+        <div v-if="error" class="px-4 py-2 lg:hidden">
           <UAlert
-            color="red"
+            color="error"
+            variant="solid"
             icon="i-heroicons-exclamation-triangle"
             :title="error"
           />
         </div>
 
         <!-- Left Panel: Input -->
-        <div class="w-full lg:basis-1/3 lg:grow-0 lg:shrink-0 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col overflow-hidden">
-          <!-- Header -->
-          <div class="flex items-center justify-between px-4 h-12 border-b border-gray-200 dark:border-gray-800 bg-blue-50 dark:bg-blue-950/30">
+        <div
+          :class="[
+            'border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden bg-white dark:bg-gray-950 w-full',
+            isInputCollapsed ? 'lg:absolute lg:z-10 lg:w-1/3' : 'lg:basis-1/3 lg:grow-0 lg:shrink-0'
+          ]"
+        >
+          <!-- Header (always visible on both mobile and desktop) -->
+          <div
+            :title="isInputCollapsed ? 'Expand input panel' : 'Collapse input panel'"
+            class="flex items-center justify-between px-4 h-12 border-b border-gray-200 dark:border-gray-800 bg-blue-50 dark:bg-blue-950/30 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+            @click="isInputCollapsed = !isInputCollapsed"
+          >
             <div class="flex items-center gap-2">
               <UIcon name="i-heroicons-arrow-down-tray" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
               <h2 class="font-semibold text-sm text-blue-900 dark:text-blue-300">Input</h2>
             </div>
-            <span class="text-xs text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded">{{ byteCount }} bytes</span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded">{{ byteCount }} bytes</span>
+              <UIcon v-if="isInputCollapsed" name="i-heroicons-chevron-down" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <UIcon v-else name="i-heroicons-chevron-up" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            </div>
           </div>
 
-          <!-- Error (desktop) -->
-          <div v-if="error" class="hidden lg:block p-4">
-            <UAlert
-              color="red"
-              icon="i-heroicons-exclamation-triangle"
-              :title="error"
-            />
-          </div>
-
-          <!-- Input Content -->
-          <div class="p-4 flex-shrink-0">
-            <USelectMenu
-              v-model="inputFormat"
-              :items="inputFormatOptions"
-              value-key="value"
-              :search-input="false"
-              :content="{ side: 'bottom', align: 'start', sideOffset: 4 }"
-              class="w-full"
-            />
-          </div>
-          <div class="flex-1 px-4 pb-4 min-h-0 min-w-0 overflow-hidden">
-            <textarea
-              v-model="hexInput"
-              :placeholder="inputFormat === 'ur' ? 'Enter UR string (e.g., ur:link3/...)' :
-                            inputFormat === 'bytewords' ? 'Enter bytewords (e.g., able acid also...)' :
-                            inputFormat === 'hex' ? 'Enter hex data (e.g., a2626964...)' :
-                            'Enter data in any format (hex, UR, or bytewords)'"
-              class="w-full h-full resize-none font-mono text-xs bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent overflow-auto"
-              style="word-break: break-all;"
-            />
-          </div>
-        </div>
-
-        <!-- Right Panel: Output -->
-        <div class="w-full lg:basis-2/3 lg:grow-0 lg:shrink-0 flex flex-col min-h-0 min-w-0 overflow-hidden bg-gray-50 dark:bg-gray-900">
-          <div v-if="parsedCbor" class="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
-            <!-- Header with Toggle -->
-            <div class="flex items-center justify-between px-4 h-12 flex-shrink-0 border-b border-gray-200 dark:border-gray-800 bg-green-50 dark:bg-green-950/30">
-              <div class="flex items-center gap-2 flex-shrink-0">
-                <UIcon name="i-heroicons-arrow-up-tray" class="w-4 h-4 text-green-600 dark:text-green-400" />
-                <h2 class="font-semibold text-sm text-green-900 dark:text-green-300">Output</h2>
-              </div>
-              <UTabs
-                :items="[
-                  { label: 'Annotated Hex', value: 'hex' },
-                  { label: 'Diagnostic', value: 'diagnostic' }
-                ]"
-                :model-value="outputView"
-                size="xs"
-                class="w-auto flex-shrink-0"
-                :ui="{ root: 'gap-0', list: 'p-0.5' }"
-                @update:model-value="outputView = $event as OutputView"
+          <!-- Input Content (only visible when not collapsed) -->
+          <template v-if="!isInputCollapsed">
+            <div class="px-4 pt-4 flex-shrink-0">
+              <USelectMenu
+                v-model="inputFormat"
+                :items="inputFormatOptions"
+                value-key="value"
+                :search-input="false"
+                :content="{ side: 'bottom', align: 'start', sideOffset: 4 }"
+                class="w-full"
               />
             </div>
 
-            <!-- Content -->
-            <div class="flex-1 min-h-0 min-w-0 overflow-auto p-4">
-              <pre v-if="outputView === 'hex'" class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200 max-w-full">{{ annotatedHex }}</pre>
-              <pre v-else class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200 max-w-full">{{ diagnosticNotation }}</pre>
+            <!-- Error (between selector and textarea) -->
+            <div v-if="error" class="hidden lg:block px-4 pt-3">
+              <UAlert
+                color="error"
+                variant="solid"
+                icon="i-heroicons-exclamation-triangle"
+                :title="error"
+              />
             </div>
+
+            <div class="flex-1 px-4 pt-3 pb-4 min-h-0 min-w-0 overflow-hidden">
+              <textarea
+                v-model="hexInput"
+                :placeholder="inputFormat === 'ur' ? 'Enter UR string (e.g., ur:link3/...)' :
+                              inputFormat === 'bytewords' ? 'Enter bytewords (e.g., able acid also...)' :
+                              inputFormat === 'hex' ? 'Enter hex data (e.g., a2626964...)' :
+                              'Enter data in any format (hex, UR, or bytewords)'"
+                class="w-full h-full resize-none font-mono text-xs bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent overflow-auto"
+                style="word-break: break-all;"
+              />
+            </div>
+          </template>
+        </div>
+
+        <!-- Right Panel: Output -->
+        <div class="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-gray-50 dark:bg-gray-900">
+          <!-- Header with Toggle (always visible) -->
+          <div
+            :class="[
+              'flex items-center justify-between px-4 h-12 flex-shrink-0 border-b border-gray-200 dark:border-gray-800 bg-green-50 dark:bg-green-950/30',
+              isInputCollapsed ? 'lg:pl-[calc(33.333333%+1rem)]' : ''
+            ]"
+          >
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <UIcon name="i-heroicons-arrow-up-tray" class="w-4 h-4 text-green-600 dark:text-green-400" />
+              <h2 class="font-semibold text-sm text-green-900 dark:text-green-300">Output</h2>
+            </div>
+            <UTabs
+              :items="[
+                { label: 'Annotated Hex', value: 'hex' },
+                { label: 'Diagnostic', value: 'diagnostic' }
+              ]"
+              :model-value="outputView"
+              size="xs"
+              class="w-auto flex-shrink-0"
+              :ui="{ root: 'gap-0', list: 'p-0.5' }"
+              @update:model-value="outputView = $event as OutputView"
+            />
+          </div>
+
+          <!-- Content -->
+          <div v-if="parsedCbor" class="flex-1 min-h-0 min-w-0 overflow-auto p-4">
+            <pre v-if="outputView === 'hex'" class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200 max-w-full">{{ annotatedHex }}</pre>
+            <pre v-else class="font-mono text-xs whitespace-pre text-gray-800 dark:text-gray-200 max-w-full">{{ diagnosticNotation }}</pre>
           </div>
 
           <!-- Empty State -->
