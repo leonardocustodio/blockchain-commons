@@ -1,6 +1,6 @@
 {
   "name": "@blockchain-commons/components",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "type": "module",
   "description": "A TypeScript implementation of Blockchain Commons cryptographic components. Supports key generation, signing, verification, encryption, and post-quantum cryptography.",
   "main": "dist/index.cjs",
