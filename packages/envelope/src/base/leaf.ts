@@ -161,6 +161,7 @@ Envelope.prototype.isSubjectNaN = function (this: Envelope): boolean {
 /// Implementation of isNull()
 Envelope.prototype.isNull = function (this: Envelope): boolean {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     this.extractNull();
     return true;
   } catch (_error) {

@@ -223,7 +223,7 @@ Envelope.prototype.decompress = function (this: Envelope): Envelope {
   const compressed = c.value;
   const digest = compressed.digestOpt();
 
-  if (!digest) {
+  if (digest === undefined) {
     throw EnvelopeError.general("Missing digest in compressed envelope");
   }
 

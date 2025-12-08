@@ -36,18 +36,19 @@ const DEFAULT_SALT_RANGE = { min: 8, max: 16 };
 
 /// Generates random bytes using crypto
 function generateRandomBytes(length: number): Uint8Array {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  // Use Web Crypto API available in browsers and Node.js 19+
   const cryptoObj = globalThis.crypto as { getRandomValues?: (array: Uint8Array) => Uint8Array } | undefined;
-  if (cryptoObj !== undefined && cryptoObj.getRandomValues !== undefined) {
-    // Browser or Node.js 19+ with global crypto
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-    return cryptoObj.getRandomValues(new Uint8Array(length));
-  } else {
-    // Node.js < 19 - use dynamic import
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-call
-    const nodeCrypto = require("crypto") as { randomBytes: (size: number) => Uint8Array };
-    return nodeCrypto.randomBytes(length);
+
+  if (cryptoObj?.getRandomValues !== undefined) {
+    const array = new Uint8Array(length);
+    cryptoObj.getRandomValues(array);
+    return array;
   }
+
+  throw new Error(
+    "Web Crypto API not available. " +
+    "Please use a modern browser or Node.js 19+ which includes global crypto support."
+  );
 }
 
 /// Calculates salt size proportional to envelope size

@@ -259,7 +259,7 @@ Envelope.prototype.assertionsWithPredicate = function (
 
   return this.assertions().filter((assertion) => {
     const pred = assertion.subject().asPredicate();
-    return pred !== undefined && pred.digest().equals(predicateDigest);
+    return pred?.digest().equals(predicateDigest) === true;
   });
 };
 

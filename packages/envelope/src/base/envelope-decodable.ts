@@ -57,15 +57,19 @@ export function extractNumber(envelope: Envelope): number {
       case 7: // MajorType.Simple
         if (
           typeof cbor.value === "object" &&
-          cbor.value &&
+          cbor.value !== null &&
           "type" in cbor.value &&
           cbor.value.type === "Float"
         ) {
           return cbor.value.value;
         }
         break;
-      default:
-        // Other CBOR types don't represent numbers
+      case 2: // MajorType.ByteString
+      case 3: // MajorType.TextString
+      case 4: // MajorType.Array
+      case 5: // MajorType.Map
+      case 6: // MajorType.Tag
+        // These CBOR types don't represent numbers
         break;
     }
   }

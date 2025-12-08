@@ -422,7 +422,7 @@ function walkUnelideWithMap(envelope: Envelope, envelopeMap: Map<string, Envelop
   if (c.type === "elided") {
     // Try to find a matching envelope to restore
     const replacement = envelopeMap.get(envelope.digest().hex());
-    return replacement !== undefined ? replacement : envelope;
+    return replacement ?? envelope;
   }
 
   if (c.type === "node") {

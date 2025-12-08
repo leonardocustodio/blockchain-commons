@@ -121,6 +121,7 @@ Envelope.prototype.summary = function (this: Envelope, maxLength = 40): string {
       }
 
       try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         this.extractNull();
         return "null";
       } catch {
@@ -129,7 +130,7 @@ Envelope.prototype.summary = function (this: Envelope, maxLength = 40): string {
 
       // Fallback: show byte string
       const bytes = this.asByteString();
-      if (bytes && bytes.length <= 16) {
+      if (bytes !== undefined && bytes.length <= 16) {
         const hex = Array.from(bytes)
           .map((b) => b.toString(16).padStart(2, "0"))
           .join("");
@@ -192,7 +193,7 @@ Envelope.prototype.treeFormat = function (this: Envelope, options: TreeFormatOpt
     }
 
     const label = edgeLabel(elem.incomingEdge);
-    if (label) {
+    if (label !== undefined && label !== "") {
       parts.push(label);
     }
 

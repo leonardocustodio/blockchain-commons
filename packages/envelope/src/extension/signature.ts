@@ -182,8 +182,8 @@ export class SigningPublicKey implements Verifier {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
       const sig = secp256k1.Signature.fromCompact(signature.data());
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return secp256k1.verify(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         sig,
         data,
         this.#publicKey,

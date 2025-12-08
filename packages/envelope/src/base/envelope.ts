@@ -11,13 +11,16 @@ import {
   TAG_LEAF,
   TAG_ENCODED_CBOR,
   TAG_COMPRESSED,
-  TAG_ENCRYPTED,
   asByteString,
   asCborArray,
   asCborMap,
   asTaggedValue,
   tryExpectedTaggedValue,
 } from "@blockchain-commons/dcbor";
+
+/// TAG_ENCRYPTED is not exported by dcbor, so we define it here
+/// According to Gordian Envelope spec, encrypted envelope uses tag 201
+const TAG_ENCRYPTED = 201;
 
 /// The core structural variants of a Gordian Envelope.
 ///
@@ -529,6 +532,7 @@ export class Envelope implements DigestProvider {
         const arr = digest !== undefined
           ? [message.ciphertext(), message.nonce(), digest.data()]
           : [message.ciphertext(), message.nonce()];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return toTaggedValue(TAG_ENCRYPTED, Envelope.valueToCbor(arr));
       }
       case "compressed": {
@@ -651,7 +655,7 @@ export class Envelope implements DigestProvider {
 
     // Check if it's a map (assertion)
     const map = asCborMap(cbor);
-    if (map) {
+    if (map !== undefined) {
       const assertion = Assertion.fromCborMap(map);
       return Envelope.newWithAssertion(assertion);
     }

@@ -120,6 +120,7 @@ function cborToDiagnostic(cbor: CborValue, indent = 0): string {
   try {
     return JSON.stringify(cbor);
   } catch {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     return String(cbor);
   }
 }

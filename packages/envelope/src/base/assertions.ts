@@ -167,11 +167,10 @@ Envelope.prototype.addAssertionEnvelopes = function (
   this: Envelope,
   assertions: Envelope[],
 ): Envelope {
-  let result = this;
-  for (const assertion of assertions) {
-    result = result.addAssertionEnvelope(assertion);
-  }
-  return result;
+  return assertions.reduce(
+    (result, assertion) => result.addAssertionEnvelope(assertion),
+    this,
+  );
 };
 
 /// Implementation of addOptionalAssertionEnvelope
@@ -232,11 +231,10 @@ Envelope.prototype.addNonemptyStringAssertion = function (
 
 /// Implementation of addAssertions
 Envelope.prototype.addAssertions = function (this: Envelope, envelopes: Envelope[]): Envelope {
-  let result = this;
-  for (const envelope of envelopes) {
-    result = result.addAssertionEnvelope(envelope);
-  }
-  return result;
+  return envelopes.reduce(
+    (result, envelope) => result.addAssertionEnvelope(envelope),
+    this,
+  );
 };
 
 /// Implementation of addAssertionIf
