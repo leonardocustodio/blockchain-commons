@@ -184,6 +184,8 @@ declare module "../base/envelope" {
 }
 
 /// Implementation of addType()
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+if (Envelope?.prototype) {
 Envelope.prototype.addType = function (this: Envelope, object: EnvelopeEncodableValue): Envelope {
   return this.addAssertion(IS_A, object);
 };
@@ -217,3 +219,4 @@ Envelope.prototype.checkType = function (this: Envelope, t: EnvelopeEncodableVal
     throw EnvelopeError.invalidType();
   }
 };
+}

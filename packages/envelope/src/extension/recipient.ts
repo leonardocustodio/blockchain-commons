@@ -319,6 +319,8 @@ declare module "../base/envelope" {
 }
 
 /// Implementation of encryptSubjectToRecipient()
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+if (Envelope?.prototype) {
 Envelope.prototype.encryptSubjectToRecipient = async function (
   this: Envelope,
   recipientPublicKey: PublicKeyBase,
@@ -464,6 +466,7 @@ Envelope.prototype.recipients = function (this: Envelope): SealedMessage[] {
     return new SealedMessage(sealedData);
   });
 };
+}
 
 // Import side-effect to register prototype extensions
 export {};

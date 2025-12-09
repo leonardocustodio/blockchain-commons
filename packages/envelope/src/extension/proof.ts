@@ -97,6 +97,8 @@ declare module "../base/envelope" {
 }
 
 /// Implementation of proof methods on Envelope prototype
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+if (Envelope?.prototype) {
 Envelope.prototype.proofContainsSet = function (target: Set<Digest>): Envelope | undefined {
   const revealSet = revealSetOfSet(this, target);
 
@@ -129,6 +131,7 @@ Envelope.prototype.confirmContainsTarget = function (target: Envelope, proof: En
   const targetSet = new Set<Digest>([target.digest()]);
   return this.confirmContainsSet(targetSet, proof);
 };
+}
 
 /// Internal helper functions
 

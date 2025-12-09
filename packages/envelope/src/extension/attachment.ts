@@ -244,6 +244,8 @@ Envelope.newAttachment = function (
 /**
  * Adds an attachment to an envelope.
  */
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+if (Envelope?.prototype) {
 Envelope.prototype.addAttachment = function (
   this: Envelope,
   payload: EnvelopeEncodableValue,
@@ -364,3 +366,4 @@ Envelope.prototype.attachmentsWithVendorAndConformsTo = function (
     }
   });
 };
+}

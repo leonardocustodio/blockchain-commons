@@ -305,7 +305,8 @@ declare module "../base/envelope" {
 }
 
 // Implementation
-
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+if (Envelope?.prototype) {
 Envelope.prototype.addSignature = function (this: Envelope, signer: Signer): Envelope {
   return this.addSignatureWithMetadata(signer, undefined);
 };
@@ -451,3 +452,4 @@ Envelope.prototype.signatures = function (this: Envelope): Envelope[] {
       throw EnvelopeError.general("Invalid signature assertion");
     });
 };
+}

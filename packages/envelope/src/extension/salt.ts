@@ -178,6 +178,8 @@ declare module "../base/envelope" {
 }
 
 /// Implementation of addSalt()
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+if (Envelope?.prototype) {
 Envelope.prototype.addSalt = function (this: Envelope): Envelope {
   const envelopeSize = this.cborBytes().length;
   const saltSize = calculateProportionalSaltSize(envelopeSize);
@@ -220,3 +222,4 @@ Envelope.prototype.addSaltInRange = function (this: Envelope, min: number, max: 
   const saltBytes = generateRandomBytes(saltSize);
   return this.addAssertion(SALT, saltBytes);
 };
+}

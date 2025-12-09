@@ -187,6 +187,8 @@ declare module "../base/envelope" {
 }
 
 /// Implementation of compress()
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+if (Envelope?.prototype) {
 Envelope.prototype.compress = function (this: Envelope): Envelope {
   const c = this.case();
 
@@ -274,3 +276,4 @@ Envelope.prototype.decompressSubject = function (this: Envelope): Envelope {
 Envelope.prototype.isCompressed = function (this: Envelope): boolean {
   return this.case().type === "compressed";
 };
+}

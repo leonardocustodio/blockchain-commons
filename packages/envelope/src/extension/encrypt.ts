@@ -237,6 +237,8 @@ declare module "../base/envelope" {
 }
 
 /// Implementation of encryptSubject()
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+if (Envelope?.prototype) {
 Envelope.prototype.encryptSubject = async function (
   this: Envelope,
   key: SymmetricKey,
@@ -351,3 +353,4 @@ Envelope.prototype.decrypt = async function (this: Envelope, key: SymmetricKey):
 Envelope.prototype.isEncrypted = function (this: Envelope): boolean {
   return this.case().type === "encrypted";
 };
+}
