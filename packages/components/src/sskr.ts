@@ -51,14 +51,7 @@ import {
 } from "@blockchain-commons/sskr";
 
 // Re-export from sskr package
-export {
-  sskrGenerate,
-  sskrGenerateUsing,
-  sskrCombine,
-  SSKRSecret,
-  SSKRGroupSpec,
-  SSKRSpec,
-};
+export { sskrGenerate, sskrGenerateUsing, sskrCombine, SSKRSecret, SSKRGroupSpec, SSKRSpec };
 
 /** Metadata size in bytes (identifier + thresholds + indices) */
 const METADATA_SIZE_BYTES = 5;
@@ -355,10 +348,7 @@ export class SSKRShareCbor
  * @param secret - The secret to split
  * @returns Groups of SSKRShareCbor instances
  */
-export function generateSSKRSharesCbor(
-  spec: SSKRSpec,
-  secret: SSKRSecret,
-): SSKRShareCbor[][] {
+export function generateSSKRSharesCbor(spec: SSKRSpec, secret: SSKRSecret): SSKRShareCbor[][] {
   const rawGroups = sskrGenerate(spec, secret);
   return rawGroups.map((group) => group.map((shareData) => SSKRShareCbor.fromData(shareData)));
 }
@@ -369,9 +359,7 @@ export function generateSSKRSharesCbor(
  * @param shares - The shares to combine
  * @returns The recovered secret
  */
-export function combineSSKRSharesCbor(
-  shares: SSKRShareCbor[],
-): SSKRSecret {
+export function combineSSKRSharesCbor(shares: SSKRShareCbor[]): SSKRSecret {
   const rawShares = shares.map((share) => share.data());
   return sskrCombine(rawShares);
 }
