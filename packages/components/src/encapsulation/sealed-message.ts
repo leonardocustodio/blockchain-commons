@@ -60,6 +60,7 @@ import { EncapsulationScheme } from "./encapsulation-scheme.js";
 import { EncapsulationCiphertext } from "./encapsulation-ciphertext.js";
 import { EncapsulationPublicKey } from "./encapsulation-public-key.js";
 import { EncapsulationPrivateKey } from "./encapsulation-private-key.js";
+import { X25519PublicKey } from "../x25519/x25519-public-key.js";
 import { bytesToHex } from "../utils.js";
 
 /**
@@ -267,8 +268,6 @@ export class SealedMessage
    * Static method to decode from tagged CBOR.
    */
   static fromTaggedCbor(cborValue: Cbor): SealedMessage {
-    // Import synchronously to avoid circular dependency
-    const { X25519PublicKey } = require("../x25519/x25519-public-key.js");
     const dummyMessage = EncryptedMessage.new(
       new Uint8Array(0),
       new Uint8Array(0),
@@ -295,8 +294,6 @@ export class SealedMessage
    */
   static fromUntaggedCborData(data: Uint8Array): SealedMessage {
     const cborValue = decodeCbor(data);
-    // Import synchronously to avoid circular dependency
-    const { X25519PublicKey } = require("../x25519/x25519-public-key.js");
     const dummyMessage = EncryptedMessage.new(
       new Uint8Array(0),
       new Uint8Array(0),

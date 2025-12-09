@@ -14,7 +14,7 @@
  */
 
 import type { RandomNumberGenerator } from "@blockchain-commons/rand";
-import type { EncapsulationPrivateKey } from "./encapsulation-private-key.js";
+import { EncapsulationPrivateKey } from "./encapsulation-private-key.js";
 import type { EncapsulationPublicKey } from "./encapsulation-public-key.js";
 
 /**
@@ -49,12 +49,9 @@ export function defaultEncapsulationScheme(): EncapsulationScheme {
 export function createEncapsulationKeypair(
   scheme: EncapsulationScheme = EncapsulationScheme.X25519,
 ): [EncapsulationPrivateKey, EncapsulationPublicKey] {
-  // Import here to avoid circular dependency at module load time
-  const { EncapsulationPrivateKey: EncPrivKey } = require("./encapsulation-private-key.js");
-
   switch (scheme) {
     case EncapsulationScheme.X25519:
-      return EncPrivKey.keypair();
+      return EncapsulationPrivateKey.keypair();
     default:
       throw new Error(`Unsupported encapsulation scheme: ${scheme}`);
   }

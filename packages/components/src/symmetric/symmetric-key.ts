@@ -41,7 +41,7 @@ import { SYMMETRIC_KEY as TAG_SYMMETRIC_KEY } from "@blockchain-commons/tags";
 import { CryptoError } from "../error.js";
 import { bytesToHex, hexToBytes, toBase64 } from "../utils.js";
 import { Nonce } from "../nonce.js";
-import type { EncryptedMessage } from "./encrypted-message.js";
+import { EncryptedMessage } from "./encrypted-message.js";
 
 const SYMMETRIC_KEY_SIZE = 32;
 
@@ -187,9 +187,6 @@ export class SymmetricKey implements CborTaggedEncodable, CborTaggedDecodable<Sy
    * authenticated data and nonce.
    */
   encrypt(plaintext: Uint8Array, aad?: Uint8Array, nonce?: Nonce): EncryptedMessage {
-    // Import dynamically to avoid circular dependency
-    const { EncryptedMessage } = require("./encrypted-message.js");
-
     const effectiveNonce = nonce ?? Nonce.new();
     const effectiveAad = aad ?? new Uint8Array(0);
 
