@@ -55,3 +55,15 @@ export {
   SigningPublicKey,
 } from "./signing/index.js";
 export { createKeypair, createKeypairUsing, defaultSignatureScheme } from "./signing/signature-scheme.js";
+
+// Key encapsulation (from encapsulation/ module)
+export {
+  EncapsulationScheme,
+  EncapsulationPrivateKey,
+  EncapsulationPublicKey,
+  EncapsulationCiphertext,
+  SealedMessage,
+  defaultEncapsulationScheme,
+  createEncapsulationKeypair,
+  createEncapsulationKeypairUsing,
+} from "./encapsulation/index.js";
