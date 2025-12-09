@@ -74,7 +74,14 @@ export class ProvenanceMarkError extends Error {
     type: ProvenanceMarkErrorType,
     details?: Record<string, unknown>,
   ): string {
-    const d = (key: string): string => String(details?.[key] ?? "?");
+    const d = (key: string): string => {
+      const value = details?.[key];
+      if (value === undefined || value === null) return "?";
+      if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+        return String(value);
+      }
+      return JSON.stringify(value);
+    };
     switch (type) {
       case ProvenanceMarkErrorType.InvalidSeedLength:
         return `invalid seed length: expected 32 bytes, got ${d("actual")} bytes`;

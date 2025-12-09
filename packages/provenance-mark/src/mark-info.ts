@@ -1,6 +1,7 @@
 // Ported from provenance-mark-rust/src/mark_info.rs
 
 import { UR } from "@blockchain-commons/uniform-resources";
+import { decodeCbor, cborData } from "@blockchain-commons/dcbor";
 import { PROVENANCE_MARK } from "@blockchain-commons/tags";
 
 import { ProvenanceMark } from "./mark.js";
@@ -32,12 +33,13 @@ export class ProvenanceMarkInfo {
   /**
    * Create a new ProvenanceMarkInfo from a mark.
    */
-  static new(mark: ProvenanceMark, comment: string = ""): ProvenanceMarkInfo {
+  static new(mark: ProvenanceMark, comment = ""): ProvenanceMarkInfo {
     const tagName = PROVENANCE_MARK.name;
     if (tagName === undefined) {
       throw new Error("PROVENANCE_MARK tag has no name");
     }
-    const ur = UR.fromCborData(tagName, mark.toCborData());
+    const cborValue = decodeCbor(mark.toCborData());
+    const ur = UR.new(tagName, cborValue);
     const bytewords = mark.bytewordsIdentifier(true);
     const bytemoji = mark.bytemojiIdentifier(true);
     return new ProvenanceMarkInfo(mark, ur, bytewords, bytemoji, comment);
@@ -114,7 +116,8 @@ export class ProvenanceMarkInfo {
   static fromJSON(json: Record<string, unknown>): ProvenanceMarkInfo {
     const urString = json.ur as string;
     const ur = UR.fromURString(urString);
-    const mark = ProvenanceMark.fromCborData(ur.toCborData());
+    const cborBytes = cborData(ur.cbor());
+    const mark = ProvenanceMark.fromCborData(cborBytes);
     const bytewords = json.bytewords as string;
     const bytemoji = json.bytemoji as string;
     const comment = typeof json.comment === "string" ? json.comment : "";

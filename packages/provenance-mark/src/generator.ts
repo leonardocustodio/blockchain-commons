@@ -15,9 +15,9 @@ import { ProvenanceMark } from "./mark.js";
  * Generator for creating provenance mark chains.
  */
 export class ProvenanceMarkGenerator {
-  private _res: ProvenanceMarkResolution;
-  private _seed: ProvenanceSeed;
-  private _chainId: Uint8Array;
+  private readonly _res: ProvenanceMarkResolution;
+  private readonly _seed: ProvenanceSeed;
+  private readonly _chainId: Uint8Array;
   private _nextSeq: number;
   private _rngState: RngState;
 
@@ -118,7 +118,7 @@ export class ProvenanceMarkGenerator {
    */
   next(date: Date, info?: Cbor): ProvenanceMark {
     const data = this._rngState.toBytes();
-    let rng = Xoshiro256StarStar.fromData(data);
+    const rng = Xoshiro256StarStar.fromData(data);
 
     const seq = this._nextSeq;
     this._nextSeq += 1;
