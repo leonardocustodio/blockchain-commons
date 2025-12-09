@@ -59,8 +59,7 @@ export function ecdsaVerify(
 
   try {
     const messageHash = doubleSha256(message);
-    const sig = secp256k1.Signature.fromCompact(signature);
-    return secp256k1.verify(sig, messageHash, publicKey);
+    return secp256k1.verify(signature, messageHash, publicKey);
   } catch {
     return false;
   }
