@@ -102,7 +102,7 @@ export class Argon2idParams implements KeyDerivation {
   }
 
   private _deriveKey(secret: Uint8Array): Uint8Array {
-    return argon2idHash(secret, this._salt.data(), 32);
+    return argon2idHash(secret, this._salt.asBytes(), 32);
   }
 
   /**

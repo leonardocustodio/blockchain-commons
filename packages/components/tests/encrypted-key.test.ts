@@ -106,8 +106,8 @@ describe("KeyDerivationMethod", () => {
       expect(keyDerivationMethodFromIndex(3)).toBe(KeyDerivationMethod.Argon2id);
     });
 
-    it("should throw on invalid index", () => {
-      expect(() => keyDerivationMethodFromIndex(99)).toThrow();
+    it("should return undefined on invalid index", () => {
+      expect(keyDerivationMethodFromIndex(99)).toBeUndefined();
     });
   });
 

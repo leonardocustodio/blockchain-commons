@@ -120,9 +120,9 @@ export class PBKDF2Params implements KeyDerivation {
   private _deriveKey(secret: Uint8Array): Uint8Array {
     switch (this._hashType) {
       case HashType.SHA256:
-        return pbkdf2HmacSha256(secret, this._salt.data(), this._iterations, 32);
+        return pbkdf2HmacSha256(secret, this._salt.asBytes(), this._iterations, 32);
       case HashType.SHA512:
-        return pbkdf2HmacSha512(secret, this._salt.data(), this._iterations, 32);
+        return pbkdf2HmacSha512(secret, this._salt.asBytes(), this._iterations, 32);
       default:
         throw new Error(`Unknown hash type: ${this._hashType}`);
     }

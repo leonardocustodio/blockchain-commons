@@ -132,7 +132,7 @@ export class ScryptParams implements KeyDerivation {
   }
 
   private _deriveKey(secret: Uint8Array): Uint8Array {
-    return scryptOpt(secret, this._salt.data(), 32, this._logN, this._r, this._p);
+    return scryptOpt(secret, this._salt.asBytes(), 32, this._logN, this._r, this._p);
   }
 
   /**
