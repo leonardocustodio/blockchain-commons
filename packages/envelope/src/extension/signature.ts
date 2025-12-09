@@ -21,10 +21,7 @@ import {
   ECDSA_PUBLIC_KEY_SIZE,
   ECDSA_UNCOMPRESSED_PUBLIC_KEY_SIZE,
 } from "@blockchain-commons/crypto";
-import {
-  SecureRandomNumberGenerator,
-  rngRandomData,
-} from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator, rngRandomData } from "@blockchain-commons/rand";
 
 /**
  * Known value for the 'signed' predicate.
@@ -169,7 +166,10 @@ export class SigningPublicKey implements Verifier {
   readonly #publicKey: Uint8Array;
 
   constructor(publicKey: Uint8Array) {
-    if (publicKey.length !== ECDSA_PUBLIC_KEY_SIZE && publicKey.length !== ECDSA_UNCOMPRESSED_PUBLIC_KEY_SIZE) {
+    if (
+      publicKey.length !== ECDSA_PUBLIC_KEY_SIZE &&
+      publicKey.length !== ECDSA_UNCOMPRESSED_PUBLIC_KEY_SIZE
+    ) {
       throw new Error(
         `Public key must be ${ECDSA_PUBLIC_KEY_SIZE} bytes (compressed) or ${ECDSA_UNCOMPRESSED_PUBLIC_KEY_SIZE} bytes (uncompressed)`,
       );

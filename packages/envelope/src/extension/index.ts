@@ -11,10 +11,10 @@ export { IS_A } from "./types";
 export { SALT } from "./salt";
 
 // Compression support
-export { Compressed } from "./compress";
+export { Compressed, registerCompressExtension } from "./compress";
 
 // Encryption support
-export { SymmetricKey, EncryptedMessage } from "./encrypt";
+export { SymmetricKey, EncryptedMessage, registerEncryptExtension } from "./encrypt";
 
 // Signature support
 export {

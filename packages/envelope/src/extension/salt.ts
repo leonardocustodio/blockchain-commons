@@ -3,7 +3,7 @@ import { EnvelopeError } from "../base/error";
 import {
   SecureRandomNumberGenerator,
   rngRandomData,
-  rngNextInClosedRange,
+  rngNextInClosedRangeI32,
   type RandomNumberGenerator,
 } from "@blockchain-commons/rand";
 
@@ -52,15 +52,12 @@ function generateRandomBytes(length: number, rng?: RandomNumberGenerator): Uint8
 
 /// Calculates salt size proportional to envelope size
 /// This matches the Rust implementation in bc-components-rust/src/salt.rs
-function calculateProportionalSaltSize(
-  envelopeSize: number,
-  rng?: RandomNumberGenerator,
-): number {
+function calculateProportionalSaltSize(envelopeSize: number, rng?: RandomNumberGenerator): number {
   const actualRng = rng ?? createSecureRng();
   const count = envelopeSize;
   const minSize = Math.max(8, Math.ceil(count * 0.05));
   const maxSize = Math.max(minSize + 8, Math.ceil(count * 0.25));
-  return rngNextInClosedRange(actualRng, minSize, maxSize);
+  return rngNextInClosedRangeI32(actualRng, minSize, maxSize);
 }
 
 declare module "../base/envelope" {
@@ -219,7 +216,7 @@ if (Envelope?.prototype) {
       );
     }
     const rng = createSecureRng();
-    const saltSize = rngNextInClosedRange(rng, min, max);
+    const saltSize = rngNextInClosedRangeI32(rng, min, max);
     const saltBytes = generateRandomBytes(saltSize, rng);
     return this.addAssertion(SALT, saltBytes);
   };

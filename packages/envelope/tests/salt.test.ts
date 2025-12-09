@@ -25,7 +25,7 @@ describe("Salt Extension", () => {
 
       const hasSalt = salted.assertions().some((a) => {
         try {
-          return a.predicate().asText() === SALT;
+          return a.asPredicate()?.asText() === SALT;
         } catch {
           return false;
         }

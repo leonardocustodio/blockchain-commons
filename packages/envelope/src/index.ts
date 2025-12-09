@@ -14,6 +14,12 @@ export * from "./base";
 // Re-export everything from the extension module
 export * from "./extension";
 
+// Import registration functions and call them to ensure proper initialization order
+import { registerEncryptExtension } from "./extension/encrypt";
+import { registerCompressExtension } from "./extension/compress";
+registerEncryptExtension();
+registerCompressExtension();
+
 // Re-export everything from the format module
 // Import for side effects (registers prototype extensions like treeFormat)
 import "./format";

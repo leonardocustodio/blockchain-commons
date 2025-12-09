@@ -13,10 +13,7 @@ import {
   SYMMETRIC_NONCE_SIZE,
   SYMMETRIC_AUTH_SIZE,
 } from "@blockchain-commons/crypto";
-import {
-  SecureRandomNumberGenerator,
-  rngRandomData,
-} from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator, rngRandomData } from "@blockchain-commons/rand";
 
 /// Extension for public-key encryption to specific recipients.
 ///

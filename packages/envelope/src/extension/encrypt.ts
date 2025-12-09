@@ -7,7 +7,6 @@ import {
   aeadChaCha20Poly1305DecryptWithAad,
   SYMMETRIC_KEY_SIZE,
   SYMMETRIC_NONCE_SIZE,
-  SYMMETRIC_AUTH_SIZE,
 } from "@blockchain-commons/crypto";
 import {
   SecureRandomNumberGenerator,
@@ -139,12 +138,7 @@ export class EncryptedMessage {
   readonly #authTag: Uint8Array;
   readonly #aadDigest?: Digest;
 
-  constructor(
-    ciphertext: Uint8Array,
-    nonce: Uint8Array,
-    authTag: Uint8Array,
-    aadDigest?: Digest,
-  ) {
+  constructor(ciphertext: Uint8Array, nonce: Uint8Array, authTag: Uint8Array, aadDigest?: Digest) {
     this.#ciphertext = ciphertext;
     this.#nonce = nonce;
     this.#authTag = authTag;
@@ -264,9 +258,19 @@ declare module "../base/envelope" {
   }
 }
 
-/// Implementation of encryptSubject()
-// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-if (Envelope?.prototype) {
+/// Register encryption extension methods on Envelope prototype
+/// This function is exported and called during module initialization
+/// to ensure Envelope is fully defined before attaching methods.
+export function registerEncryptExtension(): void {
+  if (Envelope?.prototype === undefined) {
+    return;
+  }
+
+  // Skip if already registered
+  if (typeof Envelope.prototype.encryptSubject === "function") {
+    return;
+  }
+
   Envelope.prototype.encryptSubject = function (this: Envelope, key: SymmetricKey): Envelope {
     const c = this.case();
 
@@ -373,3 +377,7 @@ if (Envelope?.prototype) {
     return this.case().type === "encrypted";
   };
 }
+
+// Auto-register on module load - will be called again from index.ts
+// to ensure proper ordering after all modules are loaded
+registerEncryptExtension();
