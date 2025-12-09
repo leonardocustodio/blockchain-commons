@@ -3,6 +3,17 @@
   "version": "1.0.0-alpha.4",
   "type": "module",
   "description": "Blockchain Commons Cryptographic Utilities for TypeScript",
+  "license": "BSD-2-Clause-Patent",
+  "author": "Leonardo Custodio <leonardo@custodio.me>",
+  "homepage": "https://github.com/leonardocustodio/blockchain-commons",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leonardocustodio/blockchain-commons",
+    "directory": "packages/crypto"
+  },
+  "bugs": {
+    "url": "https://github.com/leonardocustodio/blockchain-commons/issues"
+  },
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.mts",
@@ -19,7 +30,8 @@
   "files": [
     "dist",
     "src",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsdown",

@@ -2,7 +2,7 @@
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["src/index.ts"],
   "out": "docs",
-  "name": "Blockchain Commons XID TypeScript Library",
+  "name": "Blockchain Commons Shamir Secret Sharing TypeScript Library",
   "includeVersion": true,
   "readme": "README.md",
   "exclude": [
@@ -23,10 +23,9 @@
   "categorizeByGroup": true,
   "defaultCategory": "Other",
   "categoryOrder": [
-    "Core CBOR",
-    "Encoding/Decoding",
-    "Data Structures",
-    "Tagged Values",
+    "Secret Sharing",
+    "Share Management",
+    "Cryptography",
     "Utilities",
     "*"
   ],

@@ -3,6 +3,17 @@
   "version": "1.0.0-alpha.4",
   "type": "module",
   "description": "Blockchain Commons XID for TypeScript",
+  "license": "BSD-2-Clause-Patent",
+  "author": "Leonardo Custodio <leonardo@custodio.me>",
+  "homepage": "https://github.com/leonardocustodio/blockchain-commons",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leonardocustodio/blockchain-commons",
+    "directory": "packages/xid"
+  },
+  "bugs": {
+    "url": "https://github.com/leonardocustodio/blockchain-commons/issues"
+  },
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.mts",
@@ -34,12 +45,14 @@
     "prepublishOnly": "npm run clean && npm run build && npm test"
   },
   "keywords": [
-    "cbor",
-    "tags",
+    "xid",
+    "extensible-identifier",
+    "decentralized-identity",
     "blockchain-commons",
     "envelope",
     "gordian",
-    "cryptography"
+    "cryptography",
+    "provenance"
   ],
   "engines": {
     "node": ">=18.0.0"
