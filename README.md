@@ -21,6 +21,7 @@ A comprehensive TypeScript monorepo implementing [Blockchain Commons](https://ww
 | [**shamir**](packages/shamir) | Shamir's Secret Sharing - split secrets into shares where any threshold can reconstruct the original. Implements GF(256) arithmetic for secure secret splitting. | `1.0.0-alpha.2` | [bc-shamir-rust](https://github.com/BlockchainCommons/bc-shamir-rust) |
 | [**sskr**](packages/sskr) | Sharded Secret Key Reconstruction (SSKR) - hierarchical secret sharing with groups and thresholds. Encodes shares in Bytewords for human-friendly backup. | `1.0.0-alpha.2` | [bc-sskr-rust](https://github.com/BlockchainCommons/bc-sskr-rust) |
 | [**provenance-mark**](packages/provenance-mark) | Provenance Marks - cryptographically-secured system for establishing authenticity and provenance of digital works. Generates verifiable mark chains with configurable resolution levels. | `1.0.0-alpha.2` | [provenance-mark-rust](https://github.com/BlockchainCommons/provenance-mark-rust) |
+| [**xid**](packages/xid) | Extensible Identifiers (XID) - decentralized digital identity documents supporting keys, delegates, services, and provenance. Enables self-sovereign identity management with cryptographic verification. | `1.0.0-alpha.2` | [bc-xid-rust](https://github.com/BlockchainCommons/bc-xid-rust) |
 
 ## 🎮 Applications
 
@@ -70,6 +71,7 @@ This TypeScript implementation follows the Rust reference implementations as the
 - **[Shamir's Secret Sharing](https://github.com/BlockchainCommons/bc-shamir-rust)** - Split secrets into shares with threshold reconstruction
 - **[SSKR](https://github.com/BlockchainCommons/bc-sskr-rust)** - Sharded Secret Key Reconstruction with hierarchical groups (BCR-2020-011)
 - **[Provenance Mark](https://github.com/BlockchainCommons/provenance-mark-rust)** - Cryptographic provenance marks for digital authenticity
+- **[XID](https://github.com/BlockchainCommons/bc-xid-rust)** - Extensible Identifiers for decentralized digital identity
 
 For complete specifications and reference implementations in other languages, visit:
 - [BlockchainCommons GitHub](https://github.com/BlockchainCommons)

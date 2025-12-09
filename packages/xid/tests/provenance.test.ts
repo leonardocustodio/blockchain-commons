@@ -4,13 +4,12 @@
  */
 
 import { PrivateKeyBase } from "@blockchain-commons/envelope";
-import { makeFakeRandomNumberGenerator } from "@blockchain-commons/rand";
 import {
   ProvenanceMarkGenerator,
   ProvenanceMarkResolution,
 } from "@blockchain-commons/provenance-mark";
 import { cbor } from "@blockchain-commons/dcbor";
-import { Provenance, XIDGeneratorOptions, XIDDocument, XIDError, XIDErrorCode } from "../src";
+import { Provenance, XIDGeneratorOptions, XIDDocument } from "../src";
 
 describe("Provenance", () => {
   describe("Basic provenance", () => {
@@ -201,8 +200,7 @@ describe("Provenance", () => {
 
   describe("Advancing provenance marks", () => {
     it("should advance with embedded generator", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const passphrase = "test_passphrase";
       const date1 = new Date(Date.UTC(2025, 0, 1));
@@ -240,8 +238,6 @@ describe("Provenance", () => {
     });
 
     it("should advance with provided generator", () => {
-      const rng = makeFakeRandomNumberGenerator();
-
       // Create a generator
       const passphrase = "test_passphrase";
       const generator = ProvenanceMarkGenerator.newWithPassphrase(
@@ -254,7 +250,7 @@ describe("Provenance", () => {
       const mark1 = generator.next(date1, cbor("Genesis mark"));
 
       // Create XID document WITHOUT embedded generator
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
       const xidDocBase = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
         { type: "none" },
@@ -284,8 +280,7 @@ describe("Provenance", () => {
 
   describe("Provenance errors", () => {
     it("should error when advancing without provenance mark", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDoc = XIDDocument.new({ type: "privateKeyBase", privateKeyBase }, { type: "none" });
 
@@ -295,8 +290,6 @@ describe("Provenance", () => {
     });
 
     it("should error when advancing without generator", () => {
-      const rng = makeFakeRandomNumberGenerator();
-
       // Create a mark without generator
       const generator = ProvenanceMarkGenerator.newWithPassphrase(
         ProvenanceMarkResolution.High,
@@ -306,7 +299,7 @@ describe("Provenance", () => {
       const mark = generator.next(date, cbor("Test"));
 
       // Create XID document with mark but no generator
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
       const xidDocBase = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
         { type: "none" },
@@ -320,10 +313,9 @@ describe("Provenance", () => {
     });
 
     it("should error on generator conflict", () => {
-      const rng = makeFakeRandomNumberGenerator();
       const passphrase = "test_passphrase";
       const date = new Date(Date.UTC(2025, 0, 1));
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDoc = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
@@ -349,8 +341,6 @@ describe("Provenance", () => {
     });
 
     it("should error on chain ID mismatch", () => {
-      const rng = makeFakeRandomNumberGenerator();
-
       // Create a mark with one generator
       const generator1 = ProvenanceMarkGenerator.newWithPassphrase(
         ProvenanceMarkResolution.High,
@@ -360,7 +350,7 @@ describe("Provenance", () => {
       const mark1 = generator1.next(date1, cbor("Test"));
 
       // Create XID document with mark but no embedded generator
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
       const xidDocBase = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
         { type: "none" },
@@ -380,8 +370,6 @@ describe("Provenance", () => {
     });
 
     it("should error on sequence mismatch", () => {
-      const rng = makeFakeRandomNumberGenerator();
-
       // Create a mark at seq 0
       const generator = ProvenanceMarkGenerator.newWithPassphrase(
         ProvenanceMarkResolution.High,
@@ -395,7 +383,7 @@ describe("Provenance", () => {
       generator.next(date2, cbor("Test"));
 
       // Create XID document with mark at seq 0
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
       const xidDocBase = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
         { type: "none" },

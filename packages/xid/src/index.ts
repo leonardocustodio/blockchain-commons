@@ -8,7 +8,7 @@
  */
 
 // Error handling
-export { XIDError, XIDErrorCode, type XIDResult } from "./error.js";
+export { XIDError, XIDErrorCode, type XIDResult } from "./error";
 
 // Privilege system
 export {
@@ -17,16 +17,16 @@ export {
   privilegeFromKnownValue,
   privilegeToEnvelope,
   privilegeFromEnvelope,
-} from "./privilege.js";
+} from "./privilege";
 
 // Permissions
-export { Permissions, type HasPermissions, HasPermissionsMixin } from "./permissions.js";
+export { Permissions, type HasPermissions, HasPermissionsMixin } from "./permissions";
 
 // Name/Nickname
-export { type HasNickname, HasNicknameMixin } from "./name.js";
+export { type HasNickname, HasNicknameMixin } from "./name";
 
 // Shared reference wrapper
-export { Shared } from "./shared.js";
+export { Shared } from "./shared";
 
 // Key types
 export {
@@ -35,13 +35,13 @@ export {
   type XIDPrivateKeyEncryptConfig,
   type XIDPrivateKeyOptionsValue,
   type PrivateKeyData,
-} from "./key.js";
+} from "./key";
 
 // Service
-export { Service } from "./service.js";
+export { Service } from "./service";
 
 // Delegate
-export { Delegate, registerXIDDocumentClass } from "./delegate.js";
+export { Delegate, registerXIDDocumentClass } from "./delegate";
 
 // Provenance
 export {
@@ -50,7 +50,7 @@ export {
   type XIDGeneratorEncryptConfig,
   type XIDGeneratorOptionsValue,
   type GeneratorData,
-} from "./provenance.js";
+} from "./provenance";
 
 // XID Document (main export)
 export {
@@ -59,7 +59,7 @@ export {
   type XIDGenesisMarkOptions,
   type XIDSigningOptions,
   XIDVerifySignature,
-} from "./xid-document.js";
+} from "./xid-document";
 
 // Version information
 export const VERSION = "1.0.0-alpha.3";

@@ -3,11 +3,9 @@
  * Ported from bc-xid-rust/tests/test_xid_document.rs
  */
 
-import { PrivateKeyBase, Envelope } from "@blockchain-commons/envelope";
-import { makeFakeRandomNumberGenerator } from "@blockchain-commons/rand";
+import { PrivateKeyBase } from "@blockchain-commons/envelope";
 import { ProvenanceMarkResolution } from "@blockchain-commons/provenance-mark";
 import { XID } from "@blockchain-commons/components";
-import { cbor } from "@blockchain-commons/dcbor";
 import {
   XIDDocument,
   Key,
@@ -17,14 +15,13 @@ import {
   XIDPrivateKeyOptions,
   XIDGeneratorOptions,
   XIDVerifySignature,
-  XIDError,
 } from "../src";
 
 describe("XIDDocument", () => {
   describe("Basic creation", () => {
     it("should create XID document from public keys", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
       const publicKeys = privateKeyBase.publicKeys();
 
       const xidDocument = XIDDocument.new(
@@ -43,8 +40,8 @@ describe("XIDDocument", () => {
     });
 
     it("should create XID document from private key base", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
@@ -57,8 +54,8 @@ describe("XIDDocument", () => {
     });
 
     it("should create minimal XID document from XID only", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
       const xid = XID.from(privateKeyBase);
 
       const xidDocument = XIDDocument.fromXid(xid);
@@ -75,8 +72,8 @@ describe("XIDDocument", () => {
 
   describe("Resolution methods", () => {
     it("should manage resolution methods", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
@@ -99,8 +96,8 @@ describe("XIDDocument", () => {
 
   describe("Keys management", () => {
     it("should manage keys", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
@@ -112,7 +109,7 @@ describe("XIDDocument", () => {
       expect(inceptionKey).toBeDefined();
 
       // Add another key
-      const privateKeyBase2 = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase2 = PrivateKeyBase.generate();
       const key2 = Key.newAllowAll(privateKeyBase2.publicKeys());
       xidDocument.addKey(key2);
 
@@ -120,8 +117,8 @@ describe("XIDDocument", () => {
     });
 
     it("should find keys by public key base and reference", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
@@ -138,8 +135,8 @@ describe("XIDDocument", () => {
     });
 
     it("should remove inception key", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
@@ -157,8 +154,8 @@ describe("XIDDocument", () => {
     });
 
     it("should identify inception key correctly", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
@@ -168,21 +165,21 @@ describe("XIDDocument", () => {
       expect(xidDocument.isInceptionKey(privateKeyBase.publicKeys())).toBe(true);
 
       // Add another key that's not inception
-      const privateKeyBase2 = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase2 = PrivateKeyBase.generate();
       expect(xidDocument.isInceptionKey(privateKeyBase2.publicKeys())).toBe(false);
     });
   });
 
   describe("Delegates management", () => {
     it("should manage delegates", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const alicePrivateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const alicePrivateKeyBase = PrivateKeyBase.generate();
       const aliceXidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase: alicePrivateKeyBase },
         { type: "none" },
       );
 
-      const bobPrivateKeyBase = PrivateKeyBase.newUsing(rng);
+      const bobPrivateKeyBase = PrivateKeyBase.generate();
       const bobXidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: bobPrivateKeyBase.publicKeys() },
         { type: "none" },
@@ -207,10 +204,10 @@ describe("XIDDocument", () => {
 
   describe("Services management", () => {
     it("should manage services with references", () => {
-      const rng = makeFakeRandomNumberGenerator();
+      
 
       // Create Alice with key
-      const alicePrivateKeyBase = PrivateKeyBase.newUsing(rng);
+      const alicePrivateKeyBase = PrivateKeyBase.generate();
       const aliceXidDocument = XIDDocument.new(
         {
           type: "publicKeyBase",
@@ -221,7 +218,7 @@ describe("XIDDocument", () => {
       const aliceKey = aliceXidDocument.inceptionKey()!;
 
       // Create Bob as delegate
-      const bobPrivateKeyBase = PrivateKeyBase.newUsing(rng);
+      const bobPrivateKeyBase = PrivateKeyBase.generate();
       const bobXidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: bobPrivateKeyBase.publicKeys() },
         { type: "none" },
@@ -249,8 +246,8 @@ describe("XIDDocument", () => {
     });
 
     it("should prevent removing referenced keys", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
@@ -280,8 +277,8 @@ describe("XIDDocument", () => {
 
   describe("Provenance", () => {
     it("should create XID document with provenance", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
@@ -300,8 +297,8 @@ describe("XIDDocument", () => {
 
   describe("Private key options", () => {
     it("should omit private key by default", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
@@ -318,8 +315,8 @@ describe("XIDDocument", () => {
     });
 
     it("should include private key when specified", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
@@ -336,8 +333,8 @@ describe("XIDDocument", () => {
     });
 
     it("should elide private key when specified", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
@@ -356,8 +353,8 @@ describe("XIDDocument", () => {
     });
 
     it("should encrypt private key when specified", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
       const password = new TextEncoder().encode("secure_password");
 
       const xidDocument = XIDDocument.new(
@@ -387,8 +384,8 @@ describe("XIDDocument", () => {
 
   describe("Signing", () => {
     it("should sign with inception key", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
@@ -411,8 +408,8 @@ describe("XIDDocument", () => {
     });
 
     it("should fail signing without inception key private key", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
@@ -429,9 +426,9 @@ describe("XIDDocument", () => {
 
   describe("Document comparison", () => {
     it("should compare documents by XID", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase1 = PrivateKeyBase.newUsing(rng);
-      const privateKeyBase2 = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase1 = PrivateKeyBase.generate();
+      const privateKeyBase2 = PrivateKeyBase.generate();
 
       const xidDocument1 = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase1.publicKeys() },
@@ -455,8 +452,8 @@ describe("XIDDocument", () => {
 
   describe("Document cloning", () => {
     it("should clone document correctly", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
@@ -476,8 +473,8 @@ describe("XIDDocument", () => {
 
   describe("Encrypted generator", () => {
     it("should encrypt and decrypt generator in document", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
       const password = new TextEncoder().encode("generator_password");
 
       const xidDocument = XIDDocument.new(
@@ -514,8 +511,8 @@ describe("XIDDocument", () => {
 
   describe("Changing keys", () => {
     it("should allow changing keys", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase },
@@ -528,7 +525,7 @@ describe("XIDDocument", () => {
       expect(xidDocument.isEmpty()).toBe(true);
 
       // Add new key
-      const privateKeyBase2 = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase2 = PrivateKeyBase.generate();
       const key2 = Key.newAllowAll(privateKeyBase2.publicKeys());
       xidDocument.addKey(key2);
 
@@ -540,18 +537,18 @@ describe("XIDDocument", () => {
 
   describe("Multiple keys with encryption", () => {
     it("should encrypt multiple keys", () => {
-      const rng = makeFakeRandomNumberGenerator();
+      
       const password = new TextEncoder().encode("multi_key_password");
 
       // Create document with inception key
-      const inceptionBase = PrivateKeyBase.newUsing(rng);
+      const inceptionBase = PrivateKeyBase.generate();
       const xidDocument = XIDDocument.new(
         { type: "privateKeyBase", privateKeyBase: inceptionBase },
         { type: "none" },
       );
 
       // Add a second key
-      const secondBase = PrivateKeyBase.newUsing(rng);
+      const secondBase = PrivateKeyBase.generate();
       const secondKey = Key.newWithPrivateKeyBase(secondBase);
       xidDocument.addKey(secondKey);
 
@@ -573,8 +570,8 @@ describe("XIDDocument", () => {
 
   describe("Mode switching", () => {
     it("should switch between storage modes", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
       const password = new TextEncoder().encode("mode_switch_password");
 
       const xidDocument = XIDDocument.new(
@@ -609,8 +606,8 @@ describe("XIDDocument", () => {
 
   describe("Empty document", () => {
     it("should correctly identify empty documents", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
       const xid = XID.from(privateKeyBase);
 
       const xidDocument = XIDDocument.fromXid(xid);
@@ -635,8 +632,8 @@ describe("XIDDocument", () => {
 
   describe("Reference calculation", () => {
     it("should calculate document reference from XID", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      
+      const privateKeyBase = PrivateKeyBase.generate();
 
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },

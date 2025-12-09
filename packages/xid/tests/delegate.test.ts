@@ -4,22 +4,19 @@
  */
 
 import { PrivateKeyBase } from "@blockchain-commons/envelope";
-import { makeFakeRandomNumberGenerator } from "@blockchain-commons/rand";
 import { Delegate, XIDDocument, Privilege } from "../src";
 
 describe("Delegate", () => {
   it("should create delegate with controller and permissions", () => {
-    const rng = makeFakeRandomNumberGenerator();
-
     // Create Alice's XIDDocument
-    const alicePrivateKeyBase = PrivateKeyBase.newUsing(rng);
+    const alicePrivateKeyBase = PrivateKeyBase.generate();
     const aliceXidDocument = XIDDocument.new(
       { type: "privateKeyBase", privateKeyBase: alicePrivateKeyBase },
       { type: "none" },
     );
 
     // Create Bob's XIDDocument
-    const bobPrivateKeyBase = PrivateKeyBase.newUsing(rng);
+    const bobPrivateKeyBase = PrivateKeyBase.generate();
     const bobPublicKeys = bobPrivateKeyBase.publicKeys();
     const bobXidDocument = XIDDocument.new(
       { type: "publicKeyBase", publicKeyBase: bobPublicKeys },
@@ -58,8 +55,7 @@ describe("Delegate", () => {
 
   describe("Delegate properties", () => {
     it("should get controller XID", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
         { type: "none" },
@@ -70,8 +66,7 @@ describe("Delegate", () => {
     });
 
     it("should access controller through shared reference", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
         { type: "none" },
@@ -83,8 +78,7 @@ describe("Delegate", () => {
     });
 
     it("should get delegate reference", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
         { type: "none" },
@@ -98,8 +92,7 @@ describe("Delegate", () => {
 
   describe("Delegate permissions", () => {
     it("should manage delegate permissions", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
         { type: "none" },
@@ -116,14 +109,13 @@ describe("Delegate", () => {
 
   describe("Delegate equality and cloning", () => {
     it("should compare delegates by XID", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase1 = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase1 = PrivateKeyBase.generate();
       const xidDocument1 = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase1.publicKeys() },
         { type: "none" },
       );
 
-      const privateKeyBase2 = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase2 = PrivateKeyBase.generate();
       const xidDocument2 = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase2.publicKeys() },
         { type: "none" },
@@ -138,8 +130,7 @@ describe("Delegate", () => {
     });
 
     it("should clone delegate correctly", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
         { type: "none" },
@@ -156,8 +147,7 @@ describe("Delegate", () => {
 
   describe("Delegate hash key", () => {
     it("should use XID hex as hash key", () => {
-      const rng = makeFakeRandomNumberGenerator();
-      const privateKeyBase = PrivateKeyBase.newUsing(rng);
+      const privateKeyBase = PrivateKeyBase.generate();
       const xidDocument = XIDDocument.new(
         { type: "publicKeyBase", publicKeyBase: privateKeyBase.publicKeys() },
         { type: "none" },
