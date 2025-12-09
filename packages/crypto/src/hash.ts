@@ -4,18 +4,31 @@ import { sha256 as nobleSha256, sha512 as nobleSha512 } from "@noble/hashes/sha2
 import { hmac } from "@noble/hashes/hmac";
 import { pbkdf2 } from "@noble/hashes/pbkdf2";
 import { hkdf } from "@noble/hashes/hkdf";
-import { crc32 as nobleCrc32 } from "@noble/hashes/crc32";
 
 // Constants
 export const CRC32_SIZE = 4;
 export const SHA256_SIZE = 32;
 export const SHA512_SIZE = 64;
 
+// CRC-32 lookup table (IEEE polynomial 0xedb88320)
+const CRC32_TABLE = new Uint32Array(256);
+for (let i = 0; i < 256; i++) {
+  let crc = i;
+  for (let j = 0; j < 8; j++) {
+    crc = crc & 1 ? (crc >>> 1) ^ 0xedb88320 : crc >>> 1;
+  }
+  CRC32_TABLE[i] = crc >>> 0;
+}
+
 /**
  * Calculate CRC-32 checksum
  */
 export function crc32(data: Uint8Array): number {
-  return nobleCrc32(data);
+  let crc = 0xffffffff;
+  for (let i = 0; i < data.length; i++) {
+    crc = CRC32_TABLE[(crc ^ data[i]) & 0xff] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xffffffff) >>> 0;
 }
 
 /**
