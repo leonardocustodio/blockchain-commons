@@ -1,8 +1,17 @@
 # Blockchain Commons - TypeScript
 
-> Disclaimer: This whole repository is still in its early stages and under heavy development. Please note that the APIs and interfaces are subject to change and are not yet stable.
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![Monorepo](https://img.shields.io/badge/Monorepo-Turborepo-blueviolet)](https://turbo.build/)
+[![Package Manager](https://img.shields.io/badge/Package%20Manager-Bun-FFD700)](https://bun.sh/)
+[![Status](https://img.shields.io/badge/Status-Early%20Development-orange)](#-disclaimer)
 
-A comprehensive TypeScript monorepo implementing [Blockchain Commons](https://www.blockchaincommons.com/) specifications for cryptographic data encoding, uniform resources, and secure information structures.
+🔷 **Community Implementation:** This is an independent TypeScript monorepo implementing [Blockchain Commons](https://www.blockchaincommons.com/) open specifications. It is **not an official** Blockchain Commons repository.
+
+> 🚧 **Disclaimer:** This repository is in early development stages. APIs and interfaces are subject to change and are not yet stable.
+
+## Overview
+
+This monorepo provides TypeScript implementations of Blockchain Commons specifications including deterministic CBOR encoding, Gordian Envelope, Uniform Resources (URs), Sharded Secret Key Reconstruction (SSKR), and other cryptographic standards. All implementations follow the Rust reference implementations as the source of truth and maintain compatibility with the official specifications.
 
 ## 📦 Packages
 
