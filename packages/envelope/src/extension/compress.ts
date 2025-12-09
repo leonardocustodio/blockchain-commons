@@ -186,9 +186,19 @@ declare module "../base/envelope" {
   }
 }
 
-/// Implementation of compress()
-// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-if (Envelope?.prototype) {
+/// Register compression extension methods on Envelope prototype
+/// This function is exported and called during module initialization
+/// to ensure Envelope is fully defined before attaching methods.
+export function registerCompressExtension(): void {
+  if (Envelope?.prototype === undefined) {
+    return;
+  }
+
+  // Skip if already registered
+  if (typeof Envelope.prototype.compress === "function") {
+    return;
+  }
+
   Envelope.prototype.compress = function (this: Envelope): Envelope {
     const c = this.case();
 
@@ -277,3 +287,7 @@ if (Envelope?.prototype) {
     return this.case().type === "compressed";
   };
 }
+
+// Auto-register on module load - will be called again from index.ts
+// to ensure proper ordering after all modules are loaded
+registerCompressExtension();

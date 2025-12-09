@@ -7,37 +7,8 @@ import { cborData } from "@blockchain-commons/dcbor";
 /// representations of their CBOR encoding, useful for debugging and
 /// low-level inspection.
 
-declare module "../base/envelope" {
-  interface Envelope {
-    /// Returns the CBOR hex dump of this envelope.
-    ///
-    /// The hex output shows the raw CBOR bytes in hexadecimal format,
-    /// which is useful for debugging and understanding the binary structure.
-    ///
-    /// @returns A hexadecimal string representation of the envelope's CBOR
-    ///   encoding
-    ///
-    /// @example
-    /// ```typescript
-    /// const envelope = Envelope.new("Hello");
-    /// console.log(envelope.hex());
-    /// // Output: d8c8456548656c6c6f
-    /// ```
-    hex(): string;
-
-    /// Returns the CBOR bytes of this envelope as a Uint8Array.
-    ///
-    /// @returns The CBOR-encoded bytes
-    ///
-    /// @example
-    /// ```typescript
-    /// const envelope = Envelope.new("Hello");
-    /// const bytes = envelope.cborBytes();
-    /// console.log(bytes); // Uint8Array [...]
-    /// ```
-    cborBytes(): Uint8Array;
-  }
-}
+// Note: Method declarations are in the base Envelope class.
+// This module provides the prototype implementations.
 
 /// Implementation of hex()
 Envelope.prototype.hex = function (this: Envelope): string {

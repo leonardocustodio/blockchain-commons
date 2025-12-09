@@ -1,6 +1,6 @@
 {
   "name": "@blockchain-commons/known-values",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "type": "module",
   "description": "Blockchain Commons Known Values for TypeScript",
   "main": "dist/index.cjs",
@@ -29,9 +29,7 @@
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' --fix",
     "typecheck": "tsc --noEmit",
-    "check-types": "tsc --noEmit",
-    "docs": "typedoc",
-    "docs:watch": "typedoc --watch"
+    "docs": "typedoc"
   },
   "keywords": [
     "known-values",
@@ -54,14 +52,14 @@
     "@blockchain-commons/tsconfig": "workspace:*",
     "@eslint/js": "^9.39.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.10.1",
-    "@types/pako": "^2.0.3",
+    "@types/node": "^24.10.2",
+    "@types/pako": "^2.0.4",
     "eslint": "^9.39.1",
     "jest": "^30.2.0",
-    "prettier": "^3.2.5",
-    "ts-jest": "^29.4.5",
+    "prettier": "^3.7.4",
+    "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
-    "tsdown": "^0.17.1",
+    "tsdown": "^0.17.2",
     "typedoc": "^0.28.15",
     "typescript": "^5.9.3"
   }

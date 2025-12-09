@@ -1,6 +1,6 @@
 {
   "name": "@blockchain-commons/envelope",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "type": "module",
   "description": "Gordian Envelope for TypeScript",
   "main": "dist/index.cjs",
@@ -24,14 +24,13 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "test": "echo 'Skipping tests for envelope package (needs ESM configuration for @noble packages)'",
+    "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint 'src/**/*.ts' 'tests/**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' 'tests/**/*.ts' --fix",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "docs": "typedoc",
-    "docs:watch": "typedoc --watch",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
@@ -54,7 +53,6 @@
     "@blockchain-commons/tsconfig": "workspace:*",
     "@eslint/js": "^9.39.1",
     "@types/jest": "^30.0.0",
-    "@types/libsodium-wrappers": "^0.7.14",
     "@types/node": "^24.10.1",
     "@types/pako": "^2.0.3",
     "eslint": "^9.39.1",
@@ -67,12 +65,11 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@blockchain-commons/crypto": "workspace:*",
     "@blockchain-commons/dcbor": "workspace:*",
     "@blockchain-commons/known-values": "workspace:*",
+    "@blockchain-commons/rand": "workspace:*",
     "@blockchain-commons/tags": "workspace:*",
-    "@noble/curves": "^2.0.1",
-    "@noble/hashes": "^1.8.0",
-    "libsodium-wrappers": "^0.7.13",
     "pako": "^2.1.0"
   }
 }

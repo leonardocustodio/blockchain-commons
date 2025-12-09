@@ -527,13 +527,14 @@ export class Envelope implements DigestProvider {
         throw new Error("Known value encoding not yet implemented");
       case "encrypted": {
         // Encrypted is tagged with TAG_ENCRYPTED (40002)
-        // Contains: [ciphertext, nonce, optional_digest]
+        // Contains: [ciphertext, nonce, auth, optional_aad_digest]
+        // Per BCR-2023-004 and BCR-2022-001
         const message = c.message;
         const digest = message.aadDigest();
         const arr =
           digest !== undefined
-            ? [message.ciphertext(), message.nonce(), digest.data()]
-            : [message.ciphertext(), message.nonce()];
+            ? [message.ciphertext(), message.nonce(), message.authTag(), digest.data()]
+            : [message.ciphertext(), message.nonce(), message.authTag()];
         return toTaggedValue(TAG_ENCRYPTED, Envelope.valueToCbor(arr));
       }
       case "compressed": {
@@ -600,29 +601,30 @@ export class Envelope implements DigestProvider {
           return Envelope.fromCase({ type: "compressed", value: compressed });
         }
         case TAG_ENCRYPTED: {
-          // Encrypted envelope: array with [ciphertext, nonce, optional_digest]
+          // Encrypted envelope: array with [ciphertext, nonce, auth, optional_aad_digest]
+          // Per BCR-2023-004 and BCR-2022-001
           const arr = asCborArray(item);
-          if (arr === undefined || arr.length < 2 || arr.length > 3) {
-            throw EnvelopeError.cbor("encrypted envelope must have 2 or 3 elements");
+          if (arr === undefined || arr.length < 3 || arr.length > 4) {
+            throw EnvelopeError.cbor("encrypted envelope must have 3 or 4 elements");
           }
-          // We've already checked arr.length >= 2 above
+          // We've already checked arr.length >= 3 above
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const ciphertext = asByteString(arr.get(0)!);
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const nonce = asByteString(arr.get(1)!);
-          if (ciphertext === undefined || nonce === undefined) {
-            throw EnvelopeError.cbor("ciphertext and nonce must be byte strings");
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const authTag = asByteString(arr.get(2)!);
+          if (ciphertext === undefined || nonce === undefined || authTag === undefined) {
+            throw EnvelopeError.cbor("ciphertext, nonce, and auth must be byte strings");
           }
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const digestBytes = arr.length === 3 ? asByteString(arr.get(2)!) : undefined;
-          if (arr.length === 3 && digestBytes === undefined) {
-            throw EnvelopeError.cbor("digest must be byte string");
+          const digestBytes = arr.length === 4 ? asByteString(arr.get(3)!) : undefined;
+          if (arr.length === 4 && digestBytes === undefined) {
+            throw EnvelopeError.cbor("aad digest must be byte string");
           }
           const digest = digestBytes !== undefined ? new Digest(digestBytes) : undefined;
 
-          // Import EncryptedMessage class at runtime to avoid circular dependency
-
-          const message = new EncryptedMessage(ciphertext, nonce, digest);
+          const message = new EncryptedMessage(ciphertext, nonce, authTag, digest);
           return Envelope.fromCase({ type: "encrypted", message });
         }
         default:
@@ -741,4 +743,48 @@ export class Envelope implements DigestProvider {
   clone(): Envelope {
     return this;
   }
+
+  //
+  // Format methods (implemented via prototype extension in format module)
+  //
+
+  /// Returns a tree-formatted string representation of the envelope.
+  ///
+  /// The tree format displays the hierarchical structure of the envelope,
+  /// showing subjects, assertions, and their relationships.
+  ///
+  /// @param options - Optional formatting options
+  /// @returns A tree-formatted string
+  declare treeFormat: (options?: {
+    hideNodes?: boolean;
+    highlightDigests?: Set<string>;
+    digestDisplay?: "short" | "full";
+  }) => string;
+
+  /// Returns a short identifier for this envelope based on its digest.
+  ///
+  /// @param format - Format for the digest ('short' or 'full')
+  /// @returns A digest identifier string
+  declare shortId: (format?: "short" | "full") => string;
+
+  /// Returns a summary string for this envelope.
+  ///
+  /// @param maxLength - Maximum length of the summary
+  /// @returns A summary string
+  declare summary: (maxLength?: number) => string;
+
+  /// Returns a hex representation of the envelope's CBOR encoding.
+  ///
+  /// @returns A hex string
+  declare hex: () => string;
+
+  /// Returns the CBOR-encoded bytes of the envelope.
+  ///
+  /// @returns The CBOR bytes
+  declare cborBytes: () => Uint8Array;
+
+  /// Returns a CBOR diagnostic notation string for the envelope.
+  ///
+  /// @returns A diagnostic string
+  declare diagnostic: () => string;
 }

@@ -1,25 +1,23 @@
 /**
  * Encrypted message with ChaCha20-Poly1305 AEAD (nonce + ciphertext + authentication tag)
+ * Ported from bc-components-rust/src/encrypted.rs
  */
 
-declare global {
-  interface Global {
-    crypto?: Crypto;
-  }
-  var global: Global;
-  var Buffer: any;
-}
-
-import { chacha20poly1305 } from "@noble/ciphers/chacha";
+import {
+  aeadChaCha20Poly1305EncryptWithAad,
+  aeadChaCha20Poly1305DecryptWithAad,
+  SYMMETRIC_AUTH_SIZE,
+} from "@blockchain-commons/crypto";
 import { CryptoError } from "./error.js";
 import { SymmetricKey } from "./symmetric-key.js";
 import { Nonce } from "./nonce.js";
 import { AuthenticationTag } from "./authentication-tag.js";
+import { bytesToHex } from "./utils.js";
 
 export class EncryptedMessage {
-  private nonce: Nonce;
-  private ciphertext: Uint8Array;
-  private tag: AuthenticationTag;
+  private readonly nonce: Nonce;
+  private readonly ciphertext: Uint8Array;
+  private readonly tag: AuthenticationTag;
 
   private constructor(nonce: Nonce, ciphertext: Uint8Array, tag: AuthenticationTag) {
     this.nonce = nonce;
@@ -49,21 +47,15 @@ export class EncryptedMessage {
         nonce = Nonce.random();
       }
 
-      // Create cipher
-      const cipher = chacha20poly1305(key.toData());
+      // Encrypt using crypto package - returns [ciphertext, authTag] tuple
+      const [ciphertextData, authTagData] = aeadChaCha20Poly1305EncryptWithAad(
+        plaintext,
+        key.toData(),
+        nonce.toData(),
+        associatedData ?? new Uint8Array(0),
+      );
 
-      // Encrypt with optional associated data
-      const ciphertext = cipher.encrypt(nonce.toData(), plaintext, associatedData);
-
-      // The last 16 bytes are the authentication tag
-      if (ciphertext.length < 16) {
-        throw new Error("Ciphertext too short");
-      }
-
-      const tag = AuthenticationTag.from(ciphertext.slice(ciphertext.length - 16));
-      const actualCiphertext = ciphertext.slice(0, ciphertext.length - 16);
-
-      return new EncryptedMessage(nonce, actualCiphertext, tag);
+      return new EncryptedMessage(nonce, ciphertextData, AuthenticationTag.from(authTagData));
     } catch (e) {
       throw CryptoError.cryptoOperation(`ChaCha20-Poly1305 encryption failed: ${e}`);
     }
@@ -78,16 +70,15 @@ export class EncryptedMessage {
     associatedData?: Uint8Array,
   ): Uint8Array {
     try {
-      // Create cipher
-      const cipher = chacha20poly1305(key.toData());
+      // Decrypt using crypto package
+      const plaintext = aeadChaCha20Poly1305DecryptWithAad(
+        encrypted.ciphertext,
+        key.toData(),
+        encrypted.nonce.toData(),
+        associatedData ?? new Uint8Array(0),
+        encrypted.tag.toData(),
+      );
 
-      // Combine ciphertext and tag
-      const ciphertextWithTag = new Uint8Array(encrypted.ciphertext.length + 16);
-      ciphertextWithTag.set(encrypted.ciphertext);
-      ciphertextWithTag.set(encrypted.tag.toData(), encrypted.ciphertext.length);
-
-      // Decrypt
-      const plaintext = cipher.decrypt(encrypted.nonce.toData(), ciphertextWithTag, associatedData);
       return new Uint8Array(plaintext);
     } catch (e) {
       throw CryptoError.cryptoOperation(`ChaCha20-Poly1305 decryption failed: ${e}`);
@@ -119,7 +110,7 @@ export class EncryptedMessage {
    * Get combined ciphertext + tag
    */
   toData(): Uint8Array {
-    const combined = new Uint8Array(this.ciphertext.length + 16);
+    const combined = new Uint8Array(this.ciphertext.length + SYMMETRIC_AUTH_SIZE);
     combined.set(this.ciphertext);
     combined.set(this.tag.toData(), this.ciphertext.length);
     return combined;
@@ -129,18 +120,14 @@ export class EncryptedMessage {
    * Get hex string representation
    */
   toHex(): string {
-    const data = this.toData();
-    return Array.from(data)
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("")
-      .toUpperCase();
+    return bytesToHex(this.toData());
   }
 
   /**
    * Get total size (nonce + ciphertext + tag)
    */
   size(): number {
-    return 12 + this.ciphertext.length + 16;
+    return 12 + this.ciphertext.length + SYMMETRIC_AUTH_SIZE;
   }
 
   /**

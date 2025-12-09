@@ -3,9 +3,18 @@
 /**
  * Securely zero out a Uint8Array.
  *
+ * **IMPORTANT: This is a best-effort implementation.** Unlike the Rust reference
+ * implementation which uses `std::ptr::write_volatile()` for guaranteed volatile
+ * writes, JavaScript engines and JIT compilers can still potentially optimize
+ * away these zeroing operations. The check at the end helps prevent optimization,
+ * but it is not foolproof.
+ *
+ * For truly sensitive cryptographic operations, consider using the Web Crypto API's
+ * `crypto.subtle` with non-extractable keys when possible, as it provides stronger
+ * guarantees than what can be achieved with pure JavaScript.
+ *
  * This function attempts to prevent the compiler from optimizing away
- * the zeroing operation. While JavaScript doesn't have volatile writes,
- * we use a loop with a closure to make optimization less likely.
+ * the zeroing operation by using a verification check after the zeroing loop.
  */
 export function memzero(data: Uint8Array): void {
   const len = data.length;

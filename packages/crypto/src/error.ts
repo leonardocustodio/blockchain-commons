@@ -4,7 +4,7 @@
  * AEAD-specific error for authentication failures
  */
 export class AeadError extends Error {
-  constructor(message: string = "AEAD authentication failed") {
+  constructor(message = "AEAD authentication failed") {
     super(message);
     this.name = "AeadError";
   }
@@ -14,7 +14,7 @@ export class AeadError extends Error {
  * Generic crypto error type
  */
 export class CryptoError extends Error {
-  readonly cause?: Error;
+  override readonly cause?: Error | undefined;
 
   constructor(message: string, cause?: Error) {
     super(message);
@@ -22,8 +22,24 @@ export class CryptoError extends Error {
     this.cause = cause;
   }
 
+  /**
+   * Create a CryptoError for AEAD authentication failures.
+   *
+   * @param error - Optional underlying AeadError
+   * @returns A CryptoError wrapping the AEAD error
+   */
   static aead(error?: AeadError): CryptoError {
     return new CryptoError("AEAD error", error ?? new AeadError());
+  }
+
+  /**
+   * Create a CryptoError for invalid parameter values.
+   *
+   * @param message - Description of the invalid parameter
+   * @returns A CryptoError describing the invalid parameter
+   */
+  static invalidParameter(message: string): CryptoError {
+    return new CryptoError(`Invalid parameter: ${message}`);
   }
 }
 

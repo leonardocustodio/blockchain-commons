@@ -39,44 +39,8 @@ interface TreeElement {
   isHighlighted: boolean;
 }
 
-declare module "../base/envelope" {
-  interface Envelope {
-    /// Returns a tree-formatted string representation of the envelope.
-    ///
-    /// The tree format displays the hierarchical structure of the envelope,
-    /// showing subjects, assertions, and their relationships.
-    ///
-    /// @param options - Optional formatting options
-    /// @returns A tree-formatted string
-    ///
-    /// @example
-    /// ```typescript
-    /// const envelope = Envelope.new("Alice")
-    ///   .addAssertion("knows", "Bob");
-    ///
-    /// console.log(envelope.treeFormat());
-    /// // Output:
-    /// // 9e3b0673 NODE
-    /// //     13941b48 subj "Alice"
-    /// //     f45afd77 ASSERTION
-    /// //         db7dd21c pred "knows"
-    /// //         76543210 obj "Bob"
-    /// ```
-    treeFormat(options?: TreeFormatOptions): string;
-
-    /// Returns a short identifier for this envelope based on its digest.
-    ///
-    /// @param format - Format for the digest ('short' or 'full')
-    /// @returns A digest identifier string
-    shortId(format?: "short" | "full"): string;
-
-    /// Returns a summary string for this envelope.
-    ///
-    /// @param maxLength - Maximum length of the summary
-    /// @returns A summary string
-    summary(maxLength?: number): string;
-  }
-}
+// Note: Method declarations are in the base Envelope class.
+// This module provides the prototype implementations.
 
 /// Implementation of shortId()
 Envelope.prototype.shortId = function (this: Envelope, format: "short" | "full" = "short"): string {

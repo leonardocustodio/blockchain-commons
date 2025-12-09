@@ -50,6 +50,10 @@ playwright-report/
 .env
 .env.**
 
+# Extra
+ref/
+packages/**/docs/**
+
 # Claude Flow generated files
 .claude/settings.local.json
 .mcp.json
@@ -79,8 +83,4 @@ hive-mind-prompt-*.txt
 .claude
 .claude-flow
 .hive-mind
-packages/scaffold
-rust
-run_examples.sh
-research/
-**/docs/**
+

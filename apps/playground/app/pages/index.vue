@@ -149,23 +149,31 @@ function bytesToHex(bytes: Uint8Array): string {
 }
 
 // Helper function to check if bytes start with a specific CBOR tag
-function startsWithCborTag(bytes: Uint8Array, tagValue: number): boolean {
+// Note: Only supports CBOR tags up to 65535. Tags larger than Number.MAX_SAFE_INTEGER
+// will lose precision when converted from bigint.
+function startsWithCborTag(bytes: Uint8Array, tagValue: number | bigint): boolean {
+  // Convert bigint to number if needed (envelope tag 200 fits in number)
+  // CBOR tags in practice are small values (envelope=200, digest=40001, etc.)
+  if (typeof tagValue === 'bigint' && tagValue > BigInt(Number.MAX_SAFE_INTEGER)) {
+    console.warn('CBOR tag value exceeds Number.MAX_SAFE_INTEGER, precision may be lost')
+  }
+  const tag = typeof tagValue === 'bigint' ? Number(tagValue) : tagValue
   if (bytes.length < 2) return false
 
   // CBOR tag encoding for values 24-255: 0xD8 followed by the tag value
-  if (tagValue >= 24 && tagValue < 256) {
-    return bytes[0] === 0xd8 && bytes[1] === tagValue
+  if (tag >= 24 && tag < 256) {
+    return bytes[0] === 0xd8 && bytes[1] === tag
   }
 
   // CBOR tag encoding for values 0-23: 0xC0 | tagValue
-  if (tagValue < 24) {
-    return bytes[0] === (0xc0 | tagValue)
+  if (tag < 24) {
+    return bytes[0] === (0xc0 | tag)
   }
 
   // CBOR tag encoding for values 256-65535: 0xD9 followed by two bytes
-  if (tagValue >= 256 && tagValue < 65536) {
+  if (tag >= 256 && tag < 65536) {
     if (bytes.length < 3) return false
-    return bytes[0] === 0xd9 && bytes[1] === ((tagValue >> 8) & 0xff) && bytes[2] === (tagValue & 0xff)
+    return bytes[0] === 0xd9 && bytes[1] === ((tag >> 8) & 0xff) && bytes[2] === (tag & 0xff)
   }
 
   return false

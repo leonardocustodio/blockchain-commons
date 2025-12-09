@@ -1,6 +1,6 @@
 {
   "name": "@blockchain-commons/dcbor",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "type": "module",
   "description": "Blockchain Commons Deterministic CBOR (dCBOR) for TypeScript",
   "main": "dist/index.cjs",
@@ -33,7 +33,6 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "docs": "typedoc",
-    "docs:watch": "typedoc --watch",
     "prepublishOnly": "npm run clean && npm run build && npm test"
   },
   "keywords": [
@@ -55,13 +54,13 @@
     "@eslint/js": "^9.39.1",
     "@types/collections": "^5.1.5",
     "@types/jest": "^30.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.47.0",
-    "@typescript-eslint/parser": "^8.47.0",
+    "@typescript-eslint/eslint-plugin": "^8.49.0",
+    "@typescript-eslint/parser": "^8.49.0",
     "eslint": "^9.39.1",
     "jest": "^30.2.0",
-    "ts-jest": "^29.4.5",
+    "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
-    "tsdown": "^0.17.1",
+    "tsdown": "^0.17.2",
     "typedoc": "^0.28.15",
     "typescript": "^5.9.3"
   },

@@ -8,20 +8,20 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types",
+    "typecheck": "turbo run typecheck",
     "docs": "turbo run docs",
     "playground": "turbo run dev --filter=@blockchain-commons/playground"
   },
   "devDependencies": {
-    "prettier": "^3.2.5",
-    "tsx": "^4.21.0",
-    "turbo": "^2.6.0",
+    "prettier": "^3.7.4",
+    "turbo": "^2.6.3",
     "typescript": "^5.9.3"
   },
   "packageManager": "bun@1.2.22",
   "workspaces": [
     "apps/*",
     "packages/components",
+    "packages/crypto",
     "packages/dcbor",
     "packages/envelope",
     "packages/known-values",
