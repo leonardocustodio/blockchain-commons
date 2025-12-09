@@ -3,6 +3,7 @@ import { ref, shallowRef, computed, watch } from 'vue'
 import { decodeCbor, cborData, cbor, hexToBytes, hexOpt, diagnosticOpt, MajorType, type Cbor } from '@blockchain-commons/dcbor'
 import { UR, decodeBytewords, encodeBytewords, BytewordsStyle } from '@blockchain-commons/uniform-resources'
 import { envelopeFromCbor } from '@blockchain-commons/envelope'
+import { envelopeFromCbor, type Envelope } from '@blockchain-commons/envelope'
 import { ENVELOPE } from '@blockchain-commons/tags'
 
 useHead({
@@ -149,23 +150,25 @@ function bytesToHex(bytes: Uint8Array): string {
 }
 
 // Helper function to check if bytes start with a specific CBOR tag
-function startsWithCborTag(bytes: Uint8Array, tagValue: number): boolean {
+function startsWithCborTag(bytes: Uint8Array, tagValue: number | bigint): boolean {
+  // Convert bigint to number if needed (envelope tag 200 fits in number)
+  const tag = typeof tagValue === 'bigint' ? Number(tagValue) : tagValue
   if (bytes.length < 2) return false
 
   // CBOR tag encoding for values 24-255: 0xD8 followed by the tag value
-  if (tagValue >= 24 && tagValue < 256) {
-    return bytes[0] === 0xd8 && bytes[1] === tagValue
+  if (tag >= 24 && tag < 256) {
+    return bytes[0] === 0xd8 && bytes[1] === tag
   }
 
   // CBOR tag encoding for values 0-23: 0xC0 | tagValue
-  if (tagValue < 24) {
-    return bytes[0] === (0xc0 | tagValue)
+  if (tag < 24) {
+    return bytes[0] === (0xc0 | tag)
   }
 
   // CBOR tag encoding for values 256-65535: 0xD9 followed by two bytes
-  if (tagValue >= 256 && tagValue < 65536) {
+  if (tag >= 256 && tag < 65536) {
     if (bytes.length < 3) return false
-    return bytes[0] === 0xd9 && bytes[1] === ((tagValue >> 8) & 0xff) && bytes[2] === (tagValue & 0xff)
+    return bytes[0] === 0xd9 && bytes[1] === ((tag >> 8) & 0xff) && bytes[2] === (tag & 0xff)
   }
 
   return false

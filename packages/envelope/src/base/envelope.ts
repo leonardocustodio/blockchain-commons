@@ -741,4 +741,48 @@ export class Envelope implements DigestProvider {
   clone(): Envelope {
     return this;
   }
+
+  //
+  // Format methods (implemented via prototype extension in format module)
+  //
+
+  /// Returns a tree-formatted string representation of the envelope.
+  ///
+  /// The tree format displays the hierarchical structure of the envelope,
+  /// showing subjects, assertions, and their relationships.
+  ///
+  /// @param options - Optional formatting options
+  /// @returns A tree-formatted string
+  declare treeFormat: (options?: {
+    hideNodes?: boolean;
+    highlightDigests?: Set<string>;
+    digestDisplay?: "short" | "full";
+  }) => string;
+
+  /// Returns a short identifier for this envelope based on its digest.
+  ///
+  /// @param format - Format for the digest ('short' or 'full')
+  /// @returns A digest identifier string
+  declare shortId: (format?: "short" | "full") => string;
+
+  /// Returns a summary string for this envelope.
+  ///
+  /// @param maxLength - Maximum length of the summary
+  /// @returns A summary string
+  declare summary: (maxLength?: number) => string;
+
+  /// Returns a hex representation of the envelope's CBOR encoding.
+  ///
+  /// @returns A hex string
+  declare hex: () => string;
+
+  /// Returns the CBOR-encoded bytes of the envelope.
+  ///
+  /// @returns The CBOR bytes
+  declare cborBytes: () => Uint8Array;
+
+  /// Returns a CBOR diagnostic notation string for the envelope.
+  ///
+  /// @returns A diagnostic string
+  declare diagnostic: () => string;
 }

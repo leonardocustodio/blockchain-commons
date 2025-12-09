@@ -20,25 +20,8 @@ type CborValue =
 /// See [RFC-8949 §8](https://www.rfc-editor.org/rfc/rfc8949.html#name-diagnostic-notation)
 /// for information on CBOR diagnostic notation.
 
-declare module "../base/envelope" {
-  interface Envelope {
-    /// Returns the CBOR diagnostic notation for this envelope.
-    ///
-    /// Diagnostic notation is a human-readable representation of CBOR data
-    /// that shows the structure and contents in a format similar to JSON
-    /// but with CBOR-specific extensions.
-    ///
-    /// @returns A string containing the diagnostic notation
-    ///
-    /// @example
-    /// ```typescript
-    /// const envelope = Envelope.new("Hello");
-    /// console.log(envelope.diagnostic());
-    /// // Output: 200(204(101("Hello")))
-    /// ```
-    diagnostic(): string;
-  }
-}
+// Note: Method declarations are in the base Envelope class.
+// This module provides the prototype implementations.
 
 /// Converts a CBOR value to diagnostic notation
 function cborToDiagnostic(cbor: CborValue, indent = 0): string {
