@@ -21,6 +21,7 @@
   "workspaces": [
     "apps/*",
     "packages/components",
+    "packages/crypto",
     "packages/dcbor",
     "packages/envelope",
     "packages/known-values",
