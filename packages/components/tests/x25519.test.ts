@@ -8,7 +8,7 @@
  */
 
 import { X25519PrivateKey, X25519PublicKey, SymmetricKey, hexToBytes, bytesToHex } from "../src";
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 
 // Test vectors
 const TEST_PRIVATE_KEY_HEX = "7d68fb6fce4c86fc4527d27c7c50fbee5f9e5dc5c4e6c1d8e5f4e3d2c1b0a090";

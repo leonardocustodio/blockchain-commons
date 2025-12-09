@@ -9,8 +9,8 @@
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
-import { registerTags } from "@blockchain-commons/tags";
-import { Secret, GroupSpec, Spec } from "@blockchain-commons/sskr";
+import { registerTags } from "@bcts/tags";
+import { Secret, GroupSpec, Spec } from "@bcts/sskr";
 
 import {
   PrivateKeyBase,

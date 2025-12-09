@@ -32,11 +32,11 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { MLDSA_PRIVATE_KEY as TAG_MLDSA_PRIVATE_KEY } from "@blockchain-commons/tags";
-import type { RandomNumberGenerator } from "@blockchain-commons/rand";
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { MLDSA_PRIVATE_KEY as TAG_MLDSA_PRIVATE_KEY } from "@bcts/tags";
+import type { RandomNumberGenerator } from "@bcts/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 
 import {
   MLDSALevel,

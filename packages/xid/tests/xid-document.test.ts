@@ -3,9 +3,9 @@
  * Ported from bc-xid-rust/tests/test_xid_document.rs
  */
 
-import { PrivateKeyBase } from "@blockchain-commons/envelope";
-import { ProvenanceMarkResolution } from "@blockchain-commons/provenance-mark";
-import { XID } from "@blockchain-commons/components";
+import { PrivateKeyBase } from "@bcts/envelope";
+import { ProvenanceMarkResolution } from "@bcts/provenance-mark";
+import { XID } from "@bcts/components";
 import {
   XIDDocument,
   Key,

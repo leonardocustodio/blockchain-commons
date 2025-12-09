@@ -22,13 +22,13 @@
  * Ported from bc-components-rust/src/x25519/x25519_private_key.rs
  */
 
-import { SecureRandomNumberGenerator, type RandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator, type RandomNumberGenerator } from "@bcts/rand";
 import {
   X25519_PRIVATE_KEY_SIZE,
   x25519PublicKeyFromPrivateKey,
   x25519SharedKey,
   deriveAgreementPrivateKey,
-} from "@blockchain-commons/crypto";
+} from "@bcts/crypto";
 import {
   type Cbor,
   type Tag,
@@ -41,9 +41,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { X25519_PRIVATE_KEY as TAG_X25519_PRIVATE_KEY } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { X25519_PRIVATE_KEY as TAG_X25519_PRIVATE_KEY } from "@bcts/tags";
 import { CryptoError } from "../error.js";
 import { X25519PublicKey } from "./x25519-public-key.js";
 import { SymmetricKey } from "../symmetric/symmetric-key.js";

@@ -32,9 +32,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { MLDSA_SIGNATURE as TAG_MLDSA_SIGNATURE } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { MLDSA_SIGNATURE as TAG_MLDSA_SIGNATURE } from "@bcts/tags";
 
 import {
   MLDSALevel,

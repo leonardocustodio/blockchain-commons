@@ -20,7 +20,7 @@ import {
   defaultSignatureScheme,
   Ed25519PrivateKey,
 } from "../src";
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 
 // Test vectors from the Rust implementation
 const TEST_PRIVATE_KEY_HEX = "322b5c1dd5a17c3481c2297990c85c232ed3c17b52ce9905c6ec5193ad132c36";

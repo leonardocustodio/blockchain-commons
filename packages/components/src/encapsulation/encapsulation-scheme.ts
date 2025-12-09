@@ -13,7 +13,7 @@
  * Ported from bc-components-rust/src/encapsulation/encapsulation_scheme.rs
  */
 
-import type { RandomNumberGenerator } from "@blockchain-commons/rand";
+import type { RandomNumberGenerator } from "@bcts/rand";
 import { EncapsulationPrivateKey } from "./encapsulation-private-key.js";
 import type { EncapsulationPublicKey } from "./encapsulation-public-key.js";
 
@@ -53,7 +53,7 @@ export function createEncapsulationKeypair(
     case EncapsulationScheme.X25519:
       return EncapsulationPrivateKey.keypair();
     default:
-      throw new Error(`Unsupported encapsulation scheme: ${scheme}`);
+      throw new Error(`Unsupported encapsulation scheme: ${String(scheme)}`);
   }
 }
 
@@ -74,6 +74,6 @@ export function createEncapsulationKeypairUsing(
     case EncapsulationScheme.X25519:
       return EncapsulationPrivateKey.keypairUsing(rng);
     default:
-      throw new Error(`Deterministic keypair generation not supported for scheme: ${scheme}`);
+      throw new Error(`Deterministic keypair generation not supported for scheme: ${String(scheme)}`);
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "blockchain-commons",
+  "name": "bcts",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -10,7 +10,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
     "typecheck": "turbo run typecheck",
     "docs": "turbo run docs",
-    "playground": "turbo run dev --filter=@blockchain-commons/playground",
+    "playground": "turbo run dev --filter=@bcts/playground",
     "clean": "turbo run clean"
   },
   "devDependencies": {

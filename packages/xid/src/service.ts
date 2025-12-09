@@ -11,7 +11,7 @@ import {
   Envelope,
   type EnvelopeEncodable,
   type EnvelopeEncodableValue,
-} from "@blockchain-commons/envelope";
+} from "@bcts/envelope";
 import {
   KEY,
   DELEGATE,
@@ -19,11 +19,11 @@ import {
   CAPABILITY,
   ALLOW,
   type KnownValue,
-} from "@blockchain-commons/known-values";
+} from "@bcts/known-values";
 
 // Helper to convert KnownValue to EnvelopeEncodableValue
 const kv = (v: KnownValue): EnvelopeEncodableValue => v as unknown as EnvelopeEncodableValue;
-import type { Reference } from "@blockchain-commons/components";
+import type { Reference } from "@bcts/components";
 import { Permissions, type HasPermissions } from "./permissions";
 import { privilegeFromEnvelope } from "./privilege";
 import { XIDError } from "./error";

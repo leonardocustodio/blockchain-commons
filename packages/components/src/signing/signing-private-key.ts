@@ -17,7 +17,7 @@
  * Ported from bc-components-rust/src/signing/signing_private_key.rs
  */
 
-import { ED25519_PRIVATE_KEY_SIZE } from "@blockchain-commons/crypto";
+import { ED25519_PRIVATE_KEY_SIZE } from "@bcts/crypto";
 import {
   type Cbor,
   type Tag,
@@ -33,8 +33,8 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { SIGNING_PRIVATE_KEY as TAG_SIGNING_PRIVATE_KEY } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { SIGNING_PRIVATE_KEY as TAG_SIGNING_PRIVATE_KEY } from "@bcts/tags";
 import { Ed25519PrivateKey } from "../ed25519/ed25519-private-key.js";
 import { Sr25519PrivateKey } from "../sr25519/sr25519-private-key.js";
 import { SignatureScheme } from "./signature-scheme.js";

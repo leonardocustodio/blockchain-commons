@@ -1,5 +1,5 @@
 {
-  "name": "@blockchain-commons/envelope",
+  "name": "@bcts/envelope",
   "version": "1.0.0-alpha.5",
   "type": "module",
   "description": "Gordian Envelope for TypeScript",
@@ -60,8 +60,8 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "@blockchain-commons/eslint": "workspace:*",
-    "@blockchain-commons/tsconfig": "workspace:*",
+    "@bcts/eslint": "workspace:*",
+    "@bcts/tsconfig": "workspace:*",
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
     "@types/pako": "^2.0.3",
@@ -74,11 +74,11 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@blockchain-commons/crypto": "workspace:*",
-    "@blockchain-commons/dcbor": "workspace:*",
-    "@blockchain-commons/known-values": "workspace:*",
-    "@blockchain-commons/rand": "workspace:*",
-    "@blockchain-commons/tags": "workspace:*",
+    "@bcts/crypto": "workspace:*",
+    "@bcts/dcbor": "workspace:*",
+    "@bcts/known-values": "workspace:*",
+    "@bcts/rand": "workspace:*",
+    "@bcts/tags": "workspace:*",
     "pako": "^2.1.0"
   }
 }

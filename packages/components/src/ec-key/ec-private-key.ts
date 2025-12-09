@@ -24,7 +24,7 @@
  * Ported from bc-components-rust/src/ec_key/ec_private_key.rs
  */
 
-import { SecureRandomNumberGenerator, type RandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator, type RandomNumberGenerator } from "@bcts/rand";
 import {
   ECDSA_PRIVATE_KEY_SIZE,
   ecdsaPublicKeyFromPrivateKey,
@@ -33,7 +33,7 @@ import {
   schnorrPublicKeyFromPrivateKey,
   schnorrSign,
   schnorrSignUsing,
-} from "@blockchain-commons/crypto";
+} from "@bcts/crypto";
 import {
   type Cbor,
   type Tag,
@@ -47,9 +47,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { EC_KEY as TAG_EC_KEY, EC_KEY_V1 as TAG_EC_KEY_V1 } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { EC_KEY as TAG_EC_KEY, EC_KEY_V1 as TAG_EC_KEY_V1 } from "@bcts/tags";
 import { CryptoError } from "../error.js";
 import { ECPublicKey } from "./ec-public-key.js";
 import { SchnorrPublicKey } from "./schnorr-public-key.js";
@@ -201,7 +201,7 @@ export class ECPrivateKey
    * Get the ECPublicKey (compressed) corresponding to this ECPrivateKey.
    */
   publicKey(): ECPublicKey {
-    if (!this._publicKey) {
+    if (this._publicKey === undefined) {
       const publicKeyBytes = ecdsaPublicKeyFromPrivateKey(this._data);
       this._publicKey = ECPublicKey.fromData(publicKeyBytes);
     }
@@ -212,7 +212,7 @@ export class ECPrivateKey
    * Get the SchnorrPublicKey (x-only) corresponding to this ECPrivateKey.
    */
   schnorrPublicKey(): SchnorrPublicKey {
-    if (!this._schnorrPublicKey) {
+    if (this._schnorrPublicKey === undefined) {
       const publicKeyBytes = schnorrPublicKeyFromPrivateKey(this._data);
       this._schnorrPublicKey = SchnorrPublicKey.fromData(publicKeyBytes);
     }
@@ -229,7 +229,7 @@ export class ECPrivateKey
     try {
       return ecdsaSign(this._data, message);
     } catch (e) {
-      throw CryptoError.cryptoOperation(`ECDSA signing failed: ${e}`);
+      throw CryptoError.cryptoOperation(`ECDSA signing failed: ${String(e)}`);
     }
   }
 
@@ -243,7 +243,7 @@ export class ECPrivateKey
     try {
       return schnorrSign(this._data, message);
     } catch (e) {
-      throw CryptoError.cryptoOperation(`Schnorr signing failed: ${e}`);
+      throw CryptoError.cryptoOperation(`Schnorr signing failed: ${String(e)}`);
     }
   }
 
@@ -258,7 +258,7 @@ export class ECPrivateKey
     try {
       return schnorrSignUsing(this._data, message, rng);
     } catch (e) {
-      throw CryptoError.cryptoOperation(`Schnorr signing failed: ${e}`);
+      throw CryptoError.cryptoOperation(`Schnorr signing failed: ${String(e)}`);
     }
   }
 
@@ -338,7 +338,7 @@ export class ECPrivateKey
     // Get key data from key 3
     // CborMap.extract() returns native types (Uint8Array for byte strings)
     const keyData = map.extract<number, Uint8Array>(3);
-    if (!keyData || keyData.length === 0) {
+    if (keyData === undefined || keyData.length === 0) {
       throw new Error("ECPrivateKey CBOR must have key 3 (data)");
     }
 
@@ -388,7 +388,11 @@ export class ECPrivateKey
    * Note: URs use untagged CBOR since the type is conveyed by the UR type itself.
    */
   ur(): UR {
-    return UR.new(TAG_EC_KEY.name!, this.untaggedCbor());
+    const name = TAG_EC_KEY.name;
+    if (name === undefined) {
+      throw new Error("TAG_EC_KEY.name is undefined");
+    }
+    return UR.new(name, this.untaggedCbor());
   }
 
   /**
@@ -402,7 +406,11 @@ export class ECPrivateKey
    * Creates an ECPrivateKey from a UR.
    */
   static fromUR(ur: UR): ECPrivateKey {
-    ur.checkType(TAG_EC_KEY.name!);
+    const name = TAG_EC_KEY.name;
+    if (name === undefined) {
+      throw new Error("TAG_EC_KEY.name is undefined");
+    }
+    ur.checkType(name);
     const dummy = new ECPrivateKey(new Uint8Array(ECDSA_PRIVATE_KEY_SIZE));
     return dummy.fromUntaggedCbor(ur.cbor());
   }

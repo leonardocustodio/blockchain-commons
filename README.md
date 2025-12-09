@@ -65,7 +65,7 @@ bun run lint
 # Format code
 bun run format
 # Run tests for a specific package
-bun run test --filter=@blockchain-commons/dcbor
+bun run test --filter=@bcts/dcbor
 ```
 
 ## 📚 Specifications

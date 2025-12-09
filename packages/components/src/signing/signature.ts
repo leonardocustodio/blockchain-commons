@@ -16,7 +16,7 @@
  * Ported from bc-components-rust/src/signing/signature.rs
  */
 
-import { ED25519_SIGNATURE_SIZE } from "@blockchain-commons/crypto";
+import { ED25519_SIGNATURE_SIZE } from "@bcts/crypto";
 import { SR25519_SIGNATURE_SIZE } from "../sr25519/sr25519-private-key.js";
 import {
   type Cbor,
@@ -33,8 +33,8 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { SIGNATURE as TAG_SIGNATURE } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { SIGNATURE as TAG_SIGNATURE } from "@bcts/tags";
 import { CryptoError } from "../error.js";
 import { bytesToHex, hexToBytes } from "../utils.js";
 import { SignatureScheme } from "./signature-scheme.js";

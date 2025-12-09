@@ -15,8 +15,8 @@
  */
 
 import * as sr25519 from "@scure/sr25519";
-import type { RandomNumberGenerator } from "@blockchain-commons/rand";
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import type { RandomNumberGenerator } from "@bcts/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 import { blake2b } from "@noble/hashes/blake2.js";
 import { Sr25519PublicKey } from "./sr25519-public-key.js";
 import { bytesToHex } from "../utils.js";

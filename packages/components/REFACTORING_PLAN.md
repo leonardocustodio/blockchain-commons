@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the plan to refactor `@blockchain-commons/components` to achieve a 1:1 port of `bc-components-rust`.
+This document outlines the plan to refactor `@bcts/components` to achieve a 1:1 port of `bc-components-rust`.
 
 ## Current State Analysis
 
@@ -11,7 +11,7 @@ This document outlines the plan to refactor `@blockchain-commons/components` to 
 - **Total Lines:** ~17,050 lines
 - **Modules:** 15+ major modules
 
-### TypeScript Implementation (@blockchain-commons/components)
+### TypeScript Implementation (@bcts/components)
 - **Total Files:** 20 source files
 - **Total Lines:** ~2,050 lines
 - **Coverage:** ~12% of Rust implementation
@@ -48,7 +48,7 @@ This document outlines the plan to refactor `@blockchain-commons/components` to 
 | `private_keys.rs` | `private-keys.ts` | ✅ | Full CBOR/UR + Signer interface |
 | `public_keys.rs` | `public-keys.ts` | ✅ | Full CBOR/UR + Verifier interface |
 | `keypair.rs` | - | ⚠️ | Keypair utilities (integrated in key types) |
-| `tags_registry.rs` | - | ✅ | CBOR tags in @blockchain-commons/tags |
+| `tags_registry.rs` | - | ✅ | CBOR tags in @bcts/tags |
 | `sskr_mod.rs` | `sskr.ts` | ✅ | Full CBOR/UR + SSKR wrappers |
 
 ---
@@ -193,10 +193,10 @@ This document outlines the plan to refactor `@blockchain-commons/components` to 
 ### Current package.json dependencies:
 ```json
 {
-  "@blockchain-commons/crypto": "workspace:*",
-  "@blockchain-commons/dcbor": "workspace:*",
-  "@blockchain-commons/rand": "workspace:*",
-  "@blockchain-commons/uniform-resources": "workspace:*",
+  "@bcts/crypto": "workspace:*",
+  "@bcts/dcbor": "workspace:*",
+  "@bcts/rand": "workspace:*",
+  "@bcts/uniform-resources": "workspace:*",
   "pako": "^2.1.0"
 }
 ```
@@ -204,12 +204,12 @@ This document outlines the plan to refactor `@blockchain-commons/components` to 
 ### Required dependencies (to match Rust):
 ```json
 {
-  "@blockchain-commons/crypto": "workspace:*",
-  "@blockchain-commons/dcbor": "workspace:*",
-  "@blockchain-commons/rand": "workspace:*",
-  "@blockchain-commons/tags": "workspace:*",        // ADD
-  "@blockchain-commons/uniform-resources": "workspace:*",
-  "@blockchain-commons/sskr": "workspace:*",        // ADD
+  "@bcts/crypto": "workspace:*",
+  "@bcts/dcbor": "workspace:*",
+  "@bcts/rand": "workspace:*",
+  "@bcts/tags": "workspace:*",        // ADD
+  "@bcts/uniform-resources": "workspace:*",
+  "@bcts/sskr": "workspace:*",        // ADD
   "pako": "^2.1.0"
 }
 ```
@@ -219,7 +219,7 @@ This document outlines the plan to refactor `@blockchain-commons/components` to 
 ## Implementation Priority
 
 ### Phase 1: Foundation (Required for other packages) - ✅ COMPLETE
-1. ✅ Update `package.json` with correct dependencies (added `@blockchain-commons/tags`)
+1. ✅ Update `package.json` with correct dependencies (added `@bcts/tags`)
 2. ✅ Add `DigestProvider` interface (`digest-provider.ts`)
 3. ✅ Add CBOR/UR serialization to existing types:
    - ✅ Digest - Full CBOR/UR serialization with tests (25 tests)
@@ -231,7 +231,7 @@ This document outlines the plan to refactor `@blockchain-commons/components` to 
    - ✅ URI - Full CBOR/UR serialization with tests (25 tests)
    - ✅ XID - Full CBOR/UR serialization with tests (30 tests)
 4. ✅ Reorganize folder structure to match Rust (`id/`, `symmetric/`, `ed25519/`, `x25519/`)
-5. ✅ Export `validateTag` and `extractTaggedContent` from `@blockchain-commons/dcbor`
+5. ✅ Export `validateTag` and `extractTaggedContent` from `@bcts/dcbor`
 
 **Key Finding:** URs use **untagged** CBOR (not tagged) - the type is conveyed by the UR type string itself.
 
@@ -290,7 +290,7 @@ This document outlines the plan to refactor `@blockchain-commons/components` to 
 1. ✅ Add `PrivateKeyBase` - Root key material with CBOR tag 40016, UR type "crypto-prvkey-base"
 2. ✅ Add `PrivateKeys` container - Signing + encapsulation keys, CBOR tag 40013, UR type "crypto-prvkeys"
 3. ✅ Add `PublicKeys` container - Public keys, CBOR tag 40017, UR type "crypto-pubkeys"
-4. ✅ Add tags registry - Already complete in @blockchain-commons/tags package
+4. ✅ Add tags registry - Already complete in @bcts/tags package
 5. ✅ Add SSKR integration - SSKRShareCbor with CBOR tag 40309, UR type "sskr"
 6. ✅ Add comprehensive tests (67 tests)
 
@@ -489,7 +489,7 @@ packages/components/
 ## Next Steps
 
 1. ~~**Approve this plan** - Review and confirm the approach~~ ✅ Done
-2. ~~**Update dependencies** - Add `@blockchain-commons/tags`~~ ✅ Done
+2. ~~**Update dependencies** - Add `@bcts/tags`~~ ✅ Done
 3. ~~**Complete Phase 1** - Foundation types with CBOR/UR serialization~~ ✅ Done
 4. ~~**Complete Phase 2** - Symmetric encryption module~~ ✅ Done
 5. ~~**Complete Phase 3** - Implement signing infrastructure~~ ✅ Done
@@ -597,7 +597,7 @@ packages/components/
   - CBOR tag 40309 (legacy 309 also supported)
   - UR type "sskr"
   - Helper functions `generateSSKRSharesCbor` and `combineSSKRSharesCbor`
-- ✅ Tags registry already complete in @blockchain-commons/tags package
+- ✅ Tags registry already complete in @bcts/tags package
 - ✅ Created comprehensive tests (67 tests) covering all new types
 - ✅ All 680 tests passing
 
@@ -720,7 +720,7 @@ packages/components/
 ### December 9, 2025 - Session 1
 - ✅ Created `DigestProvider` interface
 - ✅ Added full CBOR/UR serialization to `Digest`, `Nonce`, `Salt`, `ARID`
-- ✅ Added `validateTag` and `extractTaggedContent` exports to `@blockchain-commons/dcbor`
+- ✅ Added `validateTag` and `extractTaggedContent` exports to `@bcts/dcbor`
 - ✅ Created comprehensive tests for Digest (25), Nonce (27), Salt (35), ARID (29)
 - ✅ Discovered key insight: URs use **untagged** CBOR (type conveyed by UR type string)
 - ✅ Fixed `Digest.data` to be a method `data()` instead of property (Rust API compatibility)

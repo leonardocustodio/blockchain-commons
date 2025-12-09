@@ -13,7 +13,7 @@
  * Ported from bc-components-rust/src/encrypted_key/hash_type.rs
  */
 
-import { type Cbor, cbor, expectNumber } from "@blockchain-commons/dcbor";
+import { type Cbor, cbor, expectNumber } from "@bcts/dcbor";
 
 /**
  * Enum representing supported hash types for key derivation.
@@ -35,7 +35,7 @@ export function hashTypeToString(hashType: HashType): string {
     case HashType.SHA512:
       return "SHA512";
     default:
-      throw new Error(`Unknown HashType: ${hashType}`);
+      throw new Error(`Unknown HashType: ${String(hashType)}`);
   }
 }
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, shallowRef, computed, watch, onMounted, provide } from 'vue'
-import { decodeCbor, cborData, cbor, hexToBytes, hexOpt, diagnosticOpt, MajorType, type Cbor } from '@blockchain-commons/dcbor'
-import { UR, decodeBytewords, encodeBytewords, BytewordsStyle } from '@blockchain-commons/uniform-resources'
-import { envelopeFromCbor } from '@blockchain-commons/envelope'
-import { ENVELOPE } from '@blockchain-commons/tags'
+import { decodeCbor, cborData, cbor, hexToBytes, hexOpt, diagnosticOpt, MajorType, type Cbor } from '@bcts/dcbor'
+import { UR, decodeBytewords, encodeBytewords, BytewordsStyle } from '@bcts/uniform-resources'
+import { envelopeFromCbor } from '@bcts/envelope'
+import { ENVELOPE } from '@bcts/tags'
 
 useHead({
   title: 'dCBOR Playground | Blockchain Commons',

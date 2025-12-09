@@ -1,7 +1,7 @@
 // Tests ported from bc-sskr-rust/src/lib.rs
 
-import type { RandomNumberGenerator } from "@blockchain-commons/rand";
-import { rngNextInClosedRange } from "@blockchain-commons/rand";
+import type { RandomNumberGenerator } from "@bcts/rand";
+import { rngNextInClosedRange } from "@bcts/rand";
 import {
   Secret,
   GroupSpec,

@@ -18,7 +18,7 @@
  * Ported from bc-components-rust/src/signing/signing_public_key.rs
  */
 
-import { ED25519_PUBLIC_KEY_SIZE } from "@blockchain-commons/crypto";
+import { ED25519_PUBLIC_KEY_SIZE } from "@bcts/crypto";
 import {
   type Cbor,
   type Tag,
@@ -34,8 +34,8 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { SIGNING_PUBLIC_KEY as TAG_SIGNING_PUBLIC_KEY } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { SIGNING_PUBLIC_KEY as TAG_SIGNING_PUBLIC_KEY } from "@bcts/tags";
 import { Ed25519PublicKey } from "../ed25519/ed25519-public-key.js";
 import { Sr25519PublicKey } from "../sr25519/sr25519-public-key.js";
 import { SignatureScheme } from "./signature-scheme.js";

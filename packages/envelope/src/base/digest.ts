@@ -1,4 +1,4 @@
-import { sha256 } from "@blockchain-commons/crypto";
+import { sha256 } from "@bcts/crypto";
 
 declare global {
   const TextEncoder: new () => {

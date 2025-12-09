@@ -13,8 +13,8 @@
  * Ported from bc-components-rust/src/encrypted_key/scrypt_params.rs
  */
 
-import { type Cbor, cbor, expectArray, expectNumber, expectBytes } from "@blockchain-commons/dcbor";
-import { scryptOpt } from "@blockchain-commons/crypto";
+import { type Cbor, cbor, expectArray, expectNumber, expectBytes } from "@bcts/dcbor";
+import { scryptOpt } from "@bcts/crypto";
 
 import { Salt } from "../salt.js";
 import { Nonce } from "../nonce.js";

@@ -11,8 +11,8 @@ export default defineConfig({
   globalName: "BCComponents",
   outputOptions: {
     globals: {
-      "@blockchain-commons/dcbor": "BCDcbor",
-      "@blockchain-commons/uniform-resources": "BCUR",
+      "@bcts/dcbor": "BCDcbor",
+      "@bcts/uniform-resources": "BCUR",
     },
   },
 });

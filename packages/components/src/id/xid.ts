@@ -42,9 +42,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { XID as TAG_XID } from "@blockchain-commons/tags";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
+} from "@bcts/dcbor";
+import { XID as TAG_XID } from "@bcts/tags";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
 import { CryptoError } from "../error.js";
 import { bytesToHex, toBase64 } from "../utils.js";
 
@@ -114,10 +114,9 @@ export class XID implements CborTaggedEncodable, CborTaggedDecodable<XID>, UREnc
    */
   static random(): XID {
     const data = new Uint8Array(XID_SIZE);
-    if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
-      globalThis.crypto.getRandomValues(data);
-    } else if (typeof global !== "undefined" && typeof global.crypto !== "undefined") {
-      global.crypto.getRandomValues(data);
+    const crypto = globalThis.crypto as Crypto | undefined;
+    if (crypto !== undefined && typeof crypto.getRandomValues === "function") {
+      crypto.getRandomValues(data);
     } else {
       // Fallback: fill with available random data
       for (let i = 0; i < XID_SIZE; i++) {

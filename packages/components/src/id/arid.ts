@@ -34,7 +34,7 @@
  *
  * @example
  * ```typescript
- * import { ARID } from '@blockchain-commons/components';
+ * import { ARID } from '@bcts/components';
  *
  * // Create a new random ARID
  * const arid = ARID.new();
@@ -47,7 +47,7 @@
  * ```
  */
 
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 import {
   type Cbor,
   type Tag,
@@ -60,9 +60,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { ARID as TAG_ARID } from "@blockchain-commons/tags";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
+} from "@bcts/dcbor";
+import { ARID as TAG_ARID } from "@bcts/tags";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
 import { CryptoError } from "../error.js";
 import { bytesToHex, hexToBytes, toBase64 } from "../utils.js";
 

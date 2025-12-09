@@ -20,7 +20,7 @@
  *
  * @example
  * ```typescript
- * import { Digest } from '@blockchain-commons/components';
+ * import { Digest } from '@bcts/components';
  *
  * // Create a digest from a string
  * const data = new TextEncoder().encode("hello world");
@@ -38,7 +38,7 @@
  * ```
  */
 
-import { sha256, SHA256_SIZE } from "@blockchain-commons/crypto";
+import { sha256, SHA256_SIZE } from "@bcts/crypto";
 import {
   type Cbor,
   type Tag,
@@ -51,9 +51,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { DIGEST as TAG_DIGEST } from "@blockchain-commons/tags";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
+} from "@bcts/dcbor";
+import { DIGEST as TAG_DIGEST } from "@bcts/tags";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
 import { CryptoError } from "./error.js";
 import { bytesToHex, hexToBytes, toBase64 } from "./utils.js";
 import type { DigestProvider } from "./digest-provider.js";

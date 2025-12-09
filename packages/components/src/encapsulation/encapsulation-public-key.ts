@@ -29,9 +29,9 @@ import {
   decodeCbor,
   tagsForValues,
   tagValue,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { X25519_PUBLIC_KEY as TAG_X25519_PUBLIC_KEY } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { X25519_PUBLIC_KEY as TAG_X25519_PUBLIC_KEY } from "@bcts/tags";
 import { X25519PrivateKey } from "../x25519/x25519-private-key.js";
 import { X25519PublicKey } from "../x25519/x25519-public-key.js";
 import { type SymmetricKey } from "../symmetric/symmetric-key.js";
@@ -97,7 +97,7 @@ export class EncapsulationPublicKey
    * @throws Error if this is not an X25519 key
    */
   x25519PublicKey(): X25519PublicKey {
-    if (!this._x25519PublicKey) {
+    if (this._x25519PublicKey === undefined) {
       throw new Error("Not an X25519 public key");
     }
     return this._x25519PublicKey;
@@ -108,10 +108,13 @@ export class EncapsulationPublicKey
    */
   data(): Uint8Array {
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return this._x25519PublicKey!.data();
+      case EncapsulationScheme.X25519: {
+        const pk = this._x25519PublicKey;
+        if (pk === undefined) throw new Error("X25519 public key not set");
+        return pk.data();
+      }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -126,11 +129,13 @@ export class EncapsulationPublicKey
   encapsulateNewSharedSecret(): [SymmetricKey, EncapsulationCiphertext] {
     switch (this._scheme) {
       case EncapsulationScheme.X25519: {
+        const pk = this._x25519PublicKey;
+        if (pk === undefined) throw new Error("X25519 public key not set");
         // Generate ephemeral key pair
         const [ephemeralPrivate, ephemeralPublic] = X25519PrivateKey.keypair();
 
         // Perform ECDH to get shared secret
-        const sharedSecret = ephemeralPrivate.sharedKeyWith(this._x25519PublicKey!);
+        const sharedSecret = ephemeralPrivate.sharedKeyWith(pk);
 
         // The "ciphertext" is the ephemeral public key
         const ciphertext = EncapsulationCiphertext.fromX25519PublicKey(ephemeralPublic);
@@ -138,7 +143,7 @@ export class EncapsulationPublicKey
         return [sharedSecret, ciphertext];
       }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -148,8 +153,12 @@ export class EncapsulationPublicKey
   equals(other: EncapsulationPublicKey): boolean {
     if (this._scheme !== other._scheme) return false;
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return this._x25519PublicKey!.equals(other._x25519PublicKey!);
+      case EncapsulationScheme.X25519: {
+        const thisPk = this._x25519PublicKey;
+        const otherPk = other._x25519PublicKey;
+        if (thisPk === undefined || otherPk === undefined) return false;
+        return thisPk.equals(otherPk);
+      }
       default:
         return false;
     }
@@ -163,7 +172,7 @@ export class EncapsulationPublicKey
       case EncapsulationScheme.X25519:
         return `EncapsulationPublicKey(X25519, ${bytesToHex(this.data()).substring(0, 16)}...)`;
       default:
-        return `EncapsulationPublicKey(${this._scheme})`;
+        return `EncapsulationPublicKey(${String(this._scheme)})`;
     }
   }
 
@@ -179,7 +188,7 @@ export class EncapsulationPublicKey
       case EncapsulationScheme.X25519:
         return tagsForValues([TAG_X25519_PUBLIC_KEY.value]);
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -188,10 +197,13 @@ export class EncapsulationPublicKey
    */
   untaggedCbor(): Cbor {
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return toByteString(this._x25519PublicKey!.data());
+      case EncapsulationScheme.X25519: {
+        const pk = this._x25519PublicKey;
+        if (pk === undefined) throw new Error("X25519 public key not set");
+        return toByteString(pk.data());
+      }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -277,10 +289,13 @@ export class EncapsulationPublicKey
    */
   ur(): UR {
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return UR.new(TAG_X25519_PUBLIC_KEY.name!, this.untaggedCbor());
+      case EncapsulationScheme.X25519: {
+        const name = TAG_X25519_PUBLIC_KEY.name;
+        if (name === undefined) throw new Error("TAG_X25519_PUBLIC_KEY.name is undefined");
+        return UR.new(name, this.untaggedCbor());
+      }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 

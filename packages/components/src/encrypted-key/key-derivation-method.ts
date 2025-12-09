@@ -15,7 +15,7 @@
  * Ported from bc-components-rust/src/encrypted_key/key_derivation_method.rs
  */
 
-import { type Cbor, expectNumber } from "@blockchain-commons/dcbor";
+import { type Cbor, expectNumber } from "@bcts/dcbor";
 
 /**
  * Enum representing supported key derivation methods.
@@ -77,7 +77,7 @@ export function keyDerivationMethodToString(method: KeyDerivationMethod): string
     case KeyDerivationMethod.Argon2id:
       return "Argon2id";
     default:
-      throw new Error(`Unknown KeyDerivationMethod: ${method}`);
+      throw new Error(`Unknown KeyDerivationMethod: ${String(method)}`);
   }
 }
 

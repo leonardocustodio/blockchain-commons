@@ -33,9 +33,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { URI as TAG_URI } from "@blockchain-commons/tags";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
+} from "@bcts/dcbor";
+import { URI as TAG_URI } from "@bcts/tags";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
 import { CryptoError } from "../error.js";
 import { toBase64 } from "../utils.js";
 
@@ -114,7 +114,7 @@ export class URI implements CborTaggedEncodable, CborTaggedDecodable<URI>, UREnc
    */
   scheme(): string | null {
     const match = /^([a-z][a-z0-9+.-]*):\/?\/?/i.exec(this._uri);
-    return match ? match[1] : null;
+    return match !== null ? match[1] : null;
   }
 
   /**

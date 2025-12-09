@@ -53,9 +53,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { ENCRYPTED as TAG_ENCRYPTED } from "@blockchain-commons/tags";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
+} from "@bcts/dcbor";
+import { ENCRYPTED as TAG_ENCRYPTED } from "@bcts/tags";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
 import { Nonce } from "../nonce.js";
 import { Digest } from "../digest.js";
 import { AuthenticationTag } from "./authentication-tag.js";

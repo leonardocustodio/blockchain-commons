@@ -32,9 +32,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { MLKEM_CIPHERTEXT as TAG_MLKEM_CIPHERTEXT } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { MLKEM_CIPHERTEXT as TAG_MLKEM_CIPHERTEXT } from "@bcts/tags";
 
 import {
   MLKEMLevel,

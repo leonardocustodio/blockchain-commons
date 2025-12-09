@@ -38,7 +38,7 @@
  *
  * @example
  * ```typescript
- * import { Salt } from '@blockchain-commons/components';
+ * import { Salt } from '@bcts/components';
  *
  * // Generate a salt with 16 bytes
  * const salt = Salt.newWithLen(16);
@@ -56,7 +56,7 @@ import {
   SecureRandomNumberGenerator,
   type RandomNumberGenerator,
   rngNextInClosedRangeI32,
-} from "@blockchain-commons/rand";
+} from "@bcts/rand";
 import {
   type Cbor,
   type Tag,
@@ -69,9 +69,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { SALT as TAG_SALT } from "@blockchain-commons/tags";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
+} from "@bcts/dcbor";
+import { SALT as TAG_SALT } from "@bcts/tags";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
 import { CryptoError } from "./error.js";
 import { bytesToHex, hexToBytes, toBase64 } from "./utils.js";
 

@@ -23,8 +23,8 @@ import {
   decodeCbor,
   tagsForValues,
   tagValue,
-} from "@blockchain-commons/dcbor";
-import { X25519_PUBLIC_KEY as TAG_X25519_PUBLIC_KEY } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { X25519_PUBLIC_KEY as TAG_X25519_PUBLIC_KEY } from "@bcts/tags";
 import { X25519PublicKey } from "../x25519/x25519-public-key.js";
 import { EncapsulationScheme } from "./encapsulation-scheme.js";
 import { bytesToHex } from "../utils.js";
@@ -79,7 +79,7 @@ export class EncapsulationCiphertext
    * @throws Error if this is not an X25519 ciphertext
    */
   x25519PublicKey(): X25519PublicKey {
-    if (!this._x25519PublicKey) {
+    if (this._x25519PublicKey === undefined) {
       throw new Error("Not an X25519 ciphertext");
     }
     return this._x25519PublicKey;
@@ -90,10 +90,13 @@ export class EncapsulationCiphertext
    */
   data(): Uint8Array {
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return this._x25519PublicKey!.data();
+      case EncapsulationScheme.X25519: {
+        const pk = this._x25519PublicKey;
+        if (pk === undefined) throw new Error("X25519 public key not set");
+        return pk.data();
+      }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -103,8 +106,12 @@ export class EncapsulationCiphertext
   equals(other: EncapsulationCiphertext): boolean {
     if (this._scheme !== other._scheme) return false;
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return this._x25519PublicKey!.equals(other._x25519PublicKey!);
+      case EncapsulationScheme.X25519: {
+        const thisPk = this._x25519PublicKey;
+        const otherPk = other._x25519PublicKey;
+        if (thisPk === undefined || otherPk === undefined) return false;
+        return thisPk.equals(otherPk);
+      }
       default:
         return false;
     }
@@ -118,7 +125,7 @@ export class EncapsulationCiphertext
       case EncapsulationScheme.X25519:
         return `EncapsulationCiphertext(X25519, ${bytesToHex(this.data()).substring(0, 16)}...)`;
       default:
-        return `EncapsulationCiphertext(${this._scheme})`;
+        return `EncapsulationCiphertext(${String(this._scheme)})`;
     }
   }
 
@@ -134,7 +141,7 @@ export class EncapsulationCiphertext
       case EncapsulationScheme.X25519:
         return tagsForValues([TAG_X25519_PUBLIC_KEY.value]);
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -143,10 +150,13 @@ export class EncapsulationCiphertext
    */
   untaggedCbor(): Cbor {
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return toByteString(this._x25519PublicKey!.data());
+      case EncapsulationScheme.X25519: {
+        const pk = this._x25519PublicKey;
+        if (pk === undefined) throw new Error("X25519 public key not set");
+        return toByteString(pk.data());
+      }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 

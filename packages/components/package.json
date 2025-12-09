@@ -1,5 +1,5 @@
 {
-  "name": "@blockchain-commons/components",
+  "name": "@bcts/components",
   "version": "1.0.0-alpha.5",
   "type": "module",
   "description": "A TypeScript implementation of Blockchain Commons cryptographic components. Supports key generation, signing, verification, encryption, and post-quantum cryptography.",
@@ -58,19 +58,19 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@blockchain-commons/crypto": "workspace:*",
-    "@blockchain-commons/dcbor": "workspace:*",
-    "@blockchain-commons/rand": "workspace:*",
-    "@blockchain-commons/sskr": "workspace:*",
-    "@blockchain-commons/tags": "workspace:*",
-    "@blockchain-commons/uniform-resources": "workspace:*",
+    "@bcts/crypto": "workspace:*",
+    "@bcts/dcbor": "workspace:*",
+    "@bcts/rand": "workspace:*",
+    "@bcts/sskr": "workspace:*",
+    "@bcts/tags": "workspace:*",
+    "@bcts/uniform-resources": "workspace:*",
     "@noble/post-quantum": "^0.2.1",
     "@scure/sr25519": "^1.0.0",
     "pako": "^2.1.0"
   },
   "devDependencies": {
-    "@blockchain-commons/eslint": "workspace:*",
-    "@blockchain-commons/tsconfig": "workspace:*",
+    "@bcts/eslint": "workspace:*",
+    "@bcts/tsconfig": "workspace:*",
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.2",
     "@types/pako": "^2.0.4",

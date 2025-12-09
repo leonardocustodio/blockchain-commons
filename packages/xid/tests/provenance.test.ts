@@ -3,12 +3,12 @@
  * Ported from bc-xid-rust/tests/provenance.rs
  */
 
-import { PrivateKeyBase } from "@blockchain-commons/envelope";
+import { PrivateKeyBase } from "@bcts/envelope";
 import {
   ProvenanceMarkGenerator,
   ProvenanceMarkResolution,
-} from "@blockchain-commons/provenance-mark";
-import { cbor } from "@blockchain-commons/dcbor";
+} from "@bcts/provenance-mark";
+import { cbor } from "@bcts/dcbor";
 import { Provenance, XIDGeneratorOptions, XIDDocument } from "../src";
 
 describe("Provenance", () => {

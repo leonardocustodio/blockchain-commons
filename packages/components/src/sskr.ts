@@ -3,7 +3,7 @@
  *
  * This module provides CBOR and UR serialization for SSKR (Sharded Secret Key
  * Reconstruction) shares. It wraps the core SSKR functionality from
- * @blockchain-commons/sskr with CBOR tags and UR encoding.
+ * @bcts/sskr with CBOR tags and UR encoding.
  *
  * # CBOR Serialization
  *
@@ -33,12 +33,12 @@ import {
   decodeCbor,
   tagsForValues,
   tagValue,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
 import {
   SSKR_SHARE as TAG_SSKR_SHARE,
   SSKR_SHARE_V1 as TAG_SSKR_SHARE_V1,
-} from "@blockchain-commons/tags";
+} from "@bcts/tags";
 
 import { bytesToHex, hexToBytes } from "./utils.js";
 import {
@@ -48,7 +48,7 @@ import {
   Secret as SSKRSecret,
   GroupSpec as SSKRGroupSpec,
   Spec as SSKRSpec,
-} from "@blockchain-commons/sskr";
+} from "@bcts/sskr";
 
 // Re-export from sskr package
 export { sskrGenerate, sskrGenerateUsing, sskrCombine, SSKRSecret, SSKRGroupSpec, SSKRSpec };

@@ -18,7 +18,7 @@
  * Ported from bc-components-rust/src/private_key_base.rs
  */
 
-import { SecureRandomNumberGenerator, type RandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator, type RandomNumberGenerator } from "@bcts/rand";
 import {
   type Cbor,
   type Tag,
@@ -31,10 +31,10 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { PRIVATE_KEY_BASE as TAG_PRIVATE_KEY_BASE } from "@blockchain-commons/tags";
-import { hkdfHmacSha256 } from "@blockchain-commons/crypto";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { PRIVATE_KEY_BASE as TAG_PRIVATE_KEY_BASE } from "@bcts/tags";
+import { hkdfHmacSha256 } from "@bcts/crypto";
 
 import { X25519PrivateKey } from "./x25519/x25519-private-key.js";
 import { Ed25519PrivateKey } from "./ed25519/ed25519-private-key.js";

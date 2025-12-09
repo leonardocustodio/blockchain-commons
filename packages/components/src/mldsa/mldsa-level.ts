@@ -13,8 +13,8 @@
  */
 
 import { ml_dsa44, ml_dsa65, ml_dsa87 } from "@noble/post-quantum/ml-dsa";
-import type { RandomNumberGenerator } from "@blockchain-commons/rand";
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import type { RandomNumberGenerator } from "@bcts/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 
 /**
  * ML-DSA security levels.

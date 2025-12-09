@@ -17,8 +17,8 @@
  * Ported from bc-components-rust/src/encrypted_key/argon2id_params.rs
  */
 
-import { type Cbor, cbor, expectArray, expectNumber, expectBytes } from "@blockchain-commons/dcbor";
-import { argon2idHash } from "@blockchain-commons/crypto";
+import { type Cbor, cbor, expectArray, expectNumber, expectBytes } from "@bcts/dcbor";
+import { argon2idHash } from "@bcts/crypto";
 
 import { Salt } from "../salt.js";
 import { Nonce } from "../nonce.js";

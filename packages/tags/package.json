@@ -1,5 +1,5 @@
 {
-  "name": "@blockchain-commons/tags",
+  "name": "@bcts/tags",
   "version": "1.0.0-alpha.5",
   "type": "module",
   "description": "Blockchain Commons CBOR Tags Registry for TypeScript",
@@ -56,8 +56,8 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "@blockchain-commons/eslint": "workspace:*",
-    "@blockchain-commons/tsconfig": "workspace:*",
+    "@bcts/eslint": "workspace:*",
+    "@bcts/tsconfig": "workspace:*",
     "@eslint/js": "^9.39.1",
     "@typescript-eslint/eslint-plugin": "^8.49.0",
     "@typescript-eslint/parser": "^8.49.0",
@@ -69,6 +69,6 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@blockchain-commons/dcbor": "workspace:*"
+    "@bcts/dcbor": "workspace:*"
   }
 }

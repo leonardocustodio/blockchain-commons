@@ -6,7 +6,7 @@
  * Ported from bc-components-rust/src/encrypted_key/key_derivation.rs
  */
 
-import type { Cbor } from "@blockchain-commons/dcbor";
+import type { Cbor } from "@bcts/dcbor";
 import type { SymmetricKey } from "../symmetric/symmetric-key.js";
 import type { EncryptedMessage } from "../symmetric/encrypted-message.js";
 

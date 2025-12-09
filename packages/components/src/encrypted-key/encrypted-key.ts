@@ -31,9 +31,9 @@ import {
   decodeCbor,
   tagsForValues,
   validateTag,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { ENCRYPTED_KEY as TAG_ENCRYPTED_KEY } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { ENCRYPTED_KEY as TAG_ENCRYPTED_KEY } from "@bcts/tags";
 
 import { type SymmetricKey } from "../symmetric/symmetric-key.js";
 import { EncryptedMessage } from "../symmetric/encrypted-message.js";
@@ -119,7 +119,7 @@ export class EncryptedKey
         params = argon2idParams();
         break;
       default:
-        throw new Error(`Unknown key derivation method: ${method}`);
+        throw new Error(`Unknown key derivation method: ${String(method)}`);
     }
 
     return EncryptedKey.lockOpt(params, secret, contentKey);
@@ -316,7 +316,11 @@ export class EncryptedKey
    * Returns the UR representation.
    */
   ur(): UR {
-    return UR.new(TAG_ENCRYPTED_KEY.name!, this.untaggedCbor());
+    const name = TAG_ENCRYPTED_KEY.name;
+    if (name === undefined) {
+      throw new Error("TAG_ENCRYPTED_KEY.name is undefined");
+    }
+    return UR.new(name, this.untaggedCbor());
   }
 
   /**
@@ -330,7 +334,11 @@ export class EncryptedKey
    * Creates an EncryptedKey from a UR.
    */
   static fromUR(ur: UR): EncryptedKey {
-    ur.checkType(TAG_ENCRYPTED_KEY.name!);
+    const name = TAG_ENCRYPTED_KEY.name;
+    if (name === undefined) {
+      throw new Error("TAG_ENCRYPTED_KEY.name is undefined");
+    }
+    ur.checkType(name);
     return EncryptedKey.fromUntaggedCborData(ur.cbor().toData());
   }
 

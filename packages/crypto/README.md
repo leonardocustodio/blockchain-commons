@@ -4,7 +4,7 @@
 
 ## Introduction
 
-`@blockchain-commons/crypto` exposes a uniform API for the cryptographic primitives used in higher-level [Blockchain Commons](https://blockchaincommons.com) projects such as Gordian Envelope.
+`@bcts/crypto` exposes a uniform API for the cryptographic primitives used in higher-level [Blockchain Commons](https://blockchaincommons.com) projects such as Gordian Envelope.
 
 ## Features
 
@@ -49,7 +49,7 @@ The `memzero()` function provides **best-effort** memory clearing in JavaScript/
 **Example:**
 
 ```typescript
-import { memzero } from '@blockchain-commons/crypto';
+import { memzero } from '@bcts/crypto';
 
 const sensitiveKey = new Uint8Array(32);
 // ... use the key ...

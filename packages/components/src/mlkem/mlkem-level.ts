@@ -13,8 +13,8 @@
  */
 
 import { ml_kem512, ml_kem768, ml_kem1024 } from "@noble/post-quantum/ml-kem";
-import type { RandomNumberGenerator } from "@blockchain-commons/rand";
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import type { RandomNumberGenerator } from "@bcts/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 
 /**
  * ML-KEM security levels.

@@ -3,12 +3,12 @@
  * Ported from bc-components-rust/src/ed25519_private_key.rs
  */
 
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 import {
   ED25519_PRIVATE_KEY_SIZE,
   ed25519PublicKeyFromPrivateKey,
   ed25519Sign,
-} from "@blockchain-commons/crypto";
+} from "@bcts/crypto";
 import { CryptoError } from "../error.js";
 import { Ed25519PublicKey } from "./ed25519-public-key.js";
 import { bytesToHex, hexToBytes, toBase64 } from "../utils.js";
@@ -78,7 +78,7 @@ export class Ed25519PrivateKey {
    * Derive the corresponding public key
    */
   publicKey(): Ed25519PublicKey {
-    if (!this._publicKey) {
+    if (this._publicKey === undefined) {
       const publicKeyBytes = ed25519PublicKeyFromPrivateKey(this.seed);
       this._publicKey = Ed25519PublicKey.from(publicKeyBytes);
     }
@@ -93,7 +93,7 @@ export class Ed25519PrivateKey {
       const signature = ed25519Sign(this.seed, message);
       return new Uint8Array(signature);
     } catch (e) {
-      throw CryptoError.cryptoOperation(`Ed25519 signing failed: ${e}`);
+      throw CryptoError.cryptoOperation(`Ed25519 signing failed: ${String(e)}`);
     }
   }
 

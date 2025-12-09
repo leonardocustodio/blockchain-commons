@@ -8,7 +8,7 @@
  * Ported from bc-components-rust/src/encrypted_key/key_derivation_params.rs
  */
 
-import { type Cbor, expectArray, expectNumber } from "@blockchain-commons/dcbor";
+import { type Cbor, expectArray, expectNumber } from "@bcts/dcbor";
 
 import type { SymmetricKey } from "../symmetric/symmetric-key.js";
 import type { EncryptedMessage } from "../symmetric/encrypted-message.js";

@@ -9,7 +9,7 @@ import {
   TAG_KNOWN_VALUE,
   KNOWN_VALUE_TAG,
 } from "../src/index";
-import { cbor, MajorType, bytesToHex, hexToBytes } from "@blockchain-commons/dcbor";
+import { cbor, MajorType, bytesToHex, hexToBytes } from "@bcts/dcbor";
 
 describe("KnownValue", () => {
   test("should create a KnownValue with just a value", () => {

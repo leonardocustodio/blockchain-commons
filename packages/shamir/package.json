@@ -1,5 +1,5 @@
 {
-  "name": "@blockchain-commons/shamir",
+  "name": "@bcts/shamir",
   "version": "1.0.0-alpha.5",
   "type": "module",
   "description": "Blockchain Commons Shamir Secret Sharing for TypeScript",
@@ -57,12 +57,12 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@blockchain-commons/crypto": "workspace:*",
-    "@blockchain-commons/rand": "workspace:*"
+    "@bcts/crypto": "workspace:*",
+    "@bcts/rand": "workspace:*"
   },
   "devDependencies": {
-    "@blockchain-commons/eslint": "workspace:*",
-    "@blockchain-commons/tsconfig": "workspace:*",
+    "@bcts/eslint": "workspace:*",
+    "@bcts/tsconfig": "workspace:*",
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.2",
     "eslint": "^9.39.1",

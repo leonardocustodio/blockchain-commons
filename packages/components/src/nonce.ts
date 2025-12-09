@@ -32,7 +32,7 @@
  *
  * @example
  * ```typescript
- * import { Nonce } from '@blockchain-commons/components';
+ * import { Nonce } from '@bcts/components';
  *
  * // Generate a new random nonce
  * const nonce = Nonce.new();
@@ -46,8 +46,8 @@
  * ```
  */
 
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
-import { SYMMETRIC_NONCE_SIZE } from "@blockchain-commons/crypto";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
+import { SYMMETRIC_NONCE_SIZE } from "@bcts/crypto";
 import {
   type Cbor,
   type Tag,
@@ -60,9 +60,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { NONCE as TAG_NONCE } from "@blockchain-commons/tags";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
+} from "@bcts/dcbor";
+import { NONCE as TAG_NONCE } from "@bcts/tags";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
 import { CryptoError } from "./error.js";
 import { bytesToHex, hexToBytes, toBase64 } from "./utils.js";
 

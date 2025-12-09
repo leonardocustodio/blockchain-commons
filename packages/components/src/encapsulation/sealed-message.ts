@@ -51,9 +51,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { SEALED_MESSAGE as TAG_SEALED_MESSAGE } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { SEALED_MESSAGE as TAG_SEALED_MESSAGE } from "@bcts/tags";
 import { Nonce } from "../nonce.js";
 import { EncryptedMessage } from "../symmetric/encrypted-message.js";
 import { type EncapsulationScheme } from "./encapsulation-scheme.js";
@@ -316,7 +316,11 @@ export class SealedMessage
    * Note: URs use untagged CBOR since the type is conveyed by the UR type itself.
    */
   ur(): UR {
-    return UR.new(TAG_SEALED_MESSAGE.name!, this.untaggedCbor());
+    const name = TAG_SEALED_MESSAGE.name;
+    if (name === undefined) {
+      throw new Error("TAG_SEALED_MESSAGE.name is undefined");
+    }
+    return UR.new(name, this.untaggedCbor());
   }
 
   /**
@@ -330,7 +334,11 @@ export class SealedMessage
    * Creates a SealedMessage from a UR.
    */
   static fromUR(ur: UR): SealedMessage {
-    ur.checkType(TAG_SEALED_MESSAGE.name!);
+    const name = TAG_SEALED_MESSAGE.name;
+    if (name === undefined) {
+      throw new Error("TAG_SEALED_MESSAGE.name is undefined");
+    }
+    ur.checkType(name);
     return SealedMessage.fromUntaggedCborData(ur.cbor().toData());
   }
 

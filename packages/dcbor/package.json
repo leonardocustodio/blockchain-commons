@@ -1,5 +1,5 @@
 {
-  "name": "@blockchain-commons/dcbor",
+  "name": "@bcts/dcbor",
   "version": "1.0.0-alpha.5",
   "type": "module",
   "description": "Blockchain Commons Deterministic CBOR (dCBOR) for TypeScript",
@@ -60,8 +60,8 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "@blockchain-commons/eslint": "workspace:*",
-    "@blockchain-commons/tsconfig": "workspace:*",
+    "@bcts/eslint": "workspace:*",
+    "@bcts/tsconfig": "workspace:*",
     "@eslint/js": "^9.39.1",
     "@types/collections": "^5.1.5",
     "@typescript-eslint/eslint-plugin": "^8.49.0",

@@ -17,7 +17,7 @@ import {
   hexToBytes,
   bytesToHex,
 } from "../src";
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 
 // Test vectors
 const TEST_PRIVATE_KEY_HEX = "e8f32e723decf4051aefac8e2c93c9c5b214313817cdb01a1494b917c8436b35";

@@ -25,7 +25,7 @@
 import {
   ECDSA_UNCOMPRESSED_PUBLIC_KEY_SIZE,
   ecdsaCompressPublicKey,
-} from "@blockchain-commons/crypto";
+} from "@bcts/crypto";
 import {
   type Cbor,
   type Tag,
@@ -39,9 +39,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { EC_KEY as TAG_EC_KEY, EC_KEY_V1 as TAG_EC_KEY_V1 } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { EC_KEY as TAG_EC_KEY, EC_KEY_V1 as TAG_EC_KEY_V1 } from "@bcts/tags";
 import { CryptoError } from "../error.js";
 import { bytesToHex, hexToBytes, toBase64 } from "../utils.js";
 
@@ -220,7 +220,7 @@ export class ECUncompressedPublicKey
     // Get key data from key 3
     // CborMap.extract() returns native types (Uint8Array for byte strings)
     const keyData = map.extract<number, Uint8Array>(3);
-    if (!keyData || keyData.length === 0) {
+    if (keyData === undefined || keyData.length === 0) {
       throw new Error("ECUncompressedPublicKey CBOR must have key 3 (data)");
     }
 
@@ -270,7 +270,11 @@ export class ECUncompressedPublicKey
    * Note: URs use untagged CBOR since the type is conveyed by the UR type itself.
    */
   ur(): UR {
-    return UR.new(TAG_EC_KEY.name!, this.untaggedCbor());
+    const name = TAG_EC_KEY.name;
+    if (name === undefined) {
+      throw new Error("TAG_EC_KEY.name is undefined");
+    }
+    return UR.new(name, this.untaggedCbor());
   }
 
   /**
@@ -284,7 +288,11 @@ export class ECUncompressedPublicKey
    * Creates an ECUncompressedPublicKey from a UR.
    */
   static fromUR(ur: UR): ECUncompressedPublicKey {
-    ur.checkType(TAG_EC_KEY.name!);
+    const name = TAG_EC_KEY.name;
+    if (name === undefined) {
+      throw new Error("TAG_EC_KEY.name is undefined");
+    }
+    ur.checkType(name);
     const dummy = new ECUncompressedPublicKey(new Uint8Array(ECDSA_UNCOMPRESSED_PUBLIC_KEY_SIZE));
     return dummy.fromUntaggedCbor(ur.cbor());
   }

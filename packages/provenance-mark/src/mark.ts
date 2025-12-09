@@ -1,6 +1,6 @@
 // Ported from provenance-mark-rust/src/mark.rs
 
-import { toBase64, fromBase64, bytesToHex } from "@blockchain-commons/components";
+import { toBase64, fromBase64, bytesToHex } from "@bcts/components";
 import {
   type Cbor,
   cbor,
@@ -8,15 +8,15 @@ import {
   expectArray,
   expectBytes,
   decodeCbor,
-} from "@blockchain-commons/dcbor";
-import { PROVENANCE_MARK } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { PROVENANCE_MARK } from "@bcts/tags";
 import {
   BytewordsStyle,
   encodeBytewords,
   decodeBytewords,
   encodeBytewordsIdentifier,
   encodeBytemojisIdentifier,
-} from "@blockchain-commons/uniform-resources";
+} from "@bcts/uniform-resources";
 
 import { ProvenanceMarkError, ProvenanceMarkErrorType } from "./error.js";
 import {

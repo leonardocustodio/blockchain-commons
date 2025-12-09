@@ -16,7 +16,7 @@
  * Ported from bc-components-rust/src/encapsulation/encapsulation_private_key.rs
  */
 
-import { SecureRandomNumberGenerator, type RandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator, type RandomNumberGenerator } from "@bcts/rand";
 import {
   type Cbor,
   type Tag,
@@ -29,9 +29,9 @@ import {
   decodeCbor,
   tagsForValues,
   tagValue,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { X25519_PRIVATE_KEY as TAG_X25519_PRIVATE_KEY } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { X25519_PRIVATE_KEY as TAG_X25519_PRIVATE_KEY } from "@bcts/tags";
 import { X25519PrivateKey } from "../x25519/x25519-private-key.js";
 import { type SymmetricKey } from "../symmetric/symmetric-key.js";
 import { EncapsulationScheme } from "./encapsulation-scheme.js";
@@ -141,7 +141,7 @@ export class EncapsulationPrivateKey
    * @throws Error if this is not an X25519 key
    */
   x25519PrivateKey(): X25519PrivateKey {
-    if (!this._x25519PrivateKey) {
+    if (this._x25519PrivateKey === undefined) {
       throw new Error("Not an X25519 private key");
     }
     return this._x25519PrivateKey;
@@ -152,10 +152,13 @@ export class EncapsulationPrivateKey
    */
   data(): Uint8Array {
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return this._x25519PrivateKey!.data();
+      case EncapsulationScheme.X25519: {
+        const pk = this._x25519PrivateKey;
+        if (pk === undefined) throw new Error("X25519 private key not set");
+        return pk.data();
+      }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -165,11 +168,13 @@ export class EncapsulationPrivateKey
   publicKey(): EncapsulationPublicKey {
     switch (this._scheme) {
       case EncapsulationScheme.X25519: {
-        const x25519Public = this._x25519PrivateKey!.publicKey();
+        const pk = this._x25519PrivateKey;
+        if (pk === undefined) throw new Error("X25519 private key not set");
+        const x25519Public = pk.publicKey();
         return EncapsulationPublicKey.fromX25519PublicKey(x25519Public);
       }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -184,20 +189,22 @@ export class EncapsulationPrivateKey
     // Verify scheme matches
     if (ciphertext.encapsulationScheme() !== this._scheme) {
       throw CryptoError.invalidData(
-        `Scheme mismatch: expected ${this._scheme}, got ${ciphertext.encapsulationScheme()}`,
+        `Scheme mismatch: expected ${String(this._scheme)}, got ${String(ciphertext.encapsulationScheme())}`,
       );
     }
 
     switch (this._scheme) {
       case EncapsulationScheme.X25519: {
+        const pk = this._x25519PrivateKey;
+        if (pk === undefined) throw new Error("X25519 private key not set");
         // Get the ephemeral public key from ciphertext
         const ephemeralPublic = ciphertext.x25519PublicKey();
 
         // Perform ECDH to recover shared secret
-        return this._x25519PrivateKey!.sharedKeyWith(ephemeralPublic);
+        return pk.sharedKeyWith(ephemeralPublic);
       }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -207,8 +214,12 @@ export class EncapsulationPrivateKey
   equals(other: EncapsulationPrivateKey): boolean {
     if (this._scheme !== other._scheme) return false;
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return this._x25519PrivateKey!.equals(other._x25519PrivateKey!);
+      case EncapsulationScheme.X25519: {
+        const thisPk = this._x25519PrivateKey;
+        const otherPk = other._x25519PrivateKey;
+        if (thisPk === undefined || otherPk === undefined) return false;
+        return thisPk.equals(otherPk);
+      }
       default:
         return false;
     }
@@ -222,7 +233,7 @@ export class EncapsulationPrivateKey
       case EncapsulationScheme.X25519:
         return `EncapsulationPrivateKey(X25519, ${bytesToHex(this.data()).substring(0, 16)}...)`;
       default:
-        return `EncapsulationPrivateKey(${this._scheme})`;
+        return `EncapsulationPrivateKey(${String(this._scheme)})`;
     }
   }
 
@@ -238,7 +249,7 @@ export class EncapsulationPrivateKey
       case EncapsulationScheme.X25519:
         return tagsForValues([TAG_X25519_PRIVATE_KEY.value]);
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -247,10 +258,13 @@ export class EncapsulationPrivateKey
    */
   untaggedCbor(): Cbor {
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return toByteString(this._x25519PrivateKey!.data());
+      case EncapsulationScheme.X25519: {
+        const pk = this._x25519PrivateKey;
+        if (pk === undefined) throw new Error("X25519 private key not set");
+        return toByteString(pk.data());
+      }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 
@@ -336,10 +350,13 @@ export class EncapsulationPrivateKey
    */
   ur(): UR {
     switch (this._scheme) {
-      case EncapsulationScheme.X25519:
-        return UR.new(TAG_X25519_PRIVATE_KEY.name!, this.untaggedCbor());
+      case EncapsulationScheme.X25519: {
+        const name = TAG_X25519_PRIVATE_KEY.name;
+        if (name === undefined) throw new Error("TAG_X25519_PRIVATE_KEY.name is undefined");
+        return UR.new(name, this.untaggedCbor());
+      }
       default:
-        throw new Error(`Unsupported scheme: ${this._scheme}`);
+        throw new Error(`Unsupported scheme: ${String(this._scheme)}`);
     }
   }
 

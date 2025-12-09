@@ -35,7 +35,7 @@
  * type "seed".
  */
 
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 import {
   type Cbor,
   type Tag,
@@ -51,9 +51,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { SEED as TAG_SEED, SEED_V1 as TAG_SEED_V1 } from "@blockchain-commons/tags";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
+} from "@bcts/dcbor";
+import { SEED as TAG_SEED, SEED_V1 as TAG_SEED_V1 } from "@bcts/tags";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
 import { CryptoError } from "./error.js";
 import { bytesToHex, hexToBytes, toBase64 } from "./utils.js";
 

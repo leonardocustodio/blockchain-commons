@@ -1,5 +1,5 @@
 /**
- * @blockchain-commons/components - Cryptographic components library
+ * @bcts/components - Cryptographic components library
  * TypeScript implementation of Blockchain Commons' cryptographic components specification
  * Ported from bc-components-rust
  */
@@ -130,7 +130,7 @@ export {
   SSKRShareCbor,
   generateSSKRSharesCbor,
   combineSSKRSharesCbor,
-  // Re-exports from @blockchain-commons/sskr for convenience
+  // Re-exports from @bcts/sskr for convenience
   sskrGenerate,
   sskrGenerateUsing,
   sskrCombine,
@@ -184,4 +184,4 @@ export type {
 
 // Re-export commonly used tags for higher-level packages
 // This allows packages like known-values to depend on components instead of tags directly
-export { KNOWN_VALUE } from "@blockchain-commons/tags";
+export { KNOWN_VALUE } from "@bcts/tags";

@@ -12,19 +12,19 @@ import {
   PrivateKeyBase,
   PublicKeyBase,
   type EnvelopeEncodable,
-} from "@blockchain-commons/envelope";
+} from "@bcts/envelope";
 import {
   ENDPOINT,
   NICKNAME,
   PRIVATE_KEY,
   SALT,
   type KnownValue,
-} from "@blockchain-commons/known-values";
-import type { EnvelopeEncodableValue } from "@blockchain-commons/envelope";
+} from "@bcts/known-values";
+import type { EnvelopeEncodableValue } from "@bcts/envelope";
 
 // Helper to convert KnownValue to EnvelopeEncodableValue
 const kv = (v: KnownValue): EnvelopeEncodableValue => v as unknown as EnvelopeEncodableValue;
-import { Salt, Reference } from "@blockchain-commons/components";
+import { Salt, Reference } from "@bcts/components";
 import { Permissions, type HasPermissions } from "./permissions";
 import { type Privilege } from "./privilege";
 import { type HasNickname } from "./name";

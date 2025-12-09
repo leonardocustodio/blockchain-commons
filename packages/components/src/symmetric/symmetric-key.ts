@@ -19,11 +19,11 @@
  * Ported from bc-components-rust/src/symmetric/symmetric_key.rs
  */
 
-import { SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import { SecureRandomNumberGenerator } from "@bcts/rand";
 import {
   aeadChaCha20Poly1305EncryptWithAad,
   aeadChaCha20Poly1305DecryptWithAad,
-} from "@blockchain-commons/crypto";
+} from "@bcts/crypto";
 import {
   type Cbor,
   type Tag,
@@ -36,8 +36,8 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { SYMMETRIC_KEY as TAG_SYMMETRIC_KEY } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { SYMMETRIC_KEY as TAG_SYMMETRIC_KEY } from "@bcts/tags";
 import { CryptoError } from "../error.js";
 import { bytesToHex, hexToBytes, toBase64 } from "../utils.js";
 import { Nonce } from "../nonce.js";

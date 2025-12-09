@@ -7,7 +7,7 @@ import {
   ED25519_PUBLIC_KEY_SIZE,
   ED25519_SIGNATURE_SIZE,
   ed25519Verify,
-} from "@blockchain-commons/crypto";
+} from "@bcts/crypto";
 import { CryptoError } from "../error.js";
 import { bytesToHex, hexToBytes, toBase64 } from "../utils.js";
 
@@ -66,7 +66,7 @@ export class Ed25519PublicKey {
       }
       return ed25519Verify(this.data, message, signature);
     } catch (e) {
-      throw CryptoError.cryptoOperation(`Ed25519 verification failed: ${e}`);
+      throw CryptoError.cryptoOperation(`Ed25519 verification failed: ${String(e)}`);
     }
   }
 

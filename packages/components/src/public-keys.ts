@@ -32,9 +32,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { PUBLIC_KEYS as TAG_PUBLIC_KEYS } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { PUBLIC_KEYS as TAG_PUBLIC_KEYS } from "@bcts/tags";
 
 import { SigningPublicKey } from "./signing/signing-public-key.js";
 import { EncapsulationPublicKey } from "./encapsulation/encapsulation-public-key.js";

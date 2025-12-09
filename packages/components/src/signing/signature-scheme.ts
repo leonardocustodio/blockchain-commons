@@ -7,7 +7,7 @@
  * Ported from bc-components-rust/src/signing/signature_scheme.rs
  */
 
-import { type SecureRandomNumberGenerator } from "@blockchain-commons/rand";
+import { type SecureRandomNumberGenerator } from "@bcts/rand";
 import { Ed25519PrivateKey } from "../ed25519/ed25519-private-key.js";
 import { Sr25519PrivateKey } from "../sr25519/sr25519-private-key.js";
 import { SigningPrivateKey } from "./signing-private-key.js";

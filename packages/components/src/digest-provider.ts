@@ -9,7 +9,7 @@
  *
  * @example
  * ```typescript
- * import { DigestProvider, Digest } from '@blockchain-commons/components';
+ * import { DigestProvider, Digest } from '@bcts/components';
  *
  * class Document implements DigestProvider {
  *   private content: Uint8Array;

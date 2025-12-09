@@ -32,9 +32,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
-import { MLKEM_PUBLIC_KEY as TAG_MLKEM_PUBLIC_KEY } from "@blockchain-commons/tags";
+} from "@bcts/dcbor";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
+import { MLKEM_PUBLIC_KEY as TAG_MLKEM_PUBLIC_KEY } from "@bcts/tags";
 
 import {
   MLKEMLevel,

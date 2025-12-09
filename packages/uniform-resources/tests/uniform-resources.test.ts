@@ -28,7 +28,7 @@ import {
   encodeBytewordsIdentifier,
   encodeBytemojisIdentifier,
 } from "../src";
-import { cbor } from "@blockchain-commons/dcbor";
+import { cbor } from "@bcts/dcbor";
 
 describe("URType", () => {
   it("creates a valid UR type with lowercase letters", () => {

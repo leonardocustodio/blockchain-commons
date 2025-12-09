@@ -39,9 +39,9 @@ import {
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
-} from "@blockchain-commons/dcbor";
-import { UUID as TAG_UUID } from "@blockchain-commons/tags";
-import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
+} from "@bcts/dcbor";
+import { UUID as TAG_UUID } from "@bcts/tags";
+import { UR, type UREncodable } from "@bcts/uniform-resources";
 import { CryptoError } from "../error.js";
 import { bytesToHex, toBase64 } from "../utils.js";
 
@@ -126,10 +126,9 @@ export class UUID implements CborTaggedEncodable, CborTaggedDecodable<UUID>, URE
    */
   static random(): UUID {
     const data = new Uint8Array(UUID_SIZE);
-    if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
-      globalThis.crypto.getRandomValues(data);
-    } else if (typeof global !== "undefined" && typeof global.crypto !== "undefined") {
-      global.crypto.getRandomValues(data);
+    const crypto = globalThis.crypto as Crypto | undefined;
+    if (crypto !== undefined && typeof crypto.getRandomValues === "function") {
+      crypto.getRandomValues(data);
     } else {
       // Fallback: fill with available random data
       for (let i = 0; i < UUID_SIZE; i++) {
