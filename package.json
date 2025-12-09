@@ -11,7 +11,8 @@
     "docs": "turbo run docs",
     "playground": "turbo run dev --filter=@bcts/playground",
     "clean": "turbo run clean",
-    "prepublishOnly": "turbo run build lint test docs && changeset version"
+    "release": "turbo run build lint test && changeset publish",
+    "version": "changeset version"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
