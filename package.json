@@ -9,7 +9,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "docs": "turbo run docs",
+    "docs": "turbo run research",
     "playground": "turbo run dev --filter=@blockchain-commons/playground"
   },
   "devDependencies": {
