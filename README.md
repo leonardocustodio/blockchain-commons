@@ -24,10 +24,10 @@ A comprehensive TypeScript monorepo implementing [Blockchain Commons](https://ww
 An interactive web application for experimenting with dCBOR encoding, Uniform Resources decoding, and Gordian Envelope visualization.
 
 **Features:**
-- Parse and visualize CBOR data with annotated hex and diagnostic notation
+- Parse and visualize dCBOR data with annotated hex and diagnostic notation
 - Decode Uniform Resources (UR) with support for envelope URs
 - View Gordian Envelope tree format
-- Convert between hex, UR, and bytewords formats
+- Convert between hex, UR, and Bytewords formats
 - Live examples and interactive editing
 
 **Try it locally:**
@@ -42,8 +42,6 @@ bun playground
 This is a monorepo managed with Turborepo. Common commands:
 
 ```bash
-# Run only the playground
-bun playground
 # Build all packages
 bun run build
 # Run tests across all packages
@@ -53,7 +51,7 @@ bun run lint
 # Format code
 bun run format
 # Run tests for a specific package
-bun run test --filter=envelope
+bun run test --filter=@blockchain-commons/dcbor
 ```
 
 ## 📚 Specifications & Reference Implementations
