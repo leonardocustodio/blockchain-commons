@@ -20,17 +20,10 @@
   "packageManager": "bun@1.2.22",
   "workspaces": [
     "apps/*",
-    "packages/components",
-    "packages/crypto",
-    "packages/dcbor",
-    "packages/envelope",
-    "packages/known-values",
-    "packages/provenance-mark",
-    "packages/rand",
-    "packages/shamir",
-    "packages/sskr",
-    "packages/tags",
-    "packages/uniform-resources",
+    "packages/*",
     "shared/*"
-  ]
+  ],
+  "dependencies": {
+    "@changesets/cli": "^2.29.8"
+  }
 }

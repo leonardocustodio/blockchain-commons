@@ -1,6 +1,6 @@
 {
   "name": "@blockchain-commons/xid",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "type": "module",
   "description": "Blockchain Commons XID for TypeScript",
   "main": "dist/index.cjs",
@@ -60,6 +60,10 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@blockchain-commons/dcbor": "workspace:*"
+    "@blockchain-commons/dcbor": "workspace:*",
+    "@blockchain-commons/envelope": "workspace:*",
+    "@blockchain-commons/known-values": "workspace:*",
+    "@blockchain-commons/components": "workspace:*",
+    "@blockchain-commons/provenance-mark": "workspace:*"
   }
 }
