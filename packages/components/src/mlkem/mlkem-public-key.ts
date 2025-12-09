@@ -25,7 +25,7 @@ import {
   type CborTaggedDecodable,
   cbor,
   expectArray,
-  expectInt,
+  expectInteger,
   expectBytes,
   createTaggedCbor,
   validateTag,
@@ -211,7 +211,7 @@ export class MLKEMPublicKey
     if (elements.length !== 2) {
       throw new Error(`MLKEMPublicKey CBOR must have 2 elements, got ${elements.length}`);
     }
-    const levelValue = expectInt(elements[0]);
+    const levelValue = Number(expectInteger(elements[0]));
     const level = mlkemLevelFromValue(levelValue);
     const data = expectBytes(elements[1]);
     return MLKEMPublicKey.fromBytes(level, data);

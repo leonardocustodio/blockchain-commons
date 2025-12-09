@@ -25,7 +25,7 @@ import {
   type CborTaggedDecodable,
   cbor,
   expectArray,
-  expectInt,
+  expectInteger,
   expectBytes,
   createTaggedCbor,
   validateTag,
@@ -291,7 +291,7 @@ export class MLDSAPrivateKey
     if (elements.length !== 2) {
       throw new Error(`MLDSAPrivateKey CBOR must have 2 elements, got ${elements.length}`);
     }
-    const levelValue = expectInt(elements[0]);
+    const levelValue = Number(expectInteger(elements[0]));
     const level = mldsaLevelFromValue(levelValue);
     const data = expectBytes(elements[1]);
     return MLDSAPrivateKey.fromBytes(level, data);
