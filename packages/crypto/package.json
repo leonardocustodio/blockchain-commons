@@ -1,6 +1,6 @@
 {
   "name": "@blockchain-commons/crypto",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.3",
   "type": "module",
   "description": "Blockchain Commons Cryptographic Utilities for TypeScript",
   "main": "dist/index.cjs",
