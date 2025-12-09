@@ -138,7 +138,9 @@ export class SigningPrivateKey implements Signer {
   sign(data: Uint8Array): Signature {
     const signature = secp256k1.sign(data, this.#privateKey);
     // secp256k1.Signature has toCompactRawBytes() method
-    const signatureBytes: Uint8Array = (signature as unknown as { toCompactRawBytes(): Uint8Array }).toCompactRawBytes();
+    const signatureBytes: Uint8Array = (
+      signature as unknown as { toCompactRawBytes(): Uint8Array }
+    ).toCompactRawBytes();
     return new Signature(signatureBytes);
   }
 
@@ -180,7 +182,9 @@ export class SigningPublicKey implements Verifier {
   verify(data: Uint8Array, signature: Signature): boolean {
     try {
       // Use the Signature class's fromCompact static method
-      const sig = (secp256k1.Signature as unknown as { fromCompact(data: Uint8Array): unknown }).fromCompact(signature.data());
+      const sig = (
+        secp256k1.Signature as unknown as { fromCompact(data: Uint8Array): unknown }
+      ).fromCompact(signature.data());
       return secp256k1.verify(sig as Parameters<typeof secp256k1.verify>[0], data, this.#publicKey);
     } catch {
       return false;

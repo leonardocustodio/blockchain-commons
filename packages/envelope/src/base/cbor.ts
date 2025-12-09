@@ -38,7 +38,7 @@ export class EnvelopeCBORTagged implements CborTagged {
   cborTags(): ReturnType<typeof tagsForValues> {
     return tagsForValues([TAG_ENVELOPE]);
   }
-  
+
   static cborTags(): number[] {
     return tagsForValues([TAG_ENVELOPE]).map((tag) => Number(tag.value));
   }
@@ -49,7 +49,7 @@ export class EnvelopeCBORTagged implements CborTagged {
 /// Provides the untagged CBOR representation of an envelope.
 export class EnvelopeCBORTaggedEncodable implements CborTaggedEncodable {
   constructor(private readonly envelope: Envelope) {}
-  
+
   cborTags(): ReturnType<typeof tagsForValues> {
     return tagsForValues([TAG_ENVELOPE]);
   }

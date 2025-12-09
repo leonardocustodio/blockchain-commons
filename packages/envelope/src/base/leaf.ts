@@ -164,12 +164,12 @@ Envelope.prototype.isSubjectNaN = function (this: Envelope): boolean {
 
 /// Implementation of isNull()
 Envelope.prototype.isNull = function (this: Envelope): boolean {
-      try {
-        this.extractNull();
-        return true;
-      } catch (_error) {
-        return false;
-      }
+  try {
+    this.extractNull();
+    return true;
+  } catch (_error) {
+    return false;
+  }
 };
 
 /// Implementation of tryByteString()
