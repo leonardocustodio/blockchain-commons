@@ -39,7 +39,6 @@ import { EncapsulationPrivateKey } from "./encapsulation/encapsulation-private-k
 import { PublicKeys } from "./public-keys.js";
 import type { Signature } from "./signing/signature.js";
 import type { Signer } from "./signing/signer.js";
-import { bytesToHex } from "./utils.js";
 
 /**
  * PrivateKeys - Container for a signing key and an encapsulation key.

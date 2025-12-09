@@ -23,7 +23,7 @@ import { argon2idHash } from "@blockchain-commons/crypto";
 import { Salt } from "../salt.js";
 import { Nonce } from "../nonce.js";
 import { SymmetricKey } from "../symmetric/symmetric-key.js";
-import { EncryptedMessage } from "../symmetric/encrypted-message.js";
+import { type EncryptedMessage } from "../symmetric/encrypted-message.js";
 import { KeyDerivationMethod } from "./key-derivation-method.js";
 import { SALT_LEN } from "./hkdf-params.js";
 import type { KeyDerivation } from "./key-derivation.js";

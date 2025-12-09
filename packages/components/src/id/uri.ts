@@ -113,7 +113,7 @@ export class URI implements CborTaggedEncodable, CborTaggedDecodable<URI>, UREnc
    * Get scheme (e.g., "http", "https", "urn").
    */
   scheme(): string | null {
-    const match = this._uri.match(/^([a-z][a-z0-9+.-]*):\/?\/?/i);
+    const match = /^([a-z][a-z0-9+.-]*):\/?\/?/i.exec(this._uri);
     return match ? match[1] : null;
   }
 

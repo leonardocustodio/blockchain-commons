@@ -56,10 +56,10 @@ import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
 import { SEALED_MESSAGE as TAG_SEALED_MESSAGE } from "@blockchain-commons/tags";
 import { Nonce } from "../nonce.js";
 import { EncryptedMessage } from "../symmetric/encrypted-message.js";
-import { EncapsulationScheme } from "./encapsulation-scheme.js";
+import { type EncapsulationScheme } from "./encapsulation-scheme.js";
 import { EncapsulationCiphertext } from "./encapsulation-ciphertext.js";
-import { EncapsulationPublicKey } from "./encapsulation-public-key.js";
-import { EncapsulationPrivateKey } from "./encapsulation-private-key.js";
+import { type EncapsulationPublicKey } from "./encapsulation-public-key.js";
+import { type EncapsulationPrivateKey } from "./encapsulation-private-key.js";
 import { X25519PublicKey } from "../x25519/x25519-public-key.js";
 import { bytesToHex } from "../utils.js";
 

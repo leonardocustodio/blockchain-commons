@@ -19,7 +19,7 @@ import { hkdfHmacSha256, hkdfHmacSha512 } from "@blockchain-commons/crypto";
 import { Salt } from "../salt.js";
 import { Nonce } from "../nonce.js";
 import { SymmetricKey } from "../symmetric/symmetric-key.js";
-import { EncryptedMessage } from "../symmetric/encrypted-message.js";
+import { type EncryptedMessage } from "../symmetric/encrypted-message.js";
 import { HashType, hashTypeToCbor, hashTypeFromCbor, hashTypeToString } from "./hash-type.js";
 import { KeyDerivationMethod } from "./key-derivation-method.js";
 import type { KeyDerivation } from "./key-derivation.js";

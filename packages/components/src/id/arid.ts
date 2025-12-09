@@ -199,8 +199,8 @@ export class ARID implements CborTaggedEncodable, CborTaggedDecodable<ARID>, URE
    */
   compare(other: ARID): number {
     for (let i = 0; i < this._data.length; i++) {
-      const a = this._data[i]!;
-      const b = other._data[i]!;
+      const a = this._data[i];
+      const b = other._data[i];
       if (a < b) return -1;
       if (a > b) return 1;
     }

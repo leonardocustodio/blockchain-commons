@@ -38,7 +38,6 @@ import {
 import { SIGNING_PUBLIC_KEY as TAG_SIGNING_PUBLIC_KEY } from "@blockchain-commons/tags";
 import { Ed25519PublicKey } from "../ed25519/ed25519-public-key.js";
 import { Sr25519PublicKey } from "../sr25519/sr25519-public-key.js";
-import { bytesToHex } from "../utils.js";
 import { SignatureScheme } from "./signature-scheme.js";
 import type { Signature } from "./signature.js";
 import type { Verifier } from "./signer.js";

@@ -45,7 +45,6 @@ import {
   CborMap,
   CborDate,
   toByteString,
-  expectBytes,
   expectMap,
   createTaggedCbor,
   validateTag,

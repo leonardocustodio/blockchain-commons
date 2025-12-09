@@ -66,7 +66,7 @@ const BYTEMOJIS = [
 ];
 
 export class Reference {
-  private digest: Digest;
+  private readonly digest: Digest;
 
   private constructor(digest: Digest) {
     this.digest = digest;

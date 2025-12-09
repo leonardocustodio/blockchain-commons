@@ -45,8 +45,8 @@ import { EC_KEY as TAG_EC_KEY, EC_KEY_V1 as TAG_EC_KEY_V1 } from "@blockchain-co
 import { CryptoError } from "../error.js";
 import { bytesToHex, hexToBytes, toBase64 } from "../utils.js";
 
-// Forward declaration to avoid circular dependency
-import type { ECPublicKey } from "./ec-public-key.js";
+// Note: ECPublicKey type is used in JSDoc comments but not directly imported
+// to avoid circular dependency issues
 
 export class ECUncompressedPublicKey
   implements CborTaggedEncodable, CborTaggedDecodable<ECUncompressedPublicKey>, UREncodable

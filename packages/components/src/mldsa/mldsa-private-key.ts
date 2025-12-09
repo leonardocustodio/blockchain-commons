@@ -43,7 +43,6 @@ import {
   mldsaLevelFromValue,
   mldsaLevelToString,
   mldsaPrivateKeySize,
-  mldsaGenerateKeypair,
   mldsaGenerateKeypairUsing,
   mldsaSign,
 } from "./mldsa-level.js";

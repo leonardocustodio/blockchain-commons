@@ -34,7 +34,7 @@ import { UR, type UREncodable } from "@blockchain-commons/uniform-resources";
 import { X25519_PUBLIC_KEY as TAG_X25519_PUBLIC_KEY } from "@blockchain-commons/tags";
 import { X25519PrivateKey } from "../x25519/x25519-private-key.js";
 import { X25519PublicKey } from "../x25519/x25519-public-key.js";
-import { SymmetricKey } from "../symmetric/symmetric-key.js";
+import { type SymmetricKey } from "../symmetric/symmetric-key.js";
 import { EncapsulationScheme } from "./encapsulation-scheme.js";
 import { EncapsulationCiphertext } from "./encapsulation-ciphertext.js";
 import { bytesToHex } from "../utils.js";

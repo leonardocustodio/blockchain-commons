@@ -36,8 +36,7 @@ import {
 } from "@blockchain-commons/dcbor";
 import { SIGNING_PRIVATE_KEY as TAG_SIGNING_PRIVATE_KEY } from "@blockchain-commons/tags";
 import { Ed25519PrivateKey } from "../ed25519/ed25519-private-key.js";
-import { Sr25519PrivateKey, SR25519_PRIVATE_KEY_SIZE } from "../sr25519/sr25519-private-key.js";
-import { bytesToHex } from "../utils.js";
+import { Sr25519PrivateKey } from "../sr25519/sr25519-private-key.js";
 import { SignatureScheme } from "./signature-scheme.js";
 import { Signature } from "./signature.js";
 import { SigningPublicKey } from "./signing-public-key.js";

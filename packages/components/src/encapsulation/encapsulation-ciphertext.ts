@@ -19,7 +19,6 @@ import {
   toByteString,
   expectBytes,
   createTaggedCbor,
-  validateTag,
   extractTaggedContent,
   decodeCbor,
   tagsForValues,
