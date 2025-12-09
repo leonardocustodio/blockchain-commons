@@ -67,7 +67,7 @@ export function fromMagnitude64(magnitude: bigint): bigint {
   const mask = 0xffffffffffffffffn;
   const signBit = 1n << 63n;
   const maskedMag = magnitude & mask;
-  if (maskedMag & signBit) {
+  if ((maskedMag & signBit) !== 0n) {
     // Negative value - convert from two's complement
     return maskedMag - (1n << 64n);
   }

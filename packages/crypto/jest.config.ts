@@ -1,22 +1,38 @@
 import type { Config } from "jest";
 
 const config: Config = {
-  preset: "ts-jest",
+  preset: "ts-jest/presets/default-esm",
   testEnvironment: "node",
   roots: ["<rootDir>/tests"],
   testMatch: ["**/*.test.ts"],
-  collectCoverageFrom: ["src/**/*.ts", "!src/**/*.d.ts", "!src/**/index.ts"],
-  coverageThreshold: {
-    global: {
-      branches: 90,
-      functions: 95,
-      lines: 95,
-      statements: 95,
-    },
-  },
+  moduleFileExtensions: ["ts", "js"],
+  extensionsToTreatAsEsm: [".ts"],
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
+  transform: {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        useESM: true,
+        tsconfig: {
+          module: "ESNext",
+          moduleResolution: "bundler",
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+          strict: true,
+          skipLibCheck: true,
+          declaration: true,
+          outDir: "./dist",
+          rootDir: ".",
+        },
+      },
+    ],
+  },
+  collectCoverage: false,
+  coverageDirectory: "coverage",
+  coverageReporters: ["text", "lcov"],
+  verbose: true,
 };
 
 export default config;

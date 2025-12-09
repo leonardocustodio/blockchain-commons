@@ -1,7 +1,12 @@
 // Ported from bc-rand-rust/src/random_number_generator.rs
 
 import { wideMulU32, wideMulU64 } from "./widening.js";
-import { toMagnitude, toMagnitude64, fromMagnitude, fromMagnitude64 } from "./magnitude.js";
+import {
+  toMagnitude,
+  toMagnitude64 as _toMagnitude64,
+  fromMagnitude as _fromMagnitude,
+  fromMagnitude64 as _fromMagnitude64,
+} from "./magnitude.js";
 
 /**
  * Interface for random number generators.

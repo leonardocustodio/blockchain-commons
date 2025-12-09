@@ -59,7 +59,7 @@ function xoshiro256StarStar(state: Xoshiro256State): bigint {
  * for testing purposes.
  */
 export class SeededRandomNumberGenerator implements RandomNumberGenerator {
-  private state: Xoshiro256State;
+  private readonly state: Xoshiro256State;
 
   /**
    * Creates a new seeded random number generator.

@@ -8,12 +8,16 @@ import type { RandomNumberGenerator } from "./random-number-generator.js";
  */
 function getCrypto(): Crypto {
   // Browser environment
-  if (typeof globalThis !== "undefined" && globalThis.crypto) {
+  if (
+    typeof globalThis !== "undefined" &&
+    globalThis.crypto !== null &&
+    globalThis.crypto !== undefined
+  ) {
     return globalThis.crypto;
   }
-  // Node.js environment
-  if (typeof crypto !== "undefined") {
-    return crypto;
+  // Node.js environment - globalThis.crypto is also available in Node.js >= 15
+  if (typeof globalThis.crypto !== "undefined") {
+    return globalThis.crypto;
   }
   throw new Error("No crypto API available in this environment");
 }
