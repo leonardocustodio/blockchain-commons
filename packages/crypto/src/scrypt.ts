@@ -8,7 +8,7 @@ import { scrypt as nobleScrypt } from "@noble/hashes/scrypt";
  *
  * @param password - Password or passphrase
  * @param salt - Salt value
- * @param outputLen - Desired output length (must be >9 and <=64)
+ * @param outputLen - Desired output length
  * @returns Derived key
  */
 export function scrypt(password: Uint8Array, salt: Uint8Array, outputLen: number): Uint8Array {
@@ -20,7 +20,7 @@ export function scrypt(password: Uint8Array, salt: Uint8Array, outputLen: number
  *
  * @param password - Password or passphrase
  * @param salt - Salt value
- * @param outputLen - Desired output length (must be >9 and <=64)
+ * @param outputLen - Desired output length
  * @param logN - Log2 of the CPU/memory cost parameter N (must be <64)
  * @param r - Block size parameter (must be >0)
  * @param p - Parallelization parameter (must be >0)
@@ -34,9 +34,6 @@ export function scryptOpt(
   r: number,
   p: number,
 ): Uint8Array {
-  if (outputLen <= 9 || outputLen > 64) {
-    throw new Error("Output length must be >9 and <=64");
-  }
   if (logN >= 64) {
     throw new Error("logN must be <64");
   }
