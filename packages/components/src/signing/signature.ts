@@ -24,7 +24,6 @@ import {
   type CborTaggedDecodable,
   cbor,
   toByteString,
-  toUnsigned,
   expectArray,
   expectBytes,
   expectUnsigned,
@@ -163,7 +162,7 @@ export class Signature implements CborTaggedEncodable, CborTaggedDecodable<Signa
   untaggedCbor(): Cbor {
     switch (this._type) {
       case SignatureScheme.Ed25519:
-        return cbor([toUnsigned(2), toByteString(this._data)]);
+        return cbor([2, toByteString(this._data)]);
     }
   }
 

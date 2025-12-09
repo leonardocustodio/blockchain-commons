@@ -26,7 +26,6 @@ import {
   type CborTaggedDecodable,
   cbor,
   toByteString,
-  toUnsigned,
   expectArray,
   expectBytes,
   expectUnsigned,
@@ -208,7 +207,7 @@ export class SigningPrivateKey
         if (!this._ed25519Key) {
           throw new Error("Ed25519 private key is missing");
         }
-        return cbor([toUnsigned(2), toByteString(this._ed25519Key.toData())]);
+        return cbor([2, toByteString(this._ed25519Key.toData())]);
       }
     }
   }
