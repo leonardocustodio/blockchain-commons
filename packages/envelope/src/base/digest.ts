@@ -1,15 +1,11 @@
 import { sha256 } from "@noble/hashes/sha256";
 
 declare global {
-  const TextEncoder: {
-    new (): {
-      encode(input: string): Uint8Array;
-    };
+  const TextEncoder: new () => {
+    encode(input: string): Uint8Array;
   };
-  const TextDecoder: {
-    new (): {
-      decode(input: Uint8Array): string;
-    };
+  const TextDecoder: new () => {
+    decode(input: Uint8Array): string;
   };
 }
 
