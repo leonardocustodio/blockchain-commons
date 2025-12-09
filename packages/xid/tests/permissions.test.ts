@@ -18,8 +18,8 @@ describe("Permissions", () => {
     expect(permissions.allow.size).toBe(0);
     expect(permissions.deny.size).toBe(0);
 
-    permissions.allowMut().add(Privilege.All);
-    permissions.denyMut().add(Privilege.Verify);
+    permissions.addAllow(Privilege.All);
+    permissions.addDeny(Privilege.Verify);
 
     expect(permissions.allow.has(Privilege.All)).toBe(true);
     expect(permissions.deny.has(Privilege.Verify)).toBe(true);
@@ -27,8 +27,8 @@ describe("Permissions", () => {
 
   it("should add permissions to envelope and restore", () => {
     const permissions = Permissions.new();
-    permissions.allowMut().add(Privilege.All);
-    permissions.denyMut().add(Privilege.Verify);
+    permissions.addAllow(Privilege.All);
+    permissions.addDeny(Privilege.Verify);
 
     const envelope = permissions.addToEnvelope(Envelope.new("Subject"));
     const permissions2 = Permissions.tryFromEnvelope(envelope);
@@ -54,7 +54,7 @@ describe("Permissions", () => {
   it("should clone permissions correctly", () => {
     const permissions = Permissions.new();
     permissions.addAllow(Privilege.All);
-    permissions.denyMut().add(Privilege.Verify);
+    permissions.addDeny(Privilege.Verify);
 
     const cloned = permissions.clone();
     expect(cloned.equals(permissions)).toBe(true);

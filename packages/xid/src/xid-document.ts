@@ -33,11 +33,11 @@ import {
 } from "@blockchain-commons/provenance-mark";
 import { type Cbor } from "@blockchain-commons/dcbor";
 
-import { Key, XIDPrivateKeyOptions, type XIDPrivateKeyOptionsValue } from "./key.js";
-import { Delegate, registerXIDDocumentClass } from "./delegate.js";
-import { Service } from "./service.js";
-import { Provenance, XIDGeneratorOptions, type XIDGeneratorOptionsValue } from "./provenance.js";
-import { XIDError } from "./error.js";
+import { Key, XIDPrivateKeyOptions, type XIDPrivateKeyOptionsValue } from "./key";
+import { Delegate, registerXIDDocumentClass } from "./delegate";
+import { Service } from "./service";
+import { Provenance, XIDGeneratorOptions, type XIDGeneratorOptionsValue } from "./provenance";
+import { XIDError } from "./error";
 
 // Raw values for predicate matching
 const KEY_RAW = KEY.value();
@@ -711,11 +711,14 @@ export class XIDDocument implements EnvelopeEncodable {
   private static fromEnvelopeInner(envelope: Envelope, password?: Uint8Array): XIDDocument {
     const envelopeExt = envelope as unknown as {
       asByteString(): Uint8Array | undefined;
+      subject(): Envelope;
       assertions(): Envelope[];
     };
 
     // Extract XID from subject
-    const xidData = envelopeExt.asByteString();
+    // The envelope may be a node (with assertions) or a leaf
+    const subject = envelopeExt.subject ? envelopeExt.subject() : envelope;
+    const xidData = (subject as typeof envelopeExt).asByteString();
     if (xidData === undefined) {
       throw XIDError.invalidXid();
     }

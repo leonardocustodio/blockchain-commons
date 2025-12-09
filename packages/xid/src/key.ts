@@ -25,10 +25,10 @@ import type { EnvelopeEncodableValue } from "@blockchain-commons/envelope";
 // Helper to convert KnownValue to EnvelopeEncodableValue
 const kv = (v: KnownValue): EnvelopeEncodableValue => v as unknown as EnvelopeEncodableValue;
 import { Salt, Reference } from "@blockchain-commons/components";
-import { Permissions, type HasPermissions } from "./permissions.js";
-import { type Privilege } from "./privilege.js";
-import { type HasNickname } from "./name.js";
-import { XIDError } from "./error.js";
+import { Permissions, type HasPermissions } from "./permissions";
+import { type Privilege } from "./privilege";
+import { type HasNickname } from "./name";
+import { XIDError } from "./error";
 
 /**
  * Options for handling private keys in envelopes.
@@ -226,11 +226,8 @@ export class Key implements HasNickname, HasPermissions, EnvelopeEncodable {
 
       if (data.type === "encrypted") {
         // Always preserve encrypted keys
-        const assertionEnvelope = Envelope.newAssertion(
-          kv(PRIVATE_KEY),
-          data.envelope,
-        ).addAssertion(kv(SALT), salt.toData());
-        envelope = envelope.addAssertionEnvelope(assertionEnvelope);
+        envelope = envelope.addAssertion(kv(PRIVATE_KEY), data.envelope);
+        envelope = envelope.addAssertion(kv(SALT), salt.toData());
       } else if (data.type === "decrypted") {
         // Handle decrypted keys based on options
         const option =
@@ -238,20 +235,18 @@ export class Key implements HasNickname, HasPermissions, EnvelopeEncodable {
 
         switch (option) {
           case XIDPrivateKeyOptions.Include: {
-            const assertionEnvelope = Envelope.newAssertion(
-              kv(PRIVATE_KEY),
-              data.privateKeyBase.data(),
-            ).addAssertion(kv(SALT), salt.toData());
-            envelope = envelope.addAssertionEnvelope(assertionEnvelope);
+            envelope = envelope.addAssertion(kv(PRIVATE_KEY), data.privateKeyBase.data());
+            envelope = envelope.addAssertion(kv(SALT), salt.toData());
             break;
           }
           case XIDPrivateKeyOptions.Elide: {
             const baseAssertion = Envelope.newAssertion(
               kv(PRIVATE_KEY),
               data.privateKeyBase.data(),
-            ).addAssertion(kv(SALT), salt.toData());
-            const assertionEnvelope = (baseAssertion as unknown as { elide(): Envelope }).elide();
-            envelope = envelope.addAssertionEnvelope(assertionEnvelope);
+            );
+            const elidedAssertion = (baseAssertion as unknown as { elide(): Envelope }).elide();
+            envelope = envelope.addAssertionEnvelope(elidedAssertion);
+            envelope = envelope.addAssertion(kv(SALT), salt.toData());
             break;
           }
           case XIDPrivateKeyOptions.Encrypt: {
@@ -260,11 +255,8 @@ export class Key implements HasNickname, HasPermissions, EnvelopeEncodable {
               const encrypted = (
                 privateKeysEnvelope as unknown as { encryptSubject(p: Uint8Array): Envelope }
               ).encryptSubject(privateKeyOptions.password);
-              const assertionEnvelope = Envelope.newAssertion(
-                kv(PRIVATE_KEY),
-                encrypted,
-              ).addAssertion(kv(SALT), salt.toData());
-              envelope = envelope.addAssertionEnvelope(assertionEnvelope);
+              envelope = envelope.addAssertion(kv(PRIVATE_KEY), encrypted);
+              envelope = envelope.addAssertion(kv(SALT), salt.toData());
             }
             break;
           }
@@ -303,13 +295,16 @@ export class Key implements HasNickname, HasPermissions, EnvelopeEncodable {
   static tryFromEnvelope(envelope: Envelope, password?: Uint8Array): Key {
     type EnvelopeExt = Envelope & {
       asByteString(): Uint8Array | undefined;
+      subject(): Envelope;
       assertionsWithPredicate(p: unknown): Envelope[];
       decryptSubject(p: Uint8Array): Envelope;
     };
     const env = envelope as EnvelopeExt;
 
     // Extract public key base from subject
-    const publicKeyData = env.asByteString();
+    // The envelope may be a node (with assertions) or a leaf
+    const subject = env.subject ? env.subject() : env;
+    const publicKeyData = (subject as EnvelopeExt).asByteString();
     if (publicKeyData === undefined) {
       throw XIDError.component(new Error("Could not extract public key from envelope"));
     }
@@ -318,6 +313,21 @@ export class Key implements HasNickname, HasPermissions, EnvelopeEncodable {
     // Extract optional private key
     let privateKeys: { data: PrivateKeyData; salt: Salt } | undefined;
 
+    // Extract salt from top level (if present)
+    let salt: Salt = Salt.random(32);
+    const saltAssertions = env.assertionsWithPredicate(SALT);
+    if (saltAssertions.length > 0) {
+      const saltAssertion = saltAssertions[0];
+      const saltCase = saltAssertion.case();
+      if (saltCase.type === "assertion") {
+        const saltObj = saltCase.assertion.object() as EnvelopeExt;
+        const saltData = saltObj.asByteString();
+        if (saltData !== undefined) {
+          salt = Salt.from(saltData);
+        }
+      }
+    }
+
     const privateKeyAssertions = env.assertionsWithPredicate(PRIVATE_KEY);
     if (privateKeyAssertions.length > 0) {
       const privateKeyAssertion = privateKeyAssertions[0] as EnvelopeExt;
@@ -325,27 +335,6 @@ export class Key implements HasNickname, HasPermissions, EnvelopeEncodable {
 
       if (assertionCase.type === "assertion") {
         const privateKeyObject = assertionCase.assertion.object() as EnvelopeExt;
-
-        // Extract salt
-        const saltAssertions = privateKeyAssertion.assertionsWithPredicate(SALT);
-        let salt: Salt;
-        if (saltAssertions.length > 0) {
-          const saltAssertion = saltAssertions[0];
-          const saltCase = saltAssertion.case();
-          if (saltCase.type === "assertion") {
-            const saltObj = saltCase.assertion.object() as EnvelopeExt;
-            const saltData = saltObj.asByteString();
-            if (saltData !== undefined) {
-              salt = Salt.from(saltData);
-            } else {
-              salt = Salt.random(32);
-            }
-          } else {
-            salt = Salt.random(32);
-          }
-        } else {
-          salt = Salt.random(32);
-        }
 
         // Check if encrypted
         const objCase = privateKeyObject.case();

@@ -6,7 +6,7 @@
  * Ported from bc-xid-rust/src/name.rs
  */
 
-import { XIDError } from "./error.js";
+import { XIDError } from "./error";
 
 /**
  * Interface for types that have a nickname.

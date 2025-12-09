@@ -22,5 +22,8 @@
     "apps/*",
     "packages/*",
     "shared/*"
-  ]
+  ],
+  "dependencies": {
+    "@changesets/cli": "^2.29.8"
+  }
 }

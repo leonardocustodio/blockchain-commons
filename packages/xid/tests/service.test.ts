@@ -4,6 +4,7 @@
  */
 
 import { PrivateKeyBase } from "@blockchain-commons/envelope";
+import { Reference } from "@blockchain-commons/components";
 import { Service, XIDDocument, Privilege } from "../src";
 
 describe("Service", () => {
@@ -24,7 +25,7 @@ describe("Service", () => {
     const service = Service.new("https://example.com");
 
     // Add key reference
-    const aliceKeyRef = alicePublicKeys.reference();
+    const aliceKeyRef = Reference.hash(alicePublicKeys.data());
     service.addKeyReference(aliceKeyRef);
     // Adding same key again should throw
     expect(() => service.addKeyReference(aliceKeyRef)).toThrow();
@@ -88,7 +89,7 @@ describe("Service", () => {
       const publicKeys = privateKeyBase.publicKeys();
 
       const service = Service.new("https://example.com");
-      const keyRef = publicKeys.reference();
+      const keyRef = Reference.hash(publicKeys.data());
 
       service.addKeyReference(keyRef);
       expect(service.keyReferences().size).toBe(1);
@@ -123,7 +124,7 @@ describe("Service", () => {
       const privateKeyBase = PrivateKeyBase.generate();
 
       const service = Service.new("https://example.com");
-      service.addKeyReference(privateKeyBase.publicKeys().reference());
+      service.addKeyReference(Reference.hash(privateKeyBase.publicKeys().data()));
       service.permissions().addAllow(Privilege.Sign);
       service.addCapability("test");
       service.setName("Test");

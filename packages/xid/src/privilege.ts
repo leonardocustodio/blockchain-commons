@@ -25,7 +25,7 @@ import {
   PRIVILEGE_REVOKE,
 } from "@blockchain-commons/known-values";
 import { Envelope } from "@blockchain-commons/envelope";
-import { XIDError } from "./error.js";
+import { XIDError } from "./error";
 
 /**
  * Enum representing XID privileges.

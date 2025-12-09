@@ -9,8 +9,8 @@
 
 import { type Envelope, type EnvelopeEncodable } from "@blockchain-commons/envelope";
 import { Reference, type XID } from "@blockchain-commons/components";
-import { Permissions, type HasPermissions } from "./permissions.js";
-import { Shared } from "./shared.js";
+import { Permissions, type HasPermissions } from "./permissions";
+import { Shared } from "./shared";
 
 // Forward declaration - XIDDocument will be imported dynamically to avoid circular dependency
 // The actual XIDDocument type will be set when the module is loaded

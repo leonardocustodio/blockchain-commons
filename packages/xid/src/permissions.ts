@@ -9,7 +9,7 @@
 
 import { ALLOW, DENY } from "@blockchain-commons/known-values";
 import { Envelope } from "@blockchain-commons/envelope";
-import { Privilege, privilegeFromEnvelope, privilegeToKnownValue } from "./privilege.js";
+import { Privilege, privilegeFromEnvelope, privilegeToKnownValue } from "./privilege";
 
 /**
  * Interface for types that have permissions.

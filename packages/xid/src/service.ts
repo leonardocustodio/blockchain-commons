@@ -24,9 +24,9 @@ import {
 // Helper to convert KnownValue to EnvelopeEncodableValue
 const kv = (v: KnownValue): EnvelopeEncodableValue => v as unknown as EnvelopeEncodableValue;
 import type { Reference } from "@blockchain-commons/components";
-import { Permissions, type HasPermissions } from "./permissions.js";
-import { privilegeFromEnvelope } from "./privilege.js";
-import { XIDError } from "./error.js";
+import { Permissions, type HasPermissions } from "./permissions";
+import { privilegeFromEnvelope } from "./privilege";
+import { XIDError } from "./error";
 
 // Raw values for predicate matching
 const KEY_RAW = KEY.value();
@@ -226,7 +226,13 @@ export class Service implements HasPermissions, EnvelopeEncodable {
    */
   static tryFromEnvelope(envelope: Envelope): Service {
     // Extract URI from subject
-    const uri = (envelope as unknown as { asText(): string | undefined }).asText();
+    // The envelope may be a node (with assertions) or a leaf
+    const envExt = envelope as unknown as {
+      subject(): Envelope;
+      asText(): string | undefined;
+    };
+    const subject = envExt.subject ? envExt.subject() : envelope;
+    const uri = (subject as typeof envExt).asText();
     if (uri === undefined) {
       throw XIDError.component(new Error("Could not extract URI from envelope"));
     }
