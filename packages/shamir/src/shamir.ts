@@ -14,11 +14,7 @@ function createDigest(randomData: Uint8Array, sharedSecret: Uint8Array): Uint8Ar
   return hmacSha256(randomData, sharedSecret);
 }
 
-function validateParameters(
-  threshold: number,
-  shareCount: number,
-  secretLength: number,
-): void {
+function validateParameters(threshold: number, shareCount: number, secretLength: number): void {
   if (shareCount > MAX_SHARE_COUNT) {
     throw new ShamirError(ShamirErrorType.TooManyShares);
   } else if (threshold < 1 || threshold > shareCount) {
@@ -149,10 +145,7 @@ export function splitSecret(
  * console.log(new TextDecoder().decode(secret)); // "my secret belongs to me."
  * ```
  */
-export function recoverSecret(
-  indexes: number[],
-  shares: Uint8Array[],
-): Uint8Array {
+export function recoverSecret(indexes: number[], shares: Uint8Array[]): Uint8Array {
   const threshold = shares.length;
   if (threshold === 0 || indexes.length !== threshold) {
     throw new ShamirError(ShamirErrorType.InvalidThreshold);

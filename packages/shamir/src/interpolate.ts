@@ -2,14 +2,7 @@
 
 import { memzero, memzeroVecVecU8 } from "@blockchain-commons/crypto";
 import { MAX_SECRET_LEN } from "./index.js";
-import {
-  bitslice,
-  bitsliceSetall,
-  gf256Add,
-  gf256Inv,
-  gf256Mul,
-  unbitslice,
-} from "./hazmat.js";
+import { bitslice, bitsliceSetall, gf256Add, gf256Inv, gf256Mul, unbitslice } from "./hazmat.js";
 
 /**
  * Calculate the lagrange basis coefficients for the lagrange polynomial
@@ -25,12 +18,7 @@ import {
  * @param xc - Array of x components to use as interpolating points
  * @param x - x coordinate to evaluate lagrange polynomials at
  */
-function hazmatLagrangeBasis(
-  values: Uint8Array,
-  n: number,
-  xc: Uint8Array,
-  x: number,
-): void {
+function hazmatLagrangeBasis(values: Uint8Array, n: number, xc: Uint8Array, x: number): void {
   // call the contents of xc [ x0 x1 x2 ... xn-1 ]
   const xx = new Uint8Array(32 + 16);
   const xSlice = new Uint32Array(8);

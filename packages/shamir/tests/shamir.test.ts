@@ -1,12 +1,7 @@
 // Tests ported from bc-shamir-rust/src/lib.rs
 
 import type { RandomNumberGenerator } from "@blockchain-commons/rand";
-import {
-  splitSecret,
-  recoverSecret,
-  ShamirError,
-  ShamirErrorType,
-} from "../src/index.js";
+import { splitSecret, recoverSecret, ShamirError, ShamirErrorType } from "../src/index.js";
 
 /**
  * Fake random number generator for deterministic testing.
@@ -81,33 +76,31 @@ describe("Shamir Secret Sharing", () => {
   describe("split_secret 2/7", () => {
     it("should split a 32-byte secret into 7 shares with threshold 2", () => {
       const rng = new FakeRandomNumberGenerator();
-      const secret = hexToBytes(
-        "204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a"
-      );
+      const secret = hexToBytes("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a");
 
       const shares = splitSecret(2, 7, secret, rng);
 
       expect(shares.length).toBe(7);
       expect(bytesToHex(shares[0])).toBe(
-        "2dcd14c2252dc8489af3985030e74d5a48e8eff1478ab86e65b43869bf39d556"
+        "2dcd14c2252dc8489af3985030e74d5a48e8eff1478ab86e65b43869bf39d556",
       );
       expect(bytesToHex(shares[1])).toBe(
-        "a1dfdd798388aada635b9974472b4fc59a32ae520c42c9f6a0af70149b882487"
+        "a1dfdd798388aada635b9974472b4fc59a32ae520c42c9f6a0af70149b882487",
       );
       expect(bytesToHex(shares[2])).toBe(
-        "2ee99daf727c0c7773b89a18de64497ff7476dacd1015a45f482a893f7402cef"
+        "2ee99daf727c0c7773b89a18de64497ff7476dacd1015a45f482a893f7402cef",
       );
       expect(bytesToHex(shares[3])).toBe(
-        "a2fb5414d4d96ee58a109b3ca9a84be0259d2c0f9ac92bdd3199e0eed3f1dd3e"
+        "a2fb5414d4d96ee58a109b3ca9a84be0259d2c0f9ac92bdd3199e0eed3f1dd3e",
       );
       expect(bytesToHex(shares[4])).toBe(
-        "2b851d188b8f5b3653659cc0f7fa45102dadf04b708767385cd803862fcb3c3f"
+        "2b851d188b8f5b3653659cc0f7fa45102dadf04b708767385cd803862fcb3c3f",
       );
       expect(bytesToHex(shares[5])).toBe(
-        "a797d4a32d2a39a4aacd9de48036478fff77b1e83b4f16a099c34bfb0b7acdee"
+        "a797d4a32d2a39a4aacd9de48036478fff77b1e83b4f16a099c34bfb0b7acdee",
       );
       expect(bytesToHex(shares[6])).toBe(
-        "28a19475dcde9f09ba2e9e881979413592027216e60c8513cdee937c67b2c586"
+        "28a19475dcde9f09ba2e9e881979413592027216e60c8513cdee937c67b2c586",
       );
 
       // Recover with shares 3, 4
@@ -137,12 +130,12 @@ describe("Shamir Secret Sharing", () => {
       const indexes = [0, 2];
       const shares = [
         new Uint8Array([
-          47, 165, 102, 232, 218, 99, 6, 94, 39, 6, 253, 215, 12, 88, 64, 32,
-          105, 40, 222, 146, 93, 197, 48, 129,
+          47, 165, 102, 232, 218, 99, 6, 94, 39, 6, 253, 215, 12, 88, 64, 32, 105, 40, 222, 146, 93,
+          197, 48, 129,
         ]),
         new Uint8Array([
-          221, 174, 116, 201, 90, 99, 136, 33, 64, 215, 60, 84, 207, 28, 74,
-          10, 111, 243, 43, 224, 48, 64, 199, 172,
+          221, 174, 116, 201, 90, 99, 136, 33, 64, 215, 60, 84, 207, 28, 74, 10, 111, 243, 43, 224,
+          48, 64, 199, 172,
         ]),
       ];
 
@@ -219,10 +212,7 @@ describe("Shamir Secret Sharing", () => {
     });
 
     it("should reject shares with unequal length", () => {
-      const shares = [
-        new Uint8Array(16),
-        new Uint8Array(24),
-      ];
+      const shares = [new Uint8Array(16), new Uint8Array(24)];
 
       expect(() => recoverSecret([0, 1], shares)).toThrow(ShamirError);
       expect(() => recoverSecret([0, 1], shares)).toThrow("shares have unequal length");

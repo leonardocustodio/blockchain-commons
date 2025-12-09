@@ -92,7 +92,7 @@ describe("SSKR", () => {
     it("should split and recover a 32-byte secret with 2 of 7 shares", () => {
       const rng = new FakeRandomNumberGenerator();
       const secret = Secret.new(
-        hexToBytes("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a")
+        hexToBytes("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a"),
       );
       const group = GroupSpec.new(2, 7);
       const spec = Spec.new(1, [group]);
@@ -120,7 +120,7 @@ describe("SSKR", () => {
     it("should split and recover with two groups requiring quorum from both", () => {
       const rng = new FakeRandomNumberGenerator();
       const secret = Secret.new(
-        hexToBytes("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a")
+        hexToBytes("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a"),
       );
       const group1 = GroupSpec.new(2, 3);
       const group2 = GroupSpec.new(2, 3);

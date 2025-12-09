@@ -18,10 +18,7 @@ import { METADATA_SIZE_BYTES } from "./index.js";
  * @returns A vector of groups, each containing a vector of shares,
  *   each of which is a Uint8Array.
  */
-export function sskrGenerate(
-  spec: Spec,
-  masterSecret: Secret,
-): Uint8Array[][] {
+export function sskrGenerate(spec: Spec, masterSecret: Secret): Uint8Array[][] {
   const rng = new SecureRandomNumberGenerator();
   return sskrGenerateUsing(spec, masterSecret, rng);
 }
@@ -44,9 +41,7 @@ export function sskrGenerateUsing(
 ): Uint8Array[][] {
   const groupsShares = generateShares(spec, masterSecret, randomGenerator);
 
-  const result: Uint8Array[][] = groupsShares.map((group) =>
-    group.map(serializeShare)
-  );
+  const result: Uint8Array[][] = groupsShares.map((group) => group.map(serializeShare));
 
   return result;
 }
@@ -111,8 +106,8 @@ function deserializeShare(source: Uint8Array): SSKRShare {
     throw new SSKRError(SSKRErrorType.ShareLengthInvalid);
   }
 
-  const groupThreshold = ((source[2] >> 4) + 1);
-  const groupCount = ((source[2] & 0xf) + 1);
+  const groupThreshold = (source[2] >> 4) + 1;
+  const groupCount = (source[2] & 0xf) + 1;
 
   if (groupThreshold > groupCount) {
     throw new SSKRError(SSKRErrorType.GroupThresholdInvalid);
@@ -120,7 +115,7 @@ function deserializeShare(source: Uint8Array): SSKRShare {
 
   const identifier = (source[0] << 8) | source[1];
   const groupIndex = source[3] >> 4;
-  const memberThreshold = ((source[3] & 0xf) + 1);
+  const memberThreshold = (source[3] & 0xf) + 1;
   const reserved = source[4] >> 4;
   if (reserved !== 0) {
     throw new SSKRError(SSKRErrorType.ShareReservedBitsInvalid);
@@ -185,20 +180,18 @@ function generateShares(
       throw e;
     }
 
-    const memberSSKRShares: SSKRShare[] = memberSecrets.map(
-      (memberSecret, memberIndex) => {
-        const secret = Secret.new(memberSecret);
-        return new SSKRShare(
-          identifier,
-          groupIndex,
-          spec.groupThreshold(),
-          spec.groupCount(),
-          memberIndex,
-          group.memberThreshold(),
-          secret,
-        );
-      }
-    );
+    const memberSSKRShares: SSKRShare[] = memberSecrets.map((memberSecret, memberIndex) => {
+      const secret = Secret.new(memberSecret);
+      return new SSKRShare(
+        identifier,
+        groupIndex,
+        spec.groupThreshold(),
+        spec.groupCount(),
+        memberIndex,
+        group.memberThreshold(),
+        secret,
+      );
+    });
 
     groupsShares.push(memberSSKRShares);
   }
