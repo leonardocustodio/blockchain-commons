@@ -21,7 +21,6 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
-      "browser": "./dist/index.iife.js",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "default": "./dist/index.mjs"
