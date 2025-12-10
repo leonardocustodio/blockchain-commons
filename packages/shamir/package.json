@@ -5,14 +5,14 @@
   "description": "Blockchain Commons Shamir Secret Sharing for TypeScript",
   "license": "BSD-2-Clause-Patent",
   "author": "Leonardo Custodio <leonardo@custodio.me>",
-  "homepage": "https://github.com/leonardocustodio/blockchain-commons",
+  "homepage": "https://github.com/leonardocustodio/bcts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/leonardocustodio/blockchain-commons",
+    "url": "https://github.com/leonardocustodio/bcts",
     "directory": "packages/shamir"
   },
   "bugs": {
-    "url": "https://github.com/leonardocustodio/blockchain-commons/issues"
+    "url": "https://github.com/leonardocustodio/bcts/issues"
   },
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",

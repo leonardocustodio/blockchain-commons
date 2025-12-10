@@ -5,14 +5,14 @@
   "description": "Blockchain Commons Provenance Mark for TypeScript - A cryptographically-secured system for establishing and verifying the authenticity of works",
   "license": "BSD-2-Clause-Patent",
   "author": "Leonardo Custodio <leonardo@custodio.me>",
-  "homepage": "https://github.com/leonardocustodio/blockchain-commons",
+  "homepage": "https://github.com/leonardocustodio/bcts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/leonardocustodio/blockchain-commons",
+    "url": "https://github.com/leonardocustodio/bcts",
     "directory": "packages/provenance-mark"
   },
   "bugs": {
-    "url": "https://github.com/leonardocustodio/blockchain-commons/issues"
+    "url": "https://github.com/leonardocustodio/bcts/issues"
   },
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",

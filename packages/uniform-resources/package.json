@@ -5,14 +5,14 @@
   "description": "Blockchain Commons Uniform Resources (UR) for TypeScript",
   "license": "BSD-2-Clause-Patent",
   "author": "Leonardo Custodio <leonardo@custodio.me>",
-  "homepage": "https://github.com/leonardocustodio/blockchain-commons",
+  "homepage": "https://github.com/leonardocustodio/bcts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/leonardocustodio/blockchain-commons",
+    "url": "https://github.com/leonardocustodio/bcts",
     "directory": "packages/uniform-resources"
   },
   "bugs": {
-    "url": "https://github.com/leonardocustodio/blockchain-commons/issues"
+    "url": "https://github.com/leonardocustodio/bcts/issues"
   },
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
