@@ -18,7 +18,12 @@ import {
   arrayPatternDisplay,
   arrayPatternPathsWithCaptures,
 } from "./array-pattern";
-import { type MapPattern, mapPatternPaths, mapPatternDisplay } from "./map-pattern";
+import {
+  type MapPattern,
+  mapPatternPaths,
+  mapPatternDisplay,
+  mapPatternPathsWithCaptures,
+} from "./map-pattern";
 import { type TaggedPattern, taggedPatternPaths, taggedPatternDisplay } from "./tagged-pattern";
 
 /**
@@ -59,13 +64,12 @@ export const structurePatternPathsWithCaptures = (
   haystack: Cbor,
 ): [Path[], Map<string, Path[]>] => {
   switch (pattern.type) {
-    case "Array": {
+    case "Array":
       return arrayPatternPathsWithCaptures(pattern.pattern, haystack);
-    }
     case "Map":
+      return mapPatternPathsWithCaptures(pattern.pattern, haystack);
     case "Tagged":
-      // Map and Tagged patterns don't have nested captures in the same way
-      // Just return paths with empty captures
+      // Tagged patterns - return paths with empty captures for now
       return [structurePatternPaths(pattern, haystack), new Map()];
   }
 };

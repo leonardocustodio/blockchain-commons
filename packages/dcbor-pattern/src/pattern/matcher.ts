@@ -161,10 +161,41 @@ const collectPatternCaptureNames = (pattern: Pattern, names: string[]): void => 
       break;
     case "Structure":
       // Structure patterns may have element patterns with captures
-      // This will be implemented based on the structure pattern type
+      collectStructurePatternCaptureNames(pattern.pattern, names);
       break;
     case "Meta":
       collectMetaPatternCaptureNames(pattern.pattern, names);
+      break;
+  }
+};
+
+/**
+ * Collects capture names from structure patterns.
+ */
+const collectStructurePatternCaptureNames = (
+  pattern: import("./structure").StructurePattern,
+  names: string[],
+): void => {
+  switch (pattern.type) {
+    case "Array":
+      if (pattern.pattern.variant === "Elements") {
+        collectPatternCaptureNames(pattern.pattern.pattern, names);
+      }
+      break;
+    case "Map":
+      if (pattern.pattern.variant === "Constraints") {
+        for (const constraint of pattern.pattern.constraints) {
+          // Constraints are tuples: [keyPattern, valuePattern]
+          collectPatternCaptureNames(constraint[0], names);
+          collectPatternCaptureNames(constraint[1], names);
+        }
+      }
+      break;
+    case "Tagged":
+      // Tagged patterns (Tag, Name, Regex variants) have a `pattern` property
+      if (pattern.pattern.variant !== "Any") {
+        collectPatternCaptureNames(pattern.pattern.pattern, names);
+      }
       break;
   }
 };

@@ -117,6 +117,89 @@ export const mapPatternPaths = (pattern: MapPattern, haystack: Cbor): Path[] => 
 };
 
 /**
+ * Helper to build a map context path (map -> element).
+ */
+const buildMapContextPath = (mapCbor: Cbor, element: Cbor): Path => {
+  return [mapCbor, element];
+};
+
+/**
+ * Collects captures from a pattern by checking if it's a capture pattern.
+ */
+const collectCapturesFromPattern = (
+  pattern: Pattern,
+  matchedValue: Cbor,
+  mapContext: Cbor,
+  captures: Map<string, Path[]>,
+): void => {
+  if (pattern.kind === "Meta" && pattern.pattern.type === "Capture") {
+    const captureName = pattern.pattern.pattern.name;
+    const contextPath = buildMapContextPath(mapContext, matchedValue);
+    const existing = captures.get(captureName) ?? [];
+    existing.push(contextPath);
+    captures.set(captureName, existing);
+
+    // Also collect from inner pattern
+    collectCapturesFromPattern(pattern.pattern.pattern.pattern, matchedValue, mapContext, captures);
+  }
+};
+
+/**
+ * Returns paths with captures for map patterns.
+ */
+export const mapPatternPathsWithCaptures = (
+  pattern: MapPattern,
+  haystack: Cbor,
+): [Path[], Map<string, Path[]>] => {
+  if (!isMap(haystack)) {
+    return [[], new Map()];
+  }
+
+  switch (pattern.variant) {
+    case "Any":
+    case "Length":
+      return [mapPatternPaths(pattern, haystack), new Map()];
+
+    case "Constraints": {
+      const keys = mapKeys(haystack);
+      if (keys === undefined) {
+        return [[], new Map()];
+      }
+
+      const captures = new Map<string, Path[]>();
+
+      // For each constraint, find the matching key-value pair and collect captures
+      for (const [keyPattern, valuePattern] of pattern.constraints) {
+        for (const key of keys) {
+          if (matchPattern(keyPattern, key)) {
+            const rawValue = mapValue(haystack, key);
+            if (rawValue !== undefined && rawValue !== null) {
+              // Wrap raw JavaScript value in CBOR if needed
+              const value = (rawValue as Cbor)?.isCbor
+                ? (rawValue as Cbor)
+                : cbor(rawValue as CborInput);
+              if (matchPattern(valuePattern, value)) {
+                // Collect captures from key pattern
+                collectCapturesFromPattern(keyPattern, key, haystack, captures);
+                // Collect captures from value pattern
+                collectCapturesFromPattern(valuePattern, value, haystack, captures);
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      // If pattern matches, return the map path with captures
+      if (mapPatternMatches(pattern, haystack)) {
+        return [[[haystack]], captures];
+      }
+      return [[], new Map()];
+    }
+  }
+};
+
+/**
  * Formats a MapPattern as a string.
  */
 export const mapPatternDisplay = (
