@@ -36,9 +36,9 @@ export class LeafStructurePattern implements Matcher {
   }
 
   pathsWithCaptures(haystack: Envelope): [Path[], Map<string, Path[]>] {
-    const paths = haystack.isLeaf() || haystack.isKnownValue()
-      ? [[haystack]]
-      : [];
+    const envCase = haystack.case();
+    const isLeafOrKnownValue = envCase.type === "leaf" || envCase.type === "knownValue";
+    const paths = isLeafOrKnownValue ? [[haystack]] : [];
     return [paths, new Map<string, Path[]>()];
   }
 

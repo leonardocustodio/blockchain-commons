@@ -10,7 +10,7 @@ import type { Cbor } from "@bcts/dcbor";
 import { type Pattern as DCBORPattern, parse as parseDcborPattern } from "@bcts/dcbor-pattern";
 
 // Stub for cborFromDiagnostic - not implemented in dcbor yet
-function cborFromDiagnostic(_src: string): { ok: false } {
+function cborFromDiagnostic(_src: string): { ok: true; value: Cbor } | { ok: false } {
   // TODO: Implement when dcbor adds diagnostic notation parsing
   return { ok: false };
 }

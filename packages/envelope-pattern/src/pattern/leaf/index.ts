@@ -6,12 +6,7 @@
  * @module envelope-pattern/pattern/leaf
  */
 
-import type { Envelope } from "@bcts/envelope";
-import type { Path } from "../../format";
-import type { Matcher } from "../matcher";
-import { compileAsAtomic } from "../matcher";
-import type { Instr } from "../vm";
-import type { Pattern } from "../index";
+// Types used by submodules (re-exported only)
 
 // Re-export all leaf pattern types
 export { BoolPattern, registerBoolPatternFactory } from "./bool-pattern";

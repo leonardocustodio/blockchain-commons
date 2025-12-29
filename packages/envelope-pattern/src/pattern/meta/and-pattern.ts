@@ -12,11 +12,11 @@ import type { Matcher } from "../matcher";
 import type { Instr } from "../vm";
 import type { Pattern } from "../index";
 
-// Forward declaration for Pattern factory
-let createMetaAndPattern: ((pattern: AndPattern) => Pattern) | undefined;
+// Forward declaration for Pattern factory (may be used for late binding)
+let _createMetaAndPattern: ((pattern: AndPattern) => Pattern) | undefined;
 
 export function registerAndPatternFactory(factory: (pattern: AndPattern) => Pattern): void {
-  createMetaAndPattern = factory;
+  _createMetaAndPattern = factory;
 }
 
 /**

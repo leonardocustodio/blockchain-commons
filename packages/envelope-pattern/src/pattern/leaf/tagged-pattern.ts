@@ -6,12 +6,18 @@
  * @module envelope-pattern/pattern/leaf/tagged-pattern
  */
 
-import type { Envelope } from "@bcts/envelope";
-import type { Tag } from "@bcts/tags";
+import { Envelope } from "@bcts/envelope";
+import type { Tag, Cbor } from "@bcts/dcbor";
 import {
-  TaggedPattern as DCBORTaggedPattern,
-  Pattern as DCBORPattern,
-  type Matcher as DCBORMatcher,
+  type TaggedPattern as DCBORTaggedPattern,
+  type Pattern as DCBORPattern,
+  taggedPatternAny,
+  taggedPatternWithTag,
+  taggedPatternWithName,
+  taggedPatternWithRegex,
+  taggedPatternPathsWithCaptures,
+  taggedPatternDisplay,
+  patternDisplay,
 } from "@bcts/dcbor-pattern";
 import type { Path } from "../../format";
 import type { Matcher } from "../matcher";
@@ -45,28 +51,28 @@ export class TaggedPattern implements Matcher {
    * Creates a new TaggedPattern that matches any tagged value.
    */
   static any(): TaggedPattern {
-    return new TaggedPattern(DCBORTaggedPattern.any());
+    return new TaggedPattern(taggedPatternAny());
   }
 
   /**
    * Creates a new TaggedPattern with a specific tag and content pattern.
    */
   static withTag(tag: Tag, pattern: DCBORPattern): TaggedPattern {
-    return new TaggedPattern(DCBORTaggedPattern.withTag(tag, pattern));
+    return new TaggedPattern(taggedPatternWithTag(tag, pattern));
   }
 
   /**
    * Creates a new TaggedPattern with a specific tag name and content pattern.
    */
   static withName(name: string, pattern: DCBORPattern): TaggedPattern {
-    return new TaggedPattern(DCBORTaggedPattern.withName(name, pattern));
+    return new TaggedPattern(taggedPatternWithName(name, pattern));
   }
 
   /**
    * Creates a new TaggedPattern with a tag name matching regex and content pattern.
    */
   static withRegex(regex: RegExp, pattern: DCBORPattern): TaggedPattern {
-    return new TaggedPattern(DCBORTaggedPattern.withRegex(regex, pattern));
+    return new TaggedPattern(taggedPatternWithRegex(regex, pattern));
   }
 
   /**
@@ -90,17 +96,17 @@ export class TaggedPattern implements Matcher {
 
     if (cbor !== undefined) {
       // Delegate to dcbor-pattern for CBOR matching
-      const [dcborPaths, dcborCaptures] = (this.#inner as DCBORMatcher).pathsWithCaptures(cbor);
+      const [dcborPaths, dcborCaptures] = taggedPatternPathsWithCaptures(this.#inner, cbor);
 
       if (dcborPaths.length > 0) {
         // Convert dcbor paths to envelope paths
-        const envelopePaths: Path[] = dcborPaths.map((dcborPath) => {
+        const envelopePaths: Path[] = dcborPaths.map((dcborPath: Cbor[]) => {
           const envPath: Path = [haystack];
           // Skip the first element (root) and convert rest to envelopes
           for (let i = 1; i < dcborPath.length; i++) {
             const elem = dcborPath[i];
             if (elem !== undefined) {
-              envPath.push(subject.constructor.new(elem) as Envelope);
+              envPath.push(Envelope.newLeaf(elem));
             }
           }
           return envPath;
@@ -109,12 +115,12 @@ export class TaggedPattern implements Matcher {
         // Convert dcbor captures to envelope captures
         const envelopeCaptures = new Map<string, Path[]>();
         for (const [name, paths] of dcborCaptures) {
-          const envCapturePaths: Path[] = paths.map((dcborPath) => {
+          const envCapturePaths: Path[] = paths.map((dcborPath: Cbor[]) => {
             const envPath: Path = [haystack];
             for (let i = 1; i < dcborPath.length; i++) {
               const elem = dcborPath[i];
               if (elem !== undefined) {
-                envPath.push(subject.constructor.new(elem) as Envelope);
+                envPath.push(Envelope.newLeaf(elem));
               }
             }
             return envPath;
@@ -149,20 +155,64 @@ export class TaggedPattern implements Matcher {
   }
 
   toString(): string {
-    return this.#inner.toString();
+    return taggedPatternDisplay(this.#inner, patternDisplay);
   }
 
   /**
    * Equality comparison.
    */
   equals(other: TaggedPattern): boolean {
-    return this.#inner.equals(other.#inner);
+    // Compare by variant type and values
+    if (this.#inner.variant !== other.#inner.variant) {
+      return false;
+    }
+    switch (this.#inner.variant) {
+      case "Any":
+        return true;
+      case "Tag": {
+        const otherTag = other.#inner as { variant: "Tag"; tag: Tag; pattern: DCBORPattern };
+        return this.#inner.tag.value === otherTag.tag.value &&
+          patternDisplay(this.#inner.pattern) === patternDisplay(otherTag.pattern);
+      }
+      case "Name": {
+        const otherName = other.#inner as { variant: "Name"; name: string; pattern: DCBORPattern };
+        return this.#inner.name === otherName.name &&
+          patternDisplay(this.#inner.pattern) === patternDisplay(otherName.pattern);
+      }
+      case "Regex": {
+        const otherRegex = other.#inner as { variant: "Regex"; regex: RegExp; pattern: DCBORPattern };
+        return this.#inner.regex.source === otherRegex.regex.source &&
+          patternDisplay(this.#inner.pattern) === patternDisplay(otherRegex.pattern);
+      }
+    }
   }
 
   /**
    * Hash code for use in Maps/Sets.
    */
   hashCode(): number {
-    return this.#inner.hashCode();
+    switch (this.#inner.variant) {
+      case "Any":
+        return 0;
+      case "Tag":
+        return Number(BigInt(this.#inner.tag.value) & BigInt(0xFFFFFFFF));
+      case "Name":
+        return simpleStringHash(this.#inner.name);
+      case "Regex":
+        return simpleStringHash(this.#inner.regex.source);
+    }
   }
+}
+
+/**
+ * Simple string hash function for hashCode implementations.
+ */
+function simpleStringHash(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return hash;
 }

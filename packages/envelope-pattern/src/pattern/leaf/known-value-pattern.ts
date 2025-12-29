@@ -9,8 +9,13 @@
 import type { Envelope } from "@bcts/envelope";
 import { KnownValue } from "@bcts/known-values";
 import {
-  KnownValuePattern as DCBORKnownValuePattern,
-  type Matcher as DCBORMatcher,
+  type KnownValuePattern as DCBORKnownValuePattern,
+  knownValuePatternAny,
+  knownValuePatternValue,
+  knownValuePatternNamed,
+  knownValuePatternRegex,
+  knownValuePatternMatches,
+  knownValuePatternDisplay,
 } from "@bcts/dcbor-pattern";
 import type { Path } from "../../format";
 import type { Matcher } from "../matcher";
@@ -44,28 +49,28 @@ export class KnownValuePattern implements Matcher {
    * Creates a new KnownValuePattern that matches any known value.
    */
   static any(): KnownValuePattern {
-    return new KnownValuePattern(DCBORKnownValuePattern.any());
+    return new KnownValuePattern(knownValuePatternAny());
   }
 
   /**
    * Creates a new KnownValuePattern that matches the specific known value.
    */
   static value(value: KnownValue): KnownValuePattern {
-    return new KnownValuePattern(DCBORKnownValuePattern.value(value));
+    return new KnownValuePattern(knownValuePatternValue(value));
   }
 
   /**
    * Creates a new KnownValuePattern that matches known values by name.
    */
   static named(name: string): KnownValuePattern {
-    return new KnownValuePattern(DCBORKnownValuePattern.named(name));
+    return new KnownValuePattern(knownValuePatternNamed(name));
   }
 
   /**
    * Creates a new KnownValuePattern that matches known values by regex on their name.
    */
   static regex(regex: RegExp): KnownValuePattern {
-    return new KnownValuePattern(DCBORKnownValuePattern.regex(regex));
+    return new KnownValuePattern(knownValuePatternRegex(regex));
   }
 
   /**
@@ -83,25 +88,21 @@ export class KnownValuePattern implements Matcher {
   }
 
   pathsWithCaptures(haystack: Envelope): [Path[], Map<string, Path[]>] {
-    // Check if the envelope is a known value
-    const subject = haystack.subject();
-    const knownValue = subject.asKnownValue();
+    // Check if the envelope is a known value via case()
+    const envCase = haystack.case();
 
-    if (knownValue !== undefined) {
-      // Create CBOR from the KnownValue for pattern matching
-      const knownValueCbor = knownValue.toCbor();
-      const dcborPaths = (this.#inner as DCBORMatcher).paths(knownValueCbor);
-
-      if (dcborPaths.length > 0) {
+    if (envCase.type === "knownValue") {
+      // Get the KnownValue and create CBOR for pattern matching
+      const knownValueCbor = envCase.value.taggedCbor();
+      if (knownValuePatternMatches(this.#inner, knownValueCbor)) {
         return [[[haystack]], new Map<string, Path[]>()];
       }
     }
 
-    // Also try matching as a leaf
-    const cbor = subject.asLeaf();
-    if (cbor !== undefined) {
-      const dcborPaths = (this.#inner as DCBORMatcher).paths(cbor);
-      if (dcborPaths.length > 0) {
+    // Also try matching as a leaf (for tagged CBOR containing known values)
+    const leafCbor = haystack.asLeaf();
+    if (leafCbor !== undefined) {
+      if (knownValuePatternMatches(this.#inner, leafCbor)) {
         return [[[haystack]], new Map<string, Path[]>()];
       }
     }
@@ -129,20 +130,58 @@ export class KnownValuePattern implements Matcher {
   }
 
   toString(): string {
-    return this.#inner.toString();
+    return knownValuePatternDisplay(this.#inner);
   }
 
   /**
    * Equality comparison.
    */
   equals(other: KnownValuePattern): boolean {
-    return this.#inner.equals(other.#inner);
+    // Compare by variant type and values
+    if (this.#inner.variant !== other.#inner.variant) {
+      return false;
+    }
+    switch (this.#inner.variant) {
+      case "Any":
+        return true;
+      case "Value":
+        return this.#inner.value.valueBigInt() ===
+          (other.#inner as { variant: "Value"; value: KnownValue }).value.valueBigInt();
+      case "Named":
+        return this.#inner.name ===
+          (other.#inner as { variant: "Named"; name: string }).name;
+      case "Regex":
+        return this.#inner.pattern.source ===
+          (other.#inner as { variant: "Regex"; pattern: RegExp }).pattern.source;
+    }
   }
 
   /**
    * Hash code for use in Maps/Sets.
    */
   hashCode(): number {
-    return this.#inner.hashCode();
+    switch (this.#inner.variant) {
+      case "Any":
+        return 0;
+      case "Value":
+        return Number(this.#inner.value.valueBigInt() & BigInt(0xFFFFFFFF));
+      case "Named":
+        return simpleStringHash(this.#inner.name);
+      case "Regex":
+        return simpleStringHash(this.#inner.pattern.source);
+    }
   }
+}
+
+/**
+ * Simple string hash function for hashCode implementations.
+ */
+function simpleStringHash(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return hash;
 }

@@ -13,10 +13,10 @@ import type { Instr } from "../vm";
 import type { Pattern } from "../index";
 
 // Forward declaration for Pattern factory
-let createMetaOrPattern: ((pattern: OrPattern) => Pattern) | undefined;
+let _createMetaOrPattern: ((pattern: OrPattern) => Pattern) | undefined;
 
 export function registerOrPatternFactory(factory: (pattern: OrPattern) => Pattern): void {
-  createMetaOrPattern = factory;
+  _createMetaOrPattern = factory;
 }
 
 /**

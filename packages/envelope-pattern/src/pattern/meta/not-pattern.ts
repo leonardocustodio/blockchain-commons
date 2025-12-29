@@ -13,10 +13,10 @@ import type { Instr } from "../vm";
 import type { Pattern } from "../index";
 
 // Forward declaration for Pattern factory
-let createMetaNotPattern: ((pattern: NotPattern) => Pattern) | undefined;
+let _createMetaNotPattern: ((pattern: NotPattern) => Pattern) | undefined;
 
 export function registerNotPatternFactory(factory: (pattern: NotPattern) => Pattern): void {
-  createMetaNotPattern = factory;
+  _createMetaNotPattern = factory;
 }
 
 /**

@@ -13,10 +13,10 @@ import type { Instr } from "../vm";
 import type { Pattern } from "../index";
 
 // Forward declaration for Pattern factory
-let createMetaTraversePattern: ((pattern: TraversePattern) => Pattern) | undefined;
+let _createMetaTraversePattern: ((pattern: TraversePattern) => Pattern) | undefined;
 
 export function registerTraversePatternFactory(factory: (pattern: TraversePattern) => Pattern): void {
-  createMetaTraversePattern = factory;
+  _createMetaTraversePattern = factory;
 }
 
 /**

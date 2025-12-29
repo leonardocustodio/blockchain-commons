@@ -13,10 +13,10 @@ import type { Instr } from "../vm";
 import type { Pattern } from "../index";
 
 // Forward declaration for Pattern factory
-let createStructureSubjectPattern: ((pattern: SubjectPattern) => Pattern) | undefined;
+let _createStructureSubjectPattern: ((pattern: SubjectPattern) => Pattern) | undefined;
 
 export function registerSubjectPatternFactory(factory: (pattern: SubjectPattern) => Pattern): void {
-  createStructureSubjectPattern = factory;
+  _createStructureSubjectPattern = factory;
 }
 
 /**

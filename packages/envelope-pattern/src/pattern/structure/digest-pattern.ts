@@ -6,8 +6,7 @@
  * @module envelope-pattern/pattern/structure/digest-pattern
  */
 
-import type { Envelope } from "@bcts/envelope";
-import type { Digest } from "@bcts/components";
+import type { Envelope, Digest } from "@bcts/envelope";
 import { bytesToHex } from "@bcts/dcbor";
 import type { Path } from "../../format";
 import type { Matcher } from "../matcher";
@@ -85,7 +84,7 @@ export class DigestPattern implements Matcher {
 
   pathsWithCaptures(haystack: Envelope): [Path[], Map<string, Path[]>] {
     const digest = haystack.digest();
-    const digestData = digest.data;
+    const digestData = digest.data();
     let isHit = false;
 
     switch (this.#pattern.type) {
@@ -178,8 +177,15 @@ export class DigestPattern implements Matcher {
    */
   hashCode(): number {
     switch (this.#pattern.type) {
-      case "Digest":
-        return this.#pattern.digest.hashCode();
+      case "Digest": {
+        // Hash based on first few bytes of digest
+        const data = this.#pattern.digest.data();
+        let hash = 0;
+        for (let i = 0; i < Math.min(8, data.length); i++) {
+          hash = (hash * 31 + data[i]!) | 0;
+        }
+        return hash;
+      }
       case "Prefix": {
         let hash = 0;
         for (let i = 0; i < this.#pattern.prefix.length; i++) {

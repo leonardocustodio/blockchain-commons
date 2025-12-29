@@ -9,7 +9,6 @@
 import type { Envelope } from "@bcts/envelope";
 import {
   type NullPattern as DCBORNullPattern,
-  nullPattern as dcborNullPattern,
   nullPatternPaths as dcborNullPatternPaths,
   nullPatternDisplay,
 } from "@bcts/dcbor-pattern";
@@ -39,7 +38,8 @@ export class NullPattern implements Matcher {
   static readonly #instance = new NullPattern();
 
   private constructor() {
-    this.#inner = dcborNullPattern();
+    // Create the NullPattern directly - it's just { variant: "Null" }
+    this.#inner = { variant: "Null" };
   }
 
   /**

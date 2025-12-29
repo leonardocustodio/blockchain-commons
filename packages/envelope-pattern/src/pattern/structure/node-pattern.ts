@@ -54,7 +54,7 @@ export class NodePattern implements Matcher {
    */
   static interval(min: number, max?: number): NodePattern {
     const interval = max !== undefined
-      ? Interval.range(min, max)
+      ? Interval.from(min, max)
       : Interval.atLeast(min);
     return new NodePattern({ type: "AssertionsInterval", interval });
   }
@@ -144,7 +144,8 @@ export class NodePattern implements Matcher {
       case "Any":
         return 0;
       case "AssertionsInterval":
-        return this.#pattern.interval.hashCode();
+        // Simple hash based on interval min/max
+        return this.#pattern.interval.min() * 31 + (this.#pattern.interval.max() ?? 0);
     }
   }
 }

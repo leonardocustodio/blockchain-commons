@@ -14,10 +14,10 @@ import type { Instr } from "../vm";
 import type { Pattern } from "../index";
 
 // Forward declaration for Pattern factory
-let createMetaGroupPattern: ((pattern: GroupPattern) => Pattern) | undefined;
+let _createMetaGroupPattern: ((pattern: GroupPattern) => Pattern) | undefined;
 
 export function registerGroupPatternFactory(factory: (pattern: GroupPattern) => Pattern): void {
-  createMetaGroupPattern = factory;
+  _createMetaGroupPattern = factory;
 }
 
 /**

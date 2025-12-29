@@ -6,11 +6,7 @@
  * @module envelope-pattern/pattern/meta
  */
 
-import type { Envelope } from "@bcts/envelope";
-import type { Path } from "../../format";
-import type { Matcher } from "../matcher";
-import type { Instr } from "../vm";
-import type { Pattern } from "../index";
+// Types used by submodules (re-exported only)
 
 // Re-export all meta pattern types
 export { AnyPattern, registerAnyPatternFactory } from "./any-pattern";

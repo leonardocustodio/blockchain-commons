@@ -6,11 +6,7 @@
  * @module envelope-pattern/pattern/structure
  */
 
-import type { Envelope } from "@bcts/envelope";
-import type { Path } from "../../format";
-import type { Matcher } from "../matcher";
-import type { Instr } from "../vm";
-import type { Pattern } from "../index";
+// Types used by submodules (re-exported only)
 
 // Re-export all structure pattern types
 export { LeafStructurePattern, registerLeafStructurePatternFactory } from "./leaf-structure-pattern";
