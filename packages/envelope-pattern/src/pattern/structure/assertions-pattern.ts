@@ -1,0 +1,168 @@
+/**
+ * @bcts/envelope-pattern - Assertions pattern matching
+ *
+ * This is a 1:1 TypeScript port of bc-envelope-pattern-rust assertions_pattern.rs
+ *
+ * @module envelope-pattern/pattern/structure/assertions-pattern
+ */
+
+import type { Envelope } from "@bcts/envelope";
+import type { Path } from "../../format";
+import type { Matcher } from "../matcher";
+import type { Instr } from "../vm";
+import type { Pattern } from "../index";
+
+// Forward declaration for Pattern factory
+let createStructureAssertionsPattern: ((pattern: AssertionsPattern) => Pattern) | undefined;
+
+export function registerAssertionsPatternFactory(factory: (pattern: AssertionsPattern) => Pattern): void {
+  createStructureAssertionsPattern = factory;
+}
+
+/**
+ * Pattern type for assertions pattern matching.
+ *
+ * Corresponds to the Rust `AssertionsPattern` enum in assertions_pattern.rs
+ */
+export type AssertionsPatternType =
+  | { readonly type: "Any" }
+  | { readonly type: "WithPredicate"; readonly pattern: Pattern }
+  | { readonly type: "WithObject"; readonly pattern: Pattern };
+
+/**
+ * Pattern for matching assertions in envelopes.
+ *
+ * Corresponds to the Rust `AssertionsPattern` enum in assertions_pattern.rs
+ */
+export class AssertionsPattern implements Matcher {
+  readonly #pattern: AssertionsPatternType;
+
+  private constructor(pattern: AssertionsPatternType) {
+    this.#pattern = pattern;
+  }
+
+  /**
+   * Creates a new AssertionsPattern that matches any assertion.
+   */
+  static any(): AssertionsPattern {
+    return new AssertionsPattern({ type: "Any" });
+  }
+
+  /**
+   * Creates a new AssertionsPattern that matches assertions with predicates
+   * that match a specific pattern.
+   */
+  static withPredicate(pattern: Pattern): AssertionsPattern {
+    return new AssertionsPattern({ type: "WithPredicate", pattern });
+  }
+
+  /**
+   * Creates a new AssertionsPattern that matches assertions with objects
+   * that match a specific pattern.
+   */
+  static withObject(pattern: Pattern): AssertionsPattern {
+    return new AssertionsPattern({ type: "WithObject", pattern });
+  }
+
+  /**
+   * Gets the pattern type.
+   */
+  get patternType(): AssertionsPatternType {
+    return this.#pattern;
+  }
+
+  pathsWithCaptures(haystack: Envelope): [Path[], Map<string, Path[]>] {
+    const paths: Path[] = [];
+
+    for (const assertion of haystack.assertions()) {
+      switch (this.#pattern.type) {
+        case "Any":
+          paths.push([assertion]);
+          break;
+        case "WithPredicate": {
+          const predicate = assertion.asPredicate?.();
+          if (predicate !== undefined) {
+            const innerMatcher = this.#pattern.pattern as unknown as Matcher;
+            if (innerMatcher.matches(predicate)) {
+              paths.push([assertion]);
+            }
+          }
+          break;
+        }
+        case "WithObject": {
+          const object = assertion.asObject?.();
+          if (object !== undefined) {
+            const innerMatcher = this.#pattern.pattern as unknown as Matcher;
+            if (innerMatcher.matches(object)) {
+              paths.push([assertion]);
+            }
+          }
+          break;
+        }
+      }
+    }
+
+    return [paths, new Map<string, Path[]>()];
+  }
+
+  paths(haystack: Envelope): Path[] {
+    return this.pathsWithCaptures(haystack)[0];
+  }
+
+  matches(haystack: Envelope): boolean {
+    return this.paths(haystack).length > 0;
+  }
+
+  compile(code: Instr[], literals: Pattern[], _captures: string[]): void {
+    if (createStructureAssertionsPattern === undefined) {
+      throw new Error("AssertionsPattern factory not registered");
+    }
+    const idx = literals.length;
+    literals.push(createStructureAssertionsPattern(this));
+    code.push({ type: "MatchStructure", literalIndex: idx });
+  }
+
+  isComplex(): boolean {
+    return false;
+  }
+
+  toString(): string {
+    switch (this.#pattern.type) {
+      case "Any":
+        return "assert";
+      case "WithPredicate":
+        return `assertpred(${this.#pattern.pattern})`;
+      case "WithObject":
+        return `assertobj(${this.#pattern.pattern})`;
+    }
+  }
+
+  /**
+   * Equality comparison.
+   */
+  equals(other: AssertionsPattern): boolean {
+    if (this.#pattern.type !== other.#pattern.type) {
+      return false;
+    }
+    if (this.#pattern.type === "Any") {
+      return true;
+    }
+    const thisPattern = (this.#pattern as { type: "WithPredicate" | "WithObject"; pattern: Pattern }).pattern;
+    const otherPattern = (other.#pattern as { type: "WithPredicate" | "WithObject"; pattern: Pattern }).pattern;
+    return thisPattern === otherPattern;
+  }
+
+  /**
+   * Hash code for use in Maps/Sets.
+   */
+  hashCode(): number {
+    switch (this.#pattern.type) {
+      case "Any":
+        return 0;
+      case "WithPredicate":
+        return 1;
+      case "WithObject":
+        return 2;
+    }
+  }
+}
