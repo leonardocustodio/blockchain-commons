@@ -63,7 +63,7 @@
     "@bcts/sskr": "workspace:*",
     "@bcts/tags": "workspace:*",
     "@bcts/uniform-resources": "workspace:*",
-    "@noble/hashes": "^1.8.0",
+    "@noble/hashes": "^2.0.1",
     "@noble/post-quantum": "^0.5.4",
     "@scure/sr25519": "^1.0.0",
     "pako": "^2.1.0"

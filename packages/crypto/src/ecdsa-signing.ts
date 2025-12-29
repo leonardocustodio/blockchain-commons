@@ -1,6 +1,6 @@
 // Ported from bc-crypto-rust/src/ecdsa_signing.rs
 
-import { secp256k1 } from "@noble/curves/secp256k1";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { doubleSha256 } from "./hash.js";
 import {
   ECDSA_PRIVATE_KEY_SIZE,

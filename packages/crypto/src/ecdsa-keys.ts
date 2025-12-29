@@ -1,6 +1,6 @@
 // Ported from bc-crypto-rust/src/ecdsa_keys.rs
 
-import { secp256k1 } from "@noble/curves/secp256k1";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
 import type { RandomNumberGenerator } from "@bcts/rand";
 import { hkdfHmacSha256 } from "./hash.js";
 
