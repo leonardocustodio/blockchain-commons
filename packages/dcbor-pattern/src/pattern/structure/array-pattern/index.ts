@@ -157,7 +157,7 @@ const matchComplexSequence = (haystack: Cbor, pattern: Pattern): Path[] => {
 const findSequenceElementAssignments = (
   seqPattern: SequencePattern,
   arr: Cbor[],
-): Array<[number, number]> | undefined => {
+): [number, number][] | undefined => {
   const patterns = seqPattern.patterns;
   const assigner = new SequenceAssigner(patterns, arr, matchPattern);
   return assigner.findAssignments();
@@ -174,7 +174,7 @@ const handleSequenceCaptures = (
 ): [Path[], Map<string, Path[]>] => {
   const assignments = findSequenceElementAssignments(seqPattern, arr);
   if (assignments === undefined) {
-    return [[], new Map()];
+    return [[], new Map<string, Path[]>()];
   }
 
   const allCaptures = new Map<string, Path[]>();
@@ -402,18 +402,18 @@ export const arrayPatternPathsWithCaptures = (
   haystack: Cbor,
 ): [Path[], Map<string, Path[]>] => {
   if (!isArray(haystack)) {
-    return [[], new Map()];
+    return [[], new Map<string, Path[]>()];
   }
 
   const arr = getArrayElements(haystack);
   if (arr === undefined) {
-    return [[], new Map()];
+    return [[], new Map<string, Path[]>()];
   }
 
   switch (pattern.variant) {
     case "Any":
     case "Length":
-      return [arrayPatternPaths(pattern, haystack), new Map()];
+      return [arrayPatternPaths(pattern, haystack), new Map<string, Path[]>()];
 
     case "Elements": {
       const elemPattern = pattern.pattern;
@@ -424,7 +424,7 @@ export const arrayPatternPathsWithCaptures = (
 
         // First check if this pattern matches
         if (!arrayPatternMatches(pattern, haystack)) {
-          return [[], new Map()];
+          return [[], new Map<string, Path[]>()];
         }
 
         return handleSequenceCaptures(seqPattern, haystack, arr);
@@ -436,7 +436,7 @@ export const arrayPatternPathsWithCaptures = (
         const matchingElements = arr.filter((element) => matchPattern(elemPattern, element));
 
         if (matchingElements.length === 0) {
-          return [[], new Map()];
+          return [[], new Map<string, Path[]>()];
         }
 
         const captures = new Map<string, Path[]>();
@@ -451,7 +451,7 @@ export const arrayPatternPathsWithCaptures = (
       }
 
       // Default: no captures
-      return [arrayPatternPaths(pattern, haystack), new Map()];
+      return [arrayPatternPaths(pattern, haystack), new Map<string, Path[]>()];
     }
   }
 };

@@ -297,7 +297,7 @@ import { Quantifier } from "../quantifier";
 import type { Tag } from "@bcts/dcbor";
 import type { CborDate } from "@bcts/dcbor";
 import type { Digest } from "@bcts/components";
-import { KnownValue } from "@bcts/known-values";
+import type { KnownValue } from "@bcts/known-values";
 
 /**
  * Creates a pattern that matches any value.

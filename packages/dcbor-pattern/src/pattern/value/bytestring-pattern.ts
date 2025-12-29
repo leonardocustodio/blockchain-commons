@@ -7,6 +7,7 @@
 import type { Cbor } from "@bcts/dcbor";
 import { asBytes, bytesToHex } from "@bcts/dcbor";
 import type { Path } from "../../format";
+import { bytesEqual, bytesToLatin1 } from "./bytes-utils";
 
 /**
  * Pattern for matching byte string values in dCBOR.
@@ -64,36 +65,6 @@ export const byteStringPatternBinaryRegex = (pattern: RegExp): ByteStringPattern
 });
 
 /**
- * Compares two Uint8Arrays for equality.
- */
-const bytesEqual = (a: Uint8Array, b: Uint8Array): boolean => {
-  if (a.length !== b.length) {
-    return false;
-  }
-  for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) {
-      return false;
-    }
-  }
-  return true;
-};
-
-/**
- * Converts a Uint8Array to a Latin-1 string for regex matching.
- * Each byte value (0-255) maps directly to a character code.
- * This mimics Rust's regex::bytes::Regex behavior.
- */
-const bytesToLatin1 = (bytes: Uint8Array): string => {
-  // Use String.fromCharCode for direct byte-to-char mapping
-  // This preserves all byte values including 0x00-0xFF
-  let result = "";
-  for (const byte of bytes) {
-    result += String.fromCharCode(byte);
-  }
-  return result;
-};
-
-/**
  * Tests if a CBOR value matches this byte string pattern.
  */
 export const byteStringPatternMatches = (pattern: ByteStringPattern, haystack: Cbor): boolean => {
@@ -136,22 +107,5 @@ export const byteStringPatternDisplay = (pattern: ByteStringPattern): string => 
       return `h'${bytesToHex(pattern.value)}'`;
     case "BinaryRegex":
       return `h'/${pattern.pattern.source}/'`;
-  }
-};
-
-/**
- * Compares two ByteStringPatterns for equality.
- */
-export const byteStringPatternEquals = (a: ByteStringPattern, b: ByteStringPattern): boolean => {
-  if (a.variant !== b.variant) {
-    return false;
-  }
-  switch (a.variant) {
-    case "Any":
-      return true;
-    case "Value":
-      return bytesEqual(a.value, (b as typeof a).value);
-    case "BinaryRegex":
-      return a.pattern.source === (b as typeof a).pattern.source;
   }
 };

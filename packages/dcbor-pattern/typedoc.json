@@ -9,7 +9,9 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/tests/**",
-    "**/node_modules/**"
+    "**/node_modules/**",
+    "**/match-registry.ts",
+    "**/parse-registry.ts"
   ],
   "excludePrivate": true,
   "excludeProtected": false,

@@ -152,18 +152,18 @@ export const mapPatternPathsWithCaptures = (
   haystack: Cbor,
 ): [Path[], Map<string, Path[]>] => {
   if (!isMap(haystack)) {
-    return [[], new Map()];
+    return [[], new Map<string, Path[]>()];
   }
 
   switch (pattern.variant) {
     case "Any":
     case "Length":
-      return [mapPatternPaths(pattern, haystack), new Map()];
+      return [mapPatternPaths(pattern, haystack), new Map<string, Path[]>()];
 
     case "Constraints": {
       const keys = mapKeys(haystack);
       if (keys === undefined) {
-        return [[], new Map()];
+        return [[], new Map<string, Path[]>()];
       }
 
       const captures = new Map<string, Path[]>();
@@ -194,7 +194,7 @@ export const mapPatternPathsWithCaptures = (
       if (mapPatternMatches(pattern, haystack)) {
         return [[[haystack]], captures];
       }
-      return [[], new Map()];
+      return [[], new Map<string, Path[]>()];
     }
   }
 };

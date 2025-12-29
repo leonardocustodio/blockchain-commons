@@ -80,20 +80,3 @@ export const textPatternDisplay = (pattern: TextPattern): string => {
       return `/${pattern.pattern.source}/`;
   }
 };
-
-/**
- * Compares two TextPatterns for equality.
- */
-export const textPatternEquals = (a: TextPattern, b: TextPattern): boolean => {
-  if (a.variant !== b.variant) {
-    return false;
-  }
-  switch (a.variant) {
-    case "Any":
-      return true;
-    case "Value":
-      return a.value === (b as typeof a).value;
-    case "Regex":
-      return a.pattern.source === (b as typeof a).pattern.source;
-  }
-};

@@ -17,7 +17,7 @@ export const parseText = (lexer: Lexer): Result<Pattern> => {
   // `text` keyword was already consumed
   // Check if followed by a quoted value
   const peeked = lexer.peekToken();
-  if (peeked !== undefined && peeked.ok) {
+  if (peeked?.ok === true) {
     const token = peeked.value;
     if (token.type === "SingleQuoted") {
       lexer.next(); // consume the token

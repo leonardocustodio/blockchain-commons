@@ -24,7 +24,12 @@ import {
   mapPatternDisplay,
   mapPatternPathsWithCaptures,
 } from "./map-pattern";
-import { type TaggedPattern, taggedPatternPaths, taggedPatternDisplay } from "./tagged-pattern";
+import {
+  type TaggedPattern,
+  taggedPatternPaths,
+  taggedPatternDisplay,
+  taggedPatternPathsWithCaptures,
+} from "./tagged-pattern";
 
 /**
  * Union of all structure pattern types.
@@ -69,8 +74,7 @@ export const structurePatternPathsWithCaptures = (
     case "Map":
       return mapPatternPathsWithCaptures(pattern.pattern, haystack);
     case "Tagged":
-      // Tagged patterns - return paths with empty captures for now
-      return [structurePatternPaths(pattern, haystack), new Map()];
+      return taggedPatternPathsWithCaptures(pattern.pattern, haystack);
   }
 };
 

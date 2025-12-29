@@ -21,10 +21,11 @@ describe("search capture tests", () => {
     expect(captures.has("found")).toBe(true);
 
     // Verify capture has the right number of paths
-    const capturedPaths = captures.get("found")!;
-    expect(capturedPaths.length).toBe(1);
+    const capturedPaths = captures.get("found");
+    expect(capturedPaths).toBeDefined();
+    expect(capturedPaths?.length).toBe(1);
     // Each captured path should have 3 elements: root array, inner array, 42
-    expect(capturedPaths[0].length).toBe(3);
+    expect(capturedPaths?.[0].length).toBe(3);
   });
 
   it("test_search_capture_multiple_matches", () => {
@@ -38,8 +39,9 @@ describe("search capture tests", () => {
     expect(captures.size).toBe(1);
     expect(captures.has("target")).toBe(true);
 
-    const capturedPaths = captures.get("target")!;
-    expect(capturedPaths.length).toBe(3);
+    const capturedPaths = captures.get("target");
+    expect(capturedPaths).toBeDefined();
+    expect(capturedPaths?.length).toBe(3);
   });
 
   it("test_search_capture_nested_structure", () => {
@@ -53,9 +55,10 @@ describe("search capture tests", () => {
     expect(captures.has("deep")).toBe(true);
 
     // The capture should have a deep path
-    const capturedPaths = captures.get("deep")!;
-    expect(capturedPaths.length).toBe(1);
-    expect(capturedPaths[0].length).toBe(4); // root, level1, level2, target
+    const capturedPaths = captures.get("deep");
+    expect(capturedPaths).toBeDefined();
+    expect(capturedPaths?.length).toBe(1);
+    expect(capturedPaths?.[0].length).toBe(4); // root, level1, level2, target
   });
 
   it("test_search_capture_with_array_elements", () => {
@@ -97,11 +100,13 @@ describe("search capture tests", () => {
     expect(captures.has("found")).toBe(true);
     expect(captures.has("id_value")).toBe(true);
 
-    const foundCaptures = captures.get("found")!;
-    expect(foundCaptures.length).toBe(2);
+    const foundCaptures = captures.get("found");
+    expect(foundCaptures).toBeDefined();
+    expect(foundCaptures?.length).toBe(2);
 
-    const idCaptures = captures.get("id_value")!;
-    expect(idCaptures.length).toBe(2);
+    const idCaptures = captures.get("id_value");
+    expect(idCaptures).toBeDefined();
+    expect(idCaptures?.length).toBe(2);
   });
 
   it("test_search_capture_api_consistency", () => {

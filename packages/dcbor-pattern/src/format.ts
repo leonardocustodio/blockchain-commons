@@ -145,11 +145,12 @@ export class FormatPathsOptsBuilder {
  * Truncates a string to the specified maximum length, appending an ellipsis if
  * truncated.
  *
+ * @internal
  * @param s - The string to truncate
  * @param maxLength - Maximum length, or undefined for no truncation
  * @returns The possibly truncated string
  */
-export const truncateWithEllipsis = (s: string, maxLength?: number): string => {
+const truncateWithEllipsis = (s: string, maxLength?: number): string => {
   if (maxLength === undefined || s.length <= maxLength) {
     return s;
   }
@@ -162,16 +163,13 @@ export const truncateWithEllipsis = (s: string, maxLength?: number): string => {
 /**
  * Format a single CBOR element according to the specified format.
  *
+ * @internal
  * @param cbor - The CBOR value to format
  * @param format - The format to use
  * @param maxLength - Maximum length before truncation
  * @returns The formatted string
  */
-export const formatCborElement = (
-  cbor: Cbor,
-  format: PathElementFormat,
-  maxLength?: number,
-): string => {
+const formatCborElement = (cbor: Cbor, format: PathElementFormat, maxLength?: number): string => {
   let diagnostic: string;
 
   // Use the diagnostic functions from @bcts/dcbor
@@ -248,7 +246,7 @@ export const formatPathsWithCaptures = (
 
   for (const captureName of captureNames) {
     const capturePaths = captures.get(captureName);
-    if (capturePaths) {
+    if (capturePaths !== undefined) {
       result.push(`@${captureName}`);
       for (const path of capturePaths) {
         const formattedPath = formatPathOpt(path, opts);

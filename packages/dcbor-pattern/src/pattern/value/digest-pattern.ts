@@ -8,6 +8,7 @@ import type { Cbor } from "@bcts/dcbor";
 import { tagValue, isTagged, tagContent, asBytes, bytesToHex } from "@bcts/dcbor";
 import type { Digest } from "@bcts/components";
 import type { Path } from "../../format";
+import { bytesEqual, bytesStartsWith } from "./bytes-utils";
 
 /**
  * Pattern for matching digest values in dCBOR.
@@ -60,36 +61,6 @@ export const digestPatternBinaryRegex = (pattern: RegExp): DigestPattern => ({
   variant: "BinaryRegex",
   pattern,
 });
-
-/**
- * Compares two Uint8Arrays for equality.
- */
-const bytesEqual = (a: Uint8Array, b: Uint8Array): boolean => {
-  if (a.length !== b.length) {
-    return false;
-  }
-  for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) {
-      return false;
-    }
-  }
-  return true;
-};
-
-/**
- * Tests if bytes start with a prefix.
- */
-const bytesStartsWith = (bytes: Uint8Array, prefix: Uint8Array): boolean => {
-  if (bytes.length < prefix.length) {
-    return false;
-  }
-  for (let i = 0; i < prefix.length; i++) {
-    if (bytes[i] !== prefix[i]) {
-      return false;
-    }
-  }
-  return true;
-};
 
 /**
  * Extracts digest bytes from a tagged CBOR value if it's a digest (tag 40001).
@@ -161,24 +132,5 @@ export const digestPatternDisplay = (pattern: DigestPattern): string => {
       return `digest'${bytesToHex(pattern.prefix)}'`;
     case "BinaryRegex":
       return `digest'/${pattern.pattern.source}/'`;
-  }
-};
-
-/**
- * Compares two DigestPatterns for equality.
- */
-export const digestPatternEquals = (a: DigestPattern, b: DigestPattern): boolean => {
-  if (a.variant !== b.variant) {
-    return false;
-  }
-  switch (a.variant) {
-    case "Any":
-      return true;
-    case "Value":
-      return bytesEqual(a.value.data(), (b as typeof a).value.data());
-    case "Prefix":
-      return bytesEqual(a.prefix, (b as typeof a).prefix);
-    case "BinaryRegex":
-      return a.pattern.source === (b as typeof a).pattern.source;
   }
 };

@@ -8,6 +8,8 @@ import type { Cbor } from "@bcts/dcbor";
 import type { Path } from "../format";
 import type { Instr, Program } from "./vm";
 import type { Pattern } from "./index";
+import type { StructurePattern } from "./structure";
+import type { MetaPattern } from "./meta";
 
 /**
  * Result of pattern matching with captures.
@@ -172,10 +174,7 @@ const collectPatternCaptureNames = (pattern: Pattern, names: string[]): void => 
 /**
  * Collects capture names from structure patterns.
  */
-const collectStructurePatternCaptureNames = (
-  pattern: import("./structure").StructurePattern,
-  names: string[],
-): void => {
+const collectStructurePatternCaptureNames = (pattern: StructurePattern, names: string[]): void => {
   switch (pattern.type) {
     case "Array":
       if (pattern.pattern.variant === "Elements") {
@@ -203,10 +202,7 @@ const collectStructurePatternCaptureNames = (
 /**
  * Collects capture names from meta patterns.
  */
-const collectMetaPatternCaptureNames = (
-  pattern: import("./meta").MetaPattern,
-  names: string[],
-): void => {
+const collectMetaPatternCaptureNames = (pattern: MetaPattern, names: string[]): void => {
   switch (pattern.type) {
     case "Capture":
       if (!names.includes(pattern.pattern.name)) {
@@ -274,7 +270,7 @@ const compilePatternToCode = (
  * Compiles meta patterns to VM bytecode.
  */
 const compileMetaPattern = (
-  pattern: import("./meta").MetaPattern,
+  pattern: MetaPattern,
   code: Instr[],
   literals: Pattern[],
   captureNames: string[],

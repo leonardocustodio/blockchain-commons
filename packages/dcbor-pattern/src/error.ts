@@ -311,7 +311,9 @@ export const adjustSpan = (error: Error, offset: number): Error => {
         span: span(offset + error.span.start, offset + error.span.end),
       };
     // For errors without spans, return them as-is
-    default:
+    case "EmptyInput":
+    case "UnexpectedEndOfInput":
+    case "Unknown":
       return error;
   }
 };

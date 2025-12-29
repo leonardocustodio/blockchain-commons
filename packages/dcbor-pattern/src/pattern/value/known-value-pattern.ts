@@ -121,22 +121,3 @@ export const knownValuePatternDisplay = (pattern: KnownValuePattern): string => 
       return `'/${pattern.pattern.source}/'`;
   }
 };
-
-/**
- * Compares two KnownValuePatterns for equality.
- */
-export const knownValuePatternEquals = (a: KnownValuePattern, b: KnownValuePattern): boolean => {
-  if (a.variant !== b.variant) {
-    return false;
-  }
-  switch (a.variant) {
-    case "Any":
-      return true;
-    case "Value":
-      return a.value.valueBigInt() === (b as typeof a).value.valueBigInt();
-    case "Named":
-      return a.name === (b as typeof a).name;
-    case "Regex":
-      return a.pattern.source === (b as typeof a).pattern.source;
-  }
-};

@@ -24,7 +24,7 @@ export const setParseOrFn = (fn: (lexer: Lexer) => Result<Pattern>): void => {
  * Calls the registered parseOr function.
  */
 export const parseOrFromRegistry = (lexer: Lexer): Result<Pattern> => {
-  if (!parseOrFn) {
+  if (parseOrFn === undefined) {
     throw new Error("ParseOr function not initialized. Import parse/index to initialize.");
   }
   return parseOrFn(lexer);

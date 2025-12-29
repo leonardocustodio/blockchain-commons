@@ -99,7 +99,7 @@ export const parseBracketMap = (lexer: Lexer): Result<Pattern> => {
 
     // Check for comma or closing brace
     const nextToken = lexer.peekToken();
-    if (!nextToken?.ok) {
+    if (nextToken?.ok !== true) {
       return Err({ type: "UnexpectedEndOfInput" });
     }
 

@@ -177,7 +177,7 @@ const parseTaggedInner = (
   if (!contentResult.ok) {
     // Adjust error spans to be relative to the original input
     const error = contentResult.error;
-    if ("span" in error && error.span) {
+    if ("span" in error) {
       const offset = remainderStart + patternStart + trimOffset;
       const adjustedSpan = {
         start: error.span.start + offset,

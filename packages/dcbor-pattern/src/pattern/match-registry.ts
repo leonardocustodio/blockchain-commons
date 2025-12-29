@@ -90,7 +90,7 @@ export const setPathsWithCapturesDirectFn = (
  * @throws Error if the match function hasn't been registered yet.
  */
 export const matchPattern = (pattern: Pattern, haystack: Cbor): boolean => {
-  if (!matchFn) {
+  if (matchFn === undefined) {
     throw new Error("Pattern match function not initialized");
   }
   return matchFn(pattern, haystack);
@@ -101,7 +101,7 @@ export const matchPattern = (pattern: Pattern, haystack: Cbor): boolean => {
  * @throws Error if the paths function hasn't been registered yet.
  */
 export const getPatternPaths = (pattern: Pattern, haystack: Cbor): Path[] => {
-  if (!pathsFn) {
+  if (pathsFn === undefined) {
     throw new Error("Pattern paths function not initialized");
   }
   return pathsFn(pattern, haystack);
@@ -115,7 +115,7 @@ export const getPatternPathsWithCaptures = (
   pattern: Pattern,
   haystack: Cbor,
 ): MatchResultInternal => {
-  if (!pathsWithCapturesFn) {
+  if (pathsWithCapturesFn === undefined) {
     throw new Error("Pattern paths with captures function not initialized");
   }
   return pathsWithCapturesFn(pattern, haystack);
@@ -130,7 +130,7 @@ export const getPatternPathsWithCapturesDirect = (
   pattern: Pattern,
   haystack: Cbor,
 ): MatchResultInternal => {
-  if (!pathsWithCapturesDirectFn) {
+  if (pathsWithCapturesDirectFn === undefined) {
     throw new Error("Direct pattern paths with captures function not initialized");
   }
   return pathsWithCapturesDirectFn(pattern, haystack);

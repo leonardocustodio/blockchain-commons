@@ -281,7 +281,7 @@ export class Lexer {
     }
 
     const start = this.#position;
-    const ch = this.peek()!;
+    const ch = this.peek() ?? "";
 
     // Try multi-character operators first
     if (this.startsWith("-Infinity")) {
@@ -536,8 +536,10 @@ export class Lexer {
 
     // Parse first number
     const minStart = this.#position;
-    while (this.peek() !== undefined && isDigit(this.peek()!)) {
+    let peeked = this.peek();
+    while (peeked !== undefined && isDigit(peeked)) {
       this.advance();
+      peeked = this.peek();
     }
 
     if (this.#position === minStart) {
@@ -563,8 +565,10 @@ export class Lexer {
       } else if (afterComma !== undefined && isDigit(afterComma)) {
         // Bounded: {n,m}
         const maxStart = this.#position;
-        while (this.peek() !== undefined && isDigit(this.peek()!)) {
+        let maxPeeked = this.peek();
+        while (maxPeeked !== undefined && isDigit(maxPeeked)) {
           this.advance();
+          maxPeeked = this.peek();
         }
         max = parseInt(this.#input.slice(maxStart, this.#position), 10);
 
@@ -616,7 +620,7 @@ export class Lexer {
     let escape = false;
 
     while (this.#position < this.#input.length) {
-      const ch = this.advance()!;
+      const ch = this.advance() ?? "";
 
       if (escape) {
         switch (ch) {
@@ -661,7 +665,7 @@ export class Lexer {
     let escape = false;
 
     while (this.#position < this.#input.length) {
-      const ch = this.advance()!;
+      const ch = this.advance() ?? "";
 
       if (escape) {
         switch (ch) {
@@ -706,7 +710,7 @@ export class Lexer {
     let escape = false;
 
     while (this.#position < this.#input.length) {
-      const ch = this.advance()!;
+      const ch = this.advance() ?? "";
 
       if (escape) {
         pattern += ch;
@@ -741,8 +745,10 @@ export class Lexer {
       return Err({ type: "InvalidCaptureGroupName", name: "", span: this.spanFrom(start) });
     }
 
-    while (this.peek() !== undefined && isIdentCont(this.peek()!)) {
+    let identCh = this.peek();
+    while (identCh !== undefined && isIdentCont(identCh)) {
       this.advance();
+      identCh = this.peek();
     }
 
     const name = this.#input.slice(nameStart, this.#position);
@@ -756,7 +762,7 @@ export class Lexer {
     let hex = "";
 
     while (this.#position < this.#input.length) {
-      const ch = this.peek()!;
+      const ch = this.peek() ?? "";
 
       if (ch === "'") {
         this.advance();
@@ -784,7 +790,7 @@ export class Lexer {
     let escape = false;
 
     while (this.#position < this.#input.length) {
-      const ch = this.advance()!;
+      const ch = this.advance() ?? "";
 
       if (escape) {
         pattern += ch;
@@ -876,8 +882,10 @@ export class Lexer {
   private parseIdentifierOrKeyword(start: number): Result<SpannedToken> {
     const identStart = this.#position;
 
-    while (this.peek() !== undefined && isIdentCont(this.peek()!)) {
+    let identCh = this.peek();
+    while (identCh !== undefined && isIdentCont(identCh)) {
       this.advance();
+      identCh = this.peek();
     }
 
     const ident = this.#input.slice(identStart, this.#position);
@@ -910,7 +918,7 @@ export class Lexer {
     let content = "";
 
     while (this.#position < this.#input.length) {
-      const ch = this.advance()!;
+      const ch = this.advance() ?? "";
 
       if (ch === "'") {
         if (content.length === 0) {
@@ -931,7 +939,7 @@ export class Lexer {
     let content = "";
 
     while (this.#position < this.#input.length) {
-      const ch = this.advance()!;
+      const ch = this.advance() ?? "";
 
       if (ch === "'") {
         if (content.length === 0) {

@@ -49,8 +49,9 @@ describe("capture detailed tests", () => {
     expect(captures.has("arr")).toBe(true);
 
     // The capture should contain the array
-    const arrCaptures = captures.get("arr")!;
-    expect(arrCaptures.length).toBe(1);
+    const arrCaptures = captures.get("arr");
+    expect(arrCaptures).toBeDefined();
+    expect(arrCaptures?.length).toBe(1);
   });
 
   it("test_capture_with_nested_pattern", () => {
@@ -65,12 +66,14 @@ describe("capture detailed tests", () => {
     expect(captures.has("inner")).toBe(true);
 
     // The outer capture should contain the array
-    const outerCaptures = captures.get("outer")!;
-    expect(outerCaptures.length).toBe(1);
+    const outerCaptures = captures.get("outer");
+    expect(outerCaptures).toBeDefined();
+    expect(outerCaptures?.length).toBe(1);
 
     // The inner capture should contain the element
-    const innerCaptures = captures.get("inner")!;
-    expect(innerCaptures.length).toBe(1);
+    const innerCaptures = captures.get("inner");
+    expect(innerCaptures).toBeDefined();
+    expect(innerCaptures?.length).toBe(1);
   });
 
   it("test_multiple_captures_same_value", () => {

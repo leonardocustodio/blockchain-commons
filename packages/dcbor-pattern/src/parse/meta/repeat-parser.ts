@@ -22,7 +22,7 @@ export const parseQuantifier = (
 ): Result<Pattern> => {
   const peeked = lexer.peekToken();
 
-  if (!peeked?.ok) {
+  if (peeked?.ok !== true) {
     // No quantifier found
     if (forceRepeat) {
       return Ok(wrapInRepeat(pattern, Quantifier.exactly(1)));
@@ -73,7 +73,49 @@ export const parseQuantifier = (
       lexer.next();
       return Ok(wrapInRepeat(pattern, token.quantifier));
 
-    default:
+    // All other tokens - no quantifier found
+    case "And":
+    case "Or":
+    case "Not":
+    case "Tagged":
+    case "Array":
+    case "Map":
+    case "Bool":
+    case "ByteString":
+    case "Date":
+    case "Known":
+    case "Null":
+    case "Number":
+    case "Text":
+    case "Digest":
+    case "Search":
+    case "BoolTrue":
+    case "BoolFalse":
+    case "NaN":
+    case "Infinity":
+    case "NegInfinity":
+    case "ParenOpen":
+    case "ParenClose":
+    case "BracketOpen":
+    case "BracketClose":
+    case "BraceOpen":
+    case "BraceClose":
+    case "Comma":
+    case "Colon":
+    case "Ellipsis":
+    case "GreaterThanOrEqual":
+    case "LessThanOrEqual":
+    case "GreaterThan":
+    case "LessThan":
+    case "NumberLiteral":
+    case "GroupName":
+    case "StringLiteral":
+    case "SingleQuoted":
+    case "Regex":
+    case "HexString":
+    case "HexRegex":
+    case "DateQuoted":
+    case "DigestQuoted":
       // No quantifier found
       if (forceRepeat) {
         return Ok(wrapInRepeat(pattern, Quantifier.exactly(1)));

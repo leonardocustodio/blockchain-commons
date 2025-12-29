@@ -72,8 +72,8 @@ export class BooleanBacktrackState implements BacktrackState<boolean> {
 /**
  * Assignment tracking backtracking state - collects pattern-element pairs.
  */
-export class AssignmentBacktrackState implements BacktrackState<Array<[number, number]>> {
-  readonly assignments: Array<[number, number]> = [];
+export class AssignmentBacktrackState implements BacktrackState<[number, number][]> {
+  readonly assignments: [number, number][] = [];
 
   tryAdvance(patternIdx: number, elementIdx: number): boolean {
     this.assignments.push([patternIdx, elementIdx]);
@@ -93,7 +93,7 @@ export class AssignmentBacktrackState implements BacktrackState<Array<[number, n
     return patternIdx >= patternsLen && elementIdx >= elementsLen;
   }
 
-  getResult(): Array<[number, number]> {
+  getResult(): [number, number][] {
     return this.assignments;
   }
 

@@ -15,7 +15,11 @@ import { parseBool, parseBoolTrue, parseBoolFalse } from "../value/bool-parser";
 import { parseNull } from "../value/null-parser";
 import { parseNumber } from "../value/number-parser";
 import { parseText } from "../value/text-parser";
-import { parseByteString, parseHexStringToken, parseHexRegexToken } from "../value/bytestring-parser";
+import {
+  parseByteString,
+  parseHexStringToken,
+  parseHexRegexToken,
+} from "../value/bytestring-parser";
 import { parseDate } from "../value/date-parser";
 import { parseDigest } from "../value/digest-parser";
 import { parseKnownValue } from "../value/known-value-parser";
@@ -349,8 +353,24 @@ export const parsePrimary = (lexer: Lexer): Result<Pattern> => {
       });
     }
 
-    // Unexpected tokens
-    default:
+    // Unexpected tokens - these token types are not valid as primary patterns
+    case "And":
+    case "Or":
+    case "Not":
+    case "RepeatZeroOrMoreLazy":
+    case "RepeatZeroOrMorePossessive":
+    case "RepeatOneOrMore":
+    case "RepeatOneOrMoreLazy":
+    case "RepeatOneOrMorePossessive":
+    case "RepeatZeroOrOne":
+    case "RepeatZeroOrOneLazy":
+    case "RepeatZeroOrOnePossessive":
+    case "ParenClose":
+    case "BracketClose":
+    case "BraceClose":
+    case "Comma":
+    case "Colon":
+    case "Ellipsis":
       return Err({
         type: "UnexpectedToken",
         token,

@@ -63,9 +63,10 @@ describe("array capture tests", () => {
     expect(captures.has("any_item")).toBe(true);
 
     // The capture should have a path showing the array and element
-    const capturePaths = captures.get("any_item")!;
-    expect(capturePaths.length).toBe(1);
-    expect(capturePaths[0].length).toBe(2); // [array, element]
+    const capturePaths = captures.get("any_item");
+    expect(capturePaths).toBeDefined();
+    expect(capturePaths?.length).toBe(1);
+    expect(capturePaths?.[0].length).toBe(2); // [array, element]
   });
 
   it("test_array_nested_capture", () => {

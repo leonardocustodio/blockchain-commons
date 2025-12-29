@@ -8,7 +8,6 @@
 import type { Cbor } from "@bcts/dcbor";
 import type { Path } from "../../format";
 import type { Pattern } from "../index";
-import { matchPattern } from "../match-registry";
 
 /**
  * A pattern that matches a sequence of patterns in order.
@@ -29,23 +28,28 @@ export const sequencePattern = (patterns: Pattern[]): SequencePattern => ({
 
 /**
  * Tests if a CBOR value matches this sequence pattern.
- * Note: Sequences are meant for array element matching.
- * Simple case: check if haystack matches all patterns (for single values).
+ *
+ * Note: Sequence patterns are used within array patterns for matching
+ * consecutive elements. When used standalone (not within an array),
+ * they return false/empty as the actual sequence matching logic is
+ * handled by the VM and array pattern matching.
  */
-export const sequencePatternMatches = (pattern: SequencePattern, haystack: Cbor): boolean => {
-  // For single CBOR values, all patterns must match
-  // This is a simplified implementation - full sequence matching
-  // for arrays is done in ArrayPattern
-  return pattern.patterns.every((p: Pattern) => matchPattern(p, haystack));
+export const sequencePatternMatches = (_pattern: SequencePattern, _haystack: Cbor): boolean => {
+  // Sequence patterns are meant for array element matching.
+  // When used standalone, they don't match any single CBOR value.
+  // The VM handles actual sequence matching within arrays.
+  return false;
 };
 
 /**
  * Returns paths to matching values.
+ *
+ * Note: Sequence patterns return empty paths when used directly.
+ * The actual sequence matching is handled by the VM within array contexts.
  */
-export const sequencePatternPaths = (pattern: SequencePattern, haystack: Cbor): Path[] => {
-  if (sequencePatternMatches(pattern, haystack)) {
-    return [[haystack]];
-  }
+export const sequencePatternPaths = (_pattern: SequencePattern, _haystack: Cbor): Path[] => {
+  // Sequence patterns return empty paths when used directly.
+  // This matches Rust behavior where sequence matching is VM-based.
   return [];
 };
 

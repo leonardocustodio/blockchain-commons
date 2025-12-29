@@ -179,27 +179,3 @@ export const numberPatternDisplay = (pattern: NumberPattern): string => {
       return "-Infinity";
   }
 };
-
-/**
- * Compares two NumberPatterns for equality.
- */
-export const numberPatternEquals = (a: NumberPattern, b: NumberPattern): boolean => {
-  if (a.variant !== b.variant) {
-    return false;
-  }
-  switch (a.variant) {
-    case "Any":
-    case "NaN":
-    case "Infinity":
-    case "NegInfinity":
-      return true;
-    case "Value":
-    case "GreaterThan":
-    case "GreaterThanOrEqual":
-    case "LessThan":
-    case "LessThanOrEqual":
-      return a.value === (b as typeof a).value;
-    case "Range":
-      return a.min === (b as typeof a).min && a.max === (b as typeof a).max;
-  }
-};

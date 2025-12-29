@@ -106,11 +106,11 @@ export const searchPatternPaths = (pattern: SearchPattern, haystack: Cbor): Path
 };
 
 /**
- * Result type for paths with captures.
+ * Result type for paths with captures from search operations.
  */
-interface SearchWithCaptures {
-  paths: Path[];
-  captures: Map<string, Path[]>;
+export interface SearchWithCaptures {
+  readonly paths: Path[];
+  readonly captures: Map<string, Path[]>;
 }
 
 /**
@@ -282,14 +282,7 @@ export const searchPatternPathsWithCaptures = (
     extractCaptures(p, path, captures);
   };
 
-  searchRecursiveWithCaptures(
-    pattern.pattern,
-    haystack,
-    [],
-    results,
-    captures,
-    collectCapture,
-  );
+  searchRecursiveWithCaptures(pattern.pattern, haystack, [], results, captures, collectCapture);
 
   return { paths: results, captures };
 };

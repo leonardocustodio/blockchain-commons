@@ -8,7 +8,7 @@ import type { Cbor, Tag } from "@bcts/dcbor";
 import { isTagged, tagValue, tagContent } from "@bcts/dcbor";
 import type { Path } from "../../format";
 import type { Pattern } from "../index";
-import { matchPattern } from "../match-registry";
+import { matchPattern, getPatternPathsWithCapturesDirect } from "../match-registry";
 
 /**
  * Pattern for matching CBOR tagged value structures.
@@ -107,6 +107,70 @@ export const taggedPatternPaths = (pattern: TaggedPattern, haystack: Cbor): Path
 };
 
 /**
+ * Returns paths with captures for a tagged pattern.
+ * Collects captures from inner patterns for Tag variant.
+ */
+export const taggedPatternPathsWithCaptures = (
+  pattern: TaggedPattern,
+  haystack: Cbor,
+): [Path[], Map<string, Path[]>] => {
+  if (!isTagged(haystack)) {
+    return [[], new Map<string, Path[]>()];
+  }
+
+  const tag = tagValue(haystack);
+  const content = tagContent(haystack);
+
+  if (content === undefined) {
+    return [[], new Map<string, Path[]>()];
+  }
+
+  switch (pattern.variant) {
+    case "Any":
+      // Matches any tagged value, no captures
+      return [[[haystack]], new Map<string, Path[]>()];
+
+    case "Tag": {
+      if (tag !== pattern.tag.value) {
+        return [[], new Map<string, Path[]>()];
+      }
+      // Get paths and captures from inner pattern
+      const innerResult = getPatternPathsWithCapturesDirect(pattern.pattern, content);
+      if (innerResult.paths.length === 0) {
+        return [[], innerResult.captures];
+      }
+
+      // Build paths that include the tagged value as root
+      const taggedPaths: Path[] = innerResult.paths.map((contentPath: Path) => {
+        const path: Cbor[] = [haystack];
+        // Skip the content's root in the path
+        if (contentPath.length > 1) {
+          path.push(...contentPath.slice(1));
+        }
+        return path;
+      });
+
+      // Update captures to include tagged value as root
+      const updatedCaptures = new Map<string, Path[]>();
+      for (const [name, capturePaths] of innerResult.captures) {
+        const updated: Path[] = capturePaths.map((_capturePath: Path) => {
+          // For tagged patterns, capture path is [tagged_value, content]
+          return [haystack, content];
+        });
+        updatedCaptures.set(name, updated);
+      }
+
+      return [taggedPaths, updatedCaptures];
+    }
+
+    case "Name":
+    case "Regex":
+      // For other variants, fall back to basic paths without captures
+      return [taggedPatternPaths(pattern, haystack), new Map<string, Path[]>()];
+  }
+};
+
+/**
  * Formats a TaggedPattern as a string.
  */
 export const taggedPatternDisplay = (
@@ -122,34 +186,5 @@ export const taggedPatternDisplay = (
       return `tagged(${pattern.name}, ${patternDisplay(pattern.pattern)})`;
     case "Regex":
       return `tagged(/${pattern.regex.source}/, ${patternDisplay(pattern.pattern)})`;
-  }
-};
-
-/**
- * Compares two TaggedPatterns for equality.
- */
-export const taggedPatternEquals = (
-  a: TaggedPattern,
-  b: TaggedPattern,
-  patternEquals: (p1: Pattern, p2: Pattern) => boolean,
-): boolean => {
-  if (a.variant !== b.variant) {
-    return false;
-  }
-  switch (a.variant) {
-    case "Any":
-      return true;
-    case "Tag":
-      return (
-        a.tag.value === (b as typeof a).tag.value &&
-        patternEquals(a.pattern, (b as typeof a).pattern)
-      );
-    case "Name":
-      return a.name === (b as typeof a).name && patternEquals(a.pattern, (b as typeof a).pattern);
-    case "Regex":
-      return (
-        a.regex.source === (b as typeof a).regex.source &&
-        patternEquals(a.pattern, (b as typeof a).pattern)
-      );
   }
 };

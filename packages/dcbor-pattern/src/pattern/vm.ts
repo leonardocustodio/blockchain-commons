@@ -22,7 +22,10 @@ import type { Pattern } from "./index";
 import type { Quantifier } from "../quantifier";
 import { Reluctance } from "../reluctance";
 import { getPatternPaths, getPatternPathsWithCapturesDirect } from "./match-registry";
-import { searchPatternPathsWithCaptures, searchPattern as createSearchPattern } from "./meta/search-pattern";
+import {
+  searchPatternPathsWithCaptures,
+  searchPattern as createSearchPattern,
+} from "./meta/search-pattern";
 
 /**
  * Navigation axis for traversing dCBOR tree structures.
@@ -141,7 +144,9 @@ const cborEquals = (a: Cbor, b: Cbor): boolean => {
  */
 const pathHash = (path: Path): string => {
   // Use toDiagnostic for proper CBOR serialization
-  return path.map((item) => (item.toDiagnostic ? item.toDiagnostic() : String(item))).join("|");
+  return path
+    .map((item) => (typeof item.toDiagnostic === "function" ? item.toDiagnostic() : String(item)))
+    .join("|");
 };
 
 /**
@@ -193,7 +198,8 @@ const repeatPaths = (
 
         const combined = [...state.path];
         // Skip first element if it's the same as current cbor
-        const startIdx = subPath[0] && cborEquals(subPath[0], state.cbor) ? 1 : 0;
+        const firstElement = subPath[0];
+        const startIdx = firstElement !== undefined && cborEquals(firstElement, state.cbor) ? 1 : 0;
         for (let i = startIdx; i < subPath.length; i++) {
           combined.push(subPath[i]);
         }
@@ -251,7 +257,7 @@ const repeatPaths = (
   if (reluctance === Reluctance.Greedy) {
     for (const c of counts) {
       const list = states[c];
-      if (list) {
+      if (list !== undefined) {
         out.push(...list);
       }
     }
@@ -264,7 +270,7 @@ const repeatPaths = (
     }
     for (const c of counts) {
       const list = states[c];
-      if (list) {
+      if (list !== undefined) {
         out.push(...list);
       }
     }
@@ -285,7 +291,8 @@ const runThread = (
   const stack: Thread[] = [start];
 
   while (stack.length > 0) {
-    const th = stack.pop()!;
+    const th = stack.pop();
+    if (th === undefined) break;
 
     threadLoop: while (true) {
       const instr = prog.code[th.pc];
@@ -315,7 +322,7 @@ const runThread = (
           for (let i = 0; i < prog.captureNames.length; i++) {
             const name = prog.captureNames[i];
             const capturedPaths = result.captures.get(name);
-            if (capturedPaths) {
+            if (capturedPaths !== undefined) {
               while (th.captures.length <= i) {
                 th.captures.push([]);
               }
@@ -329,7 +336,7 @@ const runThread = (
           } else {
             for (const structurePath of result.paths) {
               const target = structurePath[structurePath.length - 1];
-              if (target) {
+              if (target !== undefined) {
                 const newThread: Thread = {
                   pc: th.pc + 1,
                   cbor: target,
@@ -387,7 +394,7 @@ const runThread = (
           }
           th.path.pop();
           const parent = th.path[th.path.length - 1];
-          if (parent) {
+          if (parent !== undefined) {
             th.cbor = parent;
           }
           th.pc += 1;
@@ -429,7 +436,7 @@ const runThread = (
             for (const [name, captureIdx] of instr.captureMap) {
               if (captureIdx < newThread.captures.length) {
                 const capturePaths = result.captures.get(name);
-                if (capturePaths) {
+                if (capturePaths !== undefined) {
                   for (const capturePath of capturePaths) {
                     newThread.captures[captureIdx].push(capturePath);
                   }
@@ -445,7 +452,7 @@ const runThread = (
         case "ExtendSequence": {
           th.savedPaths.push([...th.path]);
           const last = th.path[th.path.length - 1];
-          if (last) {
+          if (last !== undefined) {
             th.path = [last];
             th.cbor = last;
           }
@@ -455,7 +462,7 @@ const runThread = (
 
         case "CombineSequence": {
           const saved = th.savedPaths.pop();
-          if (saved) {
+          if (saved !== undefined) {
             const combined = [...saved];
             if (th.path.length > 1) {
               combined.push(...th.path.slice(1));
@@ -513,11 +520,12 @@ const runThread = (
         case "CaptureEnd": {
           const idx = instr.captureIndex;
           const stack = th.captureStack[idx];
-          if (stack && stack.length > 0) {
+          if (stack !== undefined && stack.length > 0) {
             stack.pop();
             const capturedPath = [...th.path];
-            if (th.captures[idx]) {
-              th.captures[idx].push(capturedPath);
+            const captureArray = th.captures[idx];
+            if (captureArray !== undefined) {
+              captureArray.push(capturedPath);
             }
           }
           th.pc += 1;
@@ -573,7 +581,7 @@ export const run = (
 
     for (const result of results) {
       const captureGroup = result.captures[i];
-      if (captureGroup) {
+      if (captureGroup !== undefined) {
         capturedPaths.push(...captureGroup);
       }
     }

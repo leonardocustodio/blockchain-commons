@@ -160,29 +160,3 @@ export const datePatternDisplay = (pattern: DatePattern): string => {
       return `date'/${pattern.pattern.source}/'`;
   }
 };
-
-/**
- * Compares two DatePatterns for equality.
- */
-export const datePatternEquals = (a: DatePattern, b: DatePattern): boolean => {
-  if (a.variant !== b.variant) {
-    return false;
-  }
-  switch (a.variant) {
-    case "Any":
-      return true;
-    case "Value":
-    case "Earliest":
-    case "Latest":
-      return a.value.timestamp() === (b as typeof a).value.timestamp();
-    case "Range":
-      return (
-        a.min.timestamp() === (b as typeof a).min.timestamp() &&
-        a.max.timestamp() === (b as typeof a).max.timestamp()
-      );
-    case "StringValue":
-      return a.value === (b as typeof a).value;
-    case "Regex":
-      return a.pattern.source === (b as typeof a).pattern.source;
-  }
-};

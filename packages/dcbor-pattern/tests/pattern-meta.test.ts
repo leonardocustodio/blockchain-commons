@@ -317,7 +317,10 @@ describe("meta pattern tests", () => {
   });
 
   it("test_search_array_order", () => {
-    const data = cbor([[1, 2, 3], [4, 5, 6]]);
+    const data = cbor([
+      [1, 2, 3],
+      [4, 5, 6],
+    ]);
 
     const arrayPattern = parse("search(array)");
     let paths = getPaths(arrayPattern, data);

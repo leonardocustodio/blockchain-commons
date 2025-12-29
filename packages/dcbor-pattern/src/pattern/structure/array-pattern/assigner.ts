@@ -60,7 +60,7 @@ export class SequenceAssigner {
   /**
    * Find the element-to-pattern assignments (returns assignment pairs).
    */
-  findAssignments(): Array<[number, number]> | undefined {
+  findAssignments(): [number, number][] | undefined {
     // Simple case: if no patterns, then empty array should match
     if (this.#patterns.length === 0) {
       return this.#arr.length === 0 ? [] : undefined;
@@ -71,7 +71,7 @@ export class SequenceAssigner {
 
     // Simple case: if pattern count equals element count AND no repeat patterns
     if (this.#patterns.length === this.#arr.length && !hasRepeatPatterns) {
-      const assignments: Array<[number, number]> = [];
+      const assignments: [number, number][] = [];
       for (let patternIdx = 0; patternIdx < this.#patterns.length; patternIdx++) {
         const pattern = this.#patterns[patternIdx];
         const element = this.#arr[patternIdx];

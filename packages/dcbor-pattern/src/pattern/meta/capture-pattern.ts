@@ -55,12 +55,3 @@ export const capturePatternDisplay = (
 ): string => {
   return `@${pattern.name}(${patternDisplay(pattern.pattern)})`;
 };
-
-/**
- * Collects capture names from this pattern.
- */
-export const capturePatternCollectNames = (pattern: CapturePattern, names: string[]): void => {
-  names.push(pattern.name);
-  // Note: Nested captures in pattern.pattern should also be collected
-  // This will be done when implementing the full Pattern type
-};
