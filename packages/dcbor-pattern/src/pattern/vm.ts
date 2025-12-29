@@ -22,6 +22,7 @@ import type { Pattern } from "./index";
 import type { Quantifier } from "../quantifier";
 import { Reluctance } from "../reluctance";
 import { getPatternPaths, getPatternPathsWithCapturesDirect } from "./match-registry";
+import { searchPatternPathsWithCaptures, searchPattern as createSearchPattern } from "./meta/search-pattern";
 
 /**
  * Navigation axis for traversing dCBOR tree structures.
@@ -405,10 +406,12 @@ const runThread = (
         }
 
         case "Search": {
-          const result = getPatternPathsWithCapturesDirect(
-            prog.literals[instr.patternIndex],
-            th.cbor,
-          );
+          // Create a SearchPattern wrapper for the inner pattern
+          const innerPattern = prog.literals[instr.patternIndex];
+          const searchPat = createSearchPattern(innerPattern);
+
+          // Use recursive search with captures
+          const result = searchPatternPathsWithCaptures(searchPat, th.cbor);
 
           for (const searchPath of result.paths) {
             const newThread: Thread = {
@@ -532,12 +535,15 @@ export const run = (
   prog: Program,
   root: Cbor,
 ): { paths: Path[]; captures: Map<string, Path[]> } => {
+  // Initialize captures array with one empty array per capture name
+  const initialCaptures: Path[][] = prog.captureNames.map(() => []);
+
   const start: Thread = {
     pc: 0,
     cbor: root,
     path: [root],
     savedPaths: [],
-    captures: [],
+    captures: initialCaptures,
     captureStack: [],
   };
 
