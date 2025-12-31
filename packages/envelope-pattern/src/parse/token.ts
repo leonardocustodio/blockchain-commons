@@ -104,7 +104,7 @@ export type Token =
 /**
  * Keyword to token type mapping.
  */
-const KEYWORDS: Map<string, Token> = new Map([
+const KEYWORDS = new Map<string, Token>([
   // Meta Pattern Operators
   ["&", { type: "And" }],
   ["|", { type: "Or" }],
@@ -184,8 +184,8 @@ function isHexDigit(ch: string): boolean {
  */
 export class Lexer {
   readonly #source: string;
-  #position: number = 0;
-  #tokenStart: number = 0;
+  #position = 0;
+  #tokenStart = 0;
   #peekedToken: { token: Token; span: Span } | undefined = undefined;
 
   constructor(source: string) {
@@ -248,7 +248,7 @@ export class Lexer {
   /**
    * Advances the position by n characters.
    */
-  bump(n: number = 1): void {
+  bump(n = 1): void {
     this.#position = Math.min(this.#position + n, this.#source.length);
   }
 
@@ -460,13 +460,13 @@ export class Lexer {
     let pos = 0;
 
     // Skip whitespace
-    while (pos < src.length && src[pos] !== undefined && isWhitespace(src[pos]!)) {
+    while (pos < src.length && src[pos] !== undefined && isWhitespace(src[pos])) {
       pos++;
     }
 
     // Parse minimum value
     const minStart = pos;
-    while (pos < src.length && src[pos] !== undefined && isDigit(src[pos]!)) {
+    while (pos < src.length && src[pos] !== undefined && isDigit(src[pos])) {
       pos++;
     }
     if (minStart === pos) {
@@ -478,7 +478,7 @@ export class Lexer {
     }
 
     // Skip whitespace
-    while (pos < src.length && src[pos] !== undefined && isWhitespace(src[pos]!)) {
+    while (pos < src.length && src[pos] !== undefined && isWhitespace(src[pos])) {
       pos++;
     }
 
@@ -488,7 +488,7 @@ export class Lexer {
     if (ch === ",") {
       pos++;
       // Skip whitespace
-      while (pos < src.length && src[pos] !== undefined && isWhitespace(src[pos]!)) {
+      while (pos < src.length && src[pos] !== undefined && isWhitespace(src[pos])) {
         pos++;
       }
 
@@ -500,7 +500,7 @@ export class Lexer {
       } else if (nextCh !== undefined && isDigit(nextCh)) {
         // {n,m} - range
         const maxStart = pos;
-        while (pos < src.length && src[pos] !== undefined && isDigit(src[pos]!)) {
+        while (pos < src.length && src[pos] !== undefined && isDigit(src[pos])) {
           pos++;
         }
         max = parseInt(src.slice(maxStart, pos), 10);
@@ -509,7 +509,7 @@ export class Lexer {
         }
 
         // Skip whitespace
-        while (pos < src.length && src[pos] !== undefined && isWhitespace(src[pos]!)) {
+        while (pos < src.length && src[pos] !== undefined && isWhitespace(src[pos])) {
           pos++;
         }
 
@@ -624,18 +624,23 @@ export class Lexer {
     }
 
     // Parse integer part
-    while (this.peek() !== undefined && isDigit(this.peek()!)) {
+    let c = this.peek();
+    while (c !== undefined && isDigit(c)) {
       this.bump(1);
+      c = this.peek();
     }
 
     // Check for decimal point
-    if (this.peek() === "." && this.peekNext() !== undefined && isDigit(this.peekNext()!)) {
+    const nextC = this.peekNext();
+    if (this.peek() === "." && nextC !== undefined && isDigit(nextC)) {
       isFloat = true;
       this.bump(1); // consume '.'
 
       // Parse fractional part
-      while (this.peek() !== undefined && isDigit(this.peek()!)) {
+      c = this.peek();
+      while (c !== undefined && isDigit(c)) {
         this.bump(1);
+        c = this.peek();
       }
     }
 
@@ -650,8 +655,10 @@ export class Lexer {
       }
 
       // Parse exponent digits
-      while (this.peek() !== undefined && isDigit(this.peek()!)) {
+      c = this.peek();
+      while (c !== undefined && isDigit(c)) {
         this.bump(1);
+        c = this.peek();
       }
     }
 
@@ -825,9 +832,12 @@ export class Lexer {
         // Group name
         this.bump(1);
         const start = this.#position;
-        if (this.peek() !== undefined && isIdentStart(this.peek()!)) {
-          while (this.peek() !== undefined && isIdentContinue(this.peek()!)) {
+        let gc = this.peek();
+        if (gc !== undefined && isIdentStart(gc)) {
+          gc = this.peek();
+          while (gc !== undefined && isIdentContinue(gc)) {
             this.bump(1);
+            gc = this.peek();
           }
           const name = this.#source.slice(start, this.#position);
           return { token: { type: "GroupName", name }, span: this.span() };
@@ -844,15 +854,18 @@ export class Lexer {
     }
 
     // Check for number (including negative)
-    if (isDigit(ch) || (ch === "-" && this.peekNext() !== undefined && isDigit(this.peekNext()!))) {
+    const nextChar = this.peekNext();
+    if (isDigit(ch) || (ch === "-" && nextChar !== undefined && isDigit(nextChar))) {
       return { token: this.#parseNumber(), span: this.span() };
     }
 
     // Check for identifier/keyword
     if (isIdentStart(ch)) {
       const start = this.#position;
-      while (this.peek() !== undefined && isIdentContinue(this.peek()!)) {
+      let ic = this.peek();
+      while (ic !== undefined && isIdentContinue(ic)) {
         this.bump(1);
+        ic = this.peek();
       }
       const ident = this.#source.slice(start, this.#position);
 

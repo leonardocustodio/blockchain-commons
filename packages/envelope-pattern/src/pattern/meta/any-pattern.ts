@@ -26,7 +26,9 @@ export function registerAnyPatternFactory(factory: (pattern: AnyPattern) => Patt
  * Corresponds to the Rust `AnyPattern` struct in any_pattern.rs
  */
 export class AnyPattern implements Matcher {
-  private constructor() {}
+  private constructor() {
+    // Empty constructor - AnyPattern is a singleton-like pattern with no state
+  }
 
   /**
    * Creates a new AnyPattern.

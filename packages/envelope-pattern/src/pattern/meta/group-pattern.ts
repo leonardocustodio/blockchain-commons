@@ -89,8 +89,8 @@ export class GroupPattern implements Matcher {
   }
 
   toString(): string {
-    const formattedRange = String(this.#quantifier);
-    return `(${this.#pattern})${formattedRange}`;
+    const formattedRange = this.#quantifier.toString();
+    return `(${(this.#pattern as unknown as { toString(): string }).toString()})${formattedRange}`;
   }
 
   /**

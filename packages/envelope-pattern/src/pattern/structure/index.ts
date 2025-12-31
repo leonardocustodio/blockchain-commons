@@ -16,25 +16,53 @@ export {
   LeafStructurePattern,
   registerLeafStructurePatternFactory,
 } from "./leaf-structure-pattern";
-export { SubjectPattern, registerSubjectPatternFactory } from "./subject-pattern";
-export { PredicatePattern, registerPredicatePatternFactory } from "./predicate-pattern";
-export { ObjectPattern, registerObjectPatternFactory } from "./object-pattern";
-export { AssertionsPattern, registerAssertionsPatternFactory } from "./assertions-pattern";
-export { DigestPattern, registerDigestPatternFactory } from "./digest-pattern";
-export { NodePattern, registerNodePatternFactory } from "./node-pattern";
-export { ObscuredPattern, registerObscuredPatternFactory } from "./obscured-pattern";
-export { WrappedPattern, registerWrappedPatternFactory } from "./wrapped-pattern";
+export {
+  SubjectPattern,
+  type SubjectPatternType,
+  registerSubjectPatternFactory,
+} from "./subject-pattern";
+export {
+  PredicatePattern,
+  type PredicatePatternType,
+  registerPredicatePatternFactory,
+} from "./predicate-pattern";
+export {
+  ObjectPattern,
+  type ObjectPatternType,
+  registerObjectPatternFactory,
+} from "./object-pattern";
+export {
+  AssertionsPattern,
+  type AssertionsPatternType,
+  registerAssertionsPatternFactory,
+} from "./assertions-pattern";
+export {
+  DigestPattern,
+  type DigestPatternType,
+  registerDigestPatternFactory,
+} from "./digest-pattern";
+export { NodePattern, type NodePatternType, registerNodePatternFactory } from "./node-pattern";
+export {
+  ObscuredPattern,
+  type ObscuredPatternType,
+  registerObscuredPatternFactory,
+} from "./obscured-pattern";
+export {
+  WrappedPattern,
+  type WrappedPatternType,
+  registerWrappedPatternFactory,
+} from "./wrapped-pattern";
 
 // Import concrete types for use in StructurePattern
-import { LeafStructurePattern } from "./leaf-structure-pattern";
-import { SubjectPattern } from "./subject-pattern";
-import { PredicatePattern } from "./predicate-pattern";
-import { ObjectPattern } from "./object-pattern";
-import { AssertionsPattern } from "./assertions-pattern";
-import { DigestPattern } from "./digest-pattern";
-import { NodePattern } from "./node-pattern";
-import { ObscuredPattern } from "./obscured-pattern";
-import { WrappedPattern } from "./wrapped-pattern";
+import { type LeafStructurePattern } from "./leaf-structure-pattern";
+import { type SubjectPattern } from "./subject-pattern";
+import { type PredicatePattern } from "./predicate-pattern";
+import { type ObjectPattern } from "./object-pattern";
+import { type AssertionsPattern } from "./assertions-pattern";
+import { type DigestPattern } from "./digest-pattern";
+import { type NodePattern } from "./node-pattern";
+import { type ObscuredPattern } from "./obscured-pattern";
+import { type WrappedPattern } from "./wrapped-pattern";
 
 /**
  * Union type for all structure patterns.

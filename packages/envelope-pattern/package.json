@@ -2,33 +2,28 @@
   "name": "@bcts/envelope-pattern",
   "version": "1.0.0-alpha.11",
   "type": "module",
-  "description": "Pattern matching for Gordian Envelope structures - 1:1 TypeScript port of bc-envelope-pattern-rust",
+  "description": "Pattern matching for Gordian Envelope structures",
   "license": "BSD-2-Clause-Patent",
   "contributors": [
     {
-      "name": "Wolf McNally",
-      "email": "wolf@wolfmcnally.com",
-      "url": "https://wolfmcnally.com"
-    },
-    {
-      "name": "Christopher Allen",
-      "email": "christophera@lifewithalacrity.com",
-      "url": "https://www.blockchaincommons.com"
-    },
-    {
       "name": "Leonardo Custodio",
-      "email": "leonardo@parity.io",
-      "url": "https://bcts.dev"
+      "email": "leonardo.custodio@parity.io",
+      "url": "https://github.com/leonardocustodio"
+    },
+    {
+      "name": "Karim Jedda",
+      "email": "karim@parity.io",
+      "url": "https://github.com/KarimJedda"
     }
   ],
   "homepage": "https://bcts.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/parity-stack/bcts",
+    "url": "git+https://github.com/leonardocustodio/bcts.git",
     "directory": "packages/envelope-pattern"
   },
   "bugs": {
-    "url": "https://github.com/parity-stack/bcts/issues"
+    "url": "https://github.com/leonardocustodio/bcts/issues"
   },
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",

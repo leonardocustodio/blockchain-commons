@@ -121,7 +121,7 @@ export class ObjectPattern implements Matcher {
       case "Any":
         return "obj";
       case "Pattern":
-        return `obj(${this.#pattern.pattern})`;
+        return `obj(${(this.#pattern.pattern as unknown as { toString(): string }).toString()})`;
     }
   }
 

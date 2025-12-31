@@ -43,7 +43,7 @@ export class TraversePattern implements Matcher {
       throw new Error("TraversePattern requires at least one pattern");
     }
 
-    const firstPat = patterns[0]!;
+    const firstPat = patterns[0];
     const restPatterns = patterns.slice(1);
     const rest = restPatterns.length === 0 ? undefined : TraversePattern.new(restPatterns);
     return new TraversePattern(firstPat, rest);
@@ -116,7 +116,7 @@ export class TraversePattern implements Matcher {
 
   toString(): string {
     return this.patterns()
-      .map((p) => String(p))
+      .map((p) => (p as unknown as { toString(): string }).toString())
       .join(" -> ");
   }
 

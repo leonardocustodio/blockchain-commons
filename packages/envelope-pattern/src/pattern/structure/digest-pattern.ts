@@ -26,8 +26,8 @@ export function registerDigestPatternFactory(factory: (pattern: DigestPattern) =
  */
 function bytesToLatin1(bytes: Uint8Array): string {
   let result = "";
-  for (let i = 0; i < bytes.length; i++) {
-    result += String.fromCharCode(bytes[i]!);
+  for (const byte of bytes) {
+    result += String.fromCharCode(byte);
   }
   return result;
 }
@@ -151,7 +151,7 @@ export class DigestPattern implements Matcher {
       case "Any":
         return "digest";
       case "Digest":
-        return `digest(${this.#pattern.digest})`;
+        return `digest(${this.#pattern.digest.hex()})`;
       case "Prefix":
         return `digest(${bytesToHex(this.#pattern.prefix)})`;
       case "BinaryRegex":
@@ -199,24 +199,24 @@ export class DigestPattern implements Matcher {
         return 0;
       case "Digest": {
         // Hash based on first few bytes of digest
-        const data = this.#pattern.digest.data();
+        const data = this.#pattern.digest.data().slice(0, 8);
         let hash = 0;
-        for (let i = 0; i < Math.min(8, data.length); i++) {
-          hash = (hash * 31 + data[i]!) | 0;
+        for (const byte of data) {
+          hash = (hash * 31 + byte) | 0;
         }
         return hash;
       }
       case "Prefix": {
         let hash = 0;
-        for (let i = 0; i < this.#pattern.prefix.length; i++) {
-          hash = (hash * 31 + this.#pattern.prefix[i]!) | 0;
+        for (const byte of this.#pattern.prefix) {
+          hash = (hash * 31 + byte) | 0;
         }
         return hash;
       }
       case "BinaryRegex": {
         let hash = 0;
-        for (let i = 0; i < this.#pattern.regex.source.length; i++) {
-          hash = (hash * 31 + this.#pattern.regex.source.charCodeAt(i)) | 0;
+        for (const char of this.#pattern.regex.source) {
+          hash = (hash * 31 + char.charCodeAt(0)) | 0;
         }
         return hash;
       }

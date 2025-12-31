@@ -116,7 +116,7 @@ export class MapPattern implements Matcher {
       case "Any":
         return "{*}";
       case "Interval":
-        return `{{${this.#pattern.interval}}}`;
+        return `{{${this.#pattern.interval.toString()}}}`;
     }
   }
 

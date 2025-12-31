@@ -18,24 +18,24 @@ export { NumberPattern, registerNumberPatternFactory } from "./number-pattern";
 export { TextPattern, registerTextPatternFactory } from "./text-pattern";
 export { ByteStringPattern, registerByteStringPatternFactory } from "./byte-string-pattern";
 export { DatePattern, registerDatePatternFactory } from "./date-pattern";
-export { ArrayPattern, registerArrayPatternFactory } from "./array-pattern";
-export { MapPattern, registerMapPatternFactory } from "./map-pattern";
+export { ArrayPattern, type ArrayPatternType, registerArrayPatternFactory } from "./array-pattern";
+export { MapPattern, type MapPatternType, registerMapPatternFactory } from "./map-pattern";
 export { KnownValuePattern, registerKnownValuePatternFactory } from "./known-value-pattern";
 export { TaggedPattern, registerTaggedPatternFactory } from "./tagged-pattern";
-export { CBORPattern, registerCBORPatternFactory } from "./cbor-pattern";
+export { CBORPattern, type CBORPatternType, registerCBORPatternFactory } from "./cbor-pattern";
 
 // Import concrete types for use in LeafPattern
-import { BoolPattern } from "./bool-pattern";
-import { NullPattern } from "./null-pattern";
-import { NumberPattern } from "./number-pattern";
-import { TextPattern } from "./text-pattern";
-import { ByteStringPattern } from "./byte-string-pattern";
-import { DatePattern } from "./date-pattern";
-import { ArrayPattern } from "./array-pattern";
-import { MapPattern } from "./map-pattern";
-import { KnownValuePattern } from "./known-value-pattern";
-import { TaggedPattern } from "./tagged-pattern";
-import { CBORPattern } from "./cbor-pattern";
+import { type BoolPattern } from "./bool-pattern";
+import { type NullPattern } from "./null-pattern";
+import { type NumberPattern } from "./number-pattern";
+import { type TextPattern } from "./text-pattern";
+import { type ByteStringPattern } from "./byte-string-pattern";
+import { type DatePattern } from "./date-pattern";
+import { type ArrayPattern } from "./array-pattern";
+import { type MapPattern } from "./map-pattern";
+import { type KnownValuePattern } from "./known-value-pattern";
+import { type TaggedPattern } from "./tagged-pattern";
+import { type CBORPattern } from "./cbor-pattern";
 
 /**
  * Union type for all leaf patterns.

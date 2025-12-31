@@ -80,7 +80,9 @@ export class AndPattern implements Matcher {
   }
 
   toString(): string {
-    return this.#patterns.map((p) => String(p)).join(" & ");
+    return this.#patterns
+      .map((p) => (p as unknown as { toString(): string }).toString())
+      .join(" & ");
   }
 
   /**

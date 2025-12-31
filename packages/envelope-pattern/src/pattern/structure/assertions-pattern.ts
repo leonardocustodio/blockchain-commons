@@ -30,7 +30,11 @@ export type AssertionsPatternType =
   | { readonly type: "Any" }
   | { readonly type: "WithPredicate"; readonly pattern: Pattern }
   | { readonly type: "WithObject"; readonly pattern: Pattern }
-  | { readonly type: "WithBoth"; readonly predicatePattern: Pattern; readonly objectPattern: Pattern };
+  | {
+      readonly type: "WithBoth";
+      readonly predicatePattern: Pattern;
+      readonly objectPattern: Pattern;
+    };
 
 /**
  * Pattern for matching assertions in envelopes.
@@ -180,11 +184,11 @@ export class AssertionsPattern implements Matcher {
       case "Any":
         return "assert";
       case "WithPredicate":
-        return `assertpred(${this.#pattern.pattern})`;
+        return `assertpred(${(this.#pattern.pattern as unknown as { toString(): string }).toString()})`;
       case "WithObject":
-        return `assertobj(${this.#pattern.pattern})`;
+        return `assertobj(${(this.#pattern.pattern as unknown as { toString(): string }).toString()})`;
       case "WithBoth":
-        return `assert(${this.#pattern.predicatePattern}, ${this.#pattern.objectPattern})`;
+        return `assert(${(this.#pattern.predicatePattern as unknown as { toString(): string }).toString()}, ${(this.#pattern.objectPattern as unknown as { toString(): string }).toString()})`;
     }
   }
 

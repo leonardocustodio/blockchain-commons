@@ -85,7 +85,7 @@ export class OrPattern implements Matcher {
       const patternStart = code.length;
 
       // Compile this pattern
-      const pattern = this.#patterns[i]!;
+      const pattern = this.#patterns[i];
       const matcher = pattern as unknown as Matcher;
       matcher.compile(code, literals, captures);
 
@@ -97,7 +97,7 @@ export class OrPattern implements Matcher {
       // If there's a next pattern, update the split to point here
       if (i < this.#patterns.length - 1) {
         const nextPattern = code.length;
-        code[splits[i]!] = { type: "Split", a: patternStart, b: nextPattern };
+        code[splits[i]] = { type: "Split", a: patternStart, b: nextPattern };
       }
     }
 
@@ -117,7 +117,9 @@ export class OrPattern implements Matcher {
   }
 
   toString(): string {
-    return this.#patterns.map((p) => String(p)).join(" | ");
+    return this.#patterns
+      .map((p) => (p as unknown as { toString(): string }).toString())
+      .join(" | ");
   }
 
   /**

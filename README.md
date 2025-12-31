@@ -25,6 +25,7 @@ This monorepo provides TypeScript implementations of Blockchain Commons specific
 | [**dcbor**](packages/dcbor) | Deterministic CBOR encoding - a specification for serializing data in a canonical, reproducible format. Ensures identical byte sequences for cryptographic operations and blockchain applications. [📖 API Docs](https://bcts.dev/docs/dcbor) | [bc-dcbor-rust](https://github.com/BlockchainCommons/bc-dcbor-rust) |
 | [**dcbor-pattern**](packages/dcbor-pattern) | Pattern matching for dCBOR - a powerful query language for matching and extracting data from dCBOR structures. Supports value, structure, and meta patterns with named captures and VM-based execution. [📖 API Docs](https://bcts.dev/docs/dcbor-pattern) | [bc-dcbor-pattern-rust](https://github.com/BlockchainCommons/bc-dcbor-pattern-rust) |
 | [**envelope**](packages/envelope) | Gordian Envelope - structured, privacy-focused data containers for secure information exchange. Supports encryption, elision, and cryptographic assertions. [📖 API Docs](https://bcts.dev/docs/envelope) | [bc-envelope-rust](https://github.com/BlockchainCommons/bc-envelope-rust) |
+| [**envelope-pattern**](packages/envelope-pattern) | Pattern matching for Gordian Envelope - query and extract data from Envelope structures. Supports leaf, structure, and meta patterns with subject/predicate/object matching and tree traversal. [📖 API Docs](https://bcts.dev/docs/envelope-pattern) | - |
 | [**known-values**](packages/known-values) | Known Values - compact, deterministic identifiers for ontological concepts. More efficient than URIs for representing predicates and relationships. [📖 API Docs](https://bcts.dev/docs/known-values) | [known-values-rust](https://github.com/BlockchainCommons/known-values-rust) |
 | [**provenance-mark**](packages/provenance-mark) | Provenance Marks - cryptographically-secured system for establishing authenticity and provenance of digital works. Generates verifiable mark chains with configurable resolution levels. [📖 API Docs](https://bcts.dev/docs/provenance-mark) | [provenance-mark-rust](https://github.com/BlockchainCommons/provenance-mark-rust) |
 | [**rand**](packages/rand) | Cryptographically secure random number generation utilities. Provides a consistent interface for random operations across all packages. [📖 API Docs](https://bcts.dev/docs/rand) | [bc-rand-rust](https://github.com/BlockchainCommons/bc-rand-rust) |
@@ -80,10 +81,10 @@ This TypeScript implementation is a direct port from the work of [@ChristopherA]
 
 Consider visiting [Blockchain Commons](https://www.blockchaincommons.com/) to learn more about the organization and their mission.
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
-## License
+## 📄 License
 
 This project is licensed under the BSD-2-Clause-Patent License – see the [LICENSE](./LICENSE) file for details.

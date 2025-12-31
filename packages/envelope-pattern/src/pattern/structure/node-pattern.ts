@@ -142,9 +142,9 @@ export class NodePattern implements Matcher {
       case "Any":
         return "node";
       case "AssertionsInterval":
-        return `node(${this.#pattern.interval})`;
+        return `node(${this.#pattern.interval.toString()})`;
       case "WithSubject":
-        return `node(${this.#pattern.subjectPattern})`;
+        return `node(${(this.#pattern.subjectPattern as unknown as { toString(): string }).toString()})`;
     }
   }
 
@@ -164,7 +164,10 @@ export class NodePattern implements Matcher {
         );
       case "WithSubject":
         // Simple reference equality for pattern (could be improved with deep equality)
-        return this.#pattern.subjectPattern === (other.#pattern as { type: "WithSubject"; subjectPattern: Pattern }).subjectPattern;
+        return (
+          this.#pattern.subjectPattern ===
+          (other.#pattern as { type: "WithSubject"; subjectPattern: Pattern }).subjectPattern
+        );
     }
   }
 

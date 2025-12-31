@@ -123,7 +123,7 @@ export class PredicatePattern implements Matcher {
       case "Any":
         return "pred";
       case "Pattern":
-        return `pred(${this.#pattern.pattern})`;
+        return `pred(${(this.#pattern.pattern as unknown as { toString(): string }).toString()})`;
     }
   }
 

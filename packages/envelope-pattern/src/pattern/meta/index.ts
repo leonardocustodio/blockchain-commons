@@ -22,14 +22,14 @@ export { TraversePattern, registerTraversePatternFactory } from "./traverse-patt
 export { GroupPattern, registerGroupPatternFactory } from "./group-pattern";
 
 // Import concrete types for use in MetaPattern
-import { AnyPattern } from "./any-pattern";
-import { AndPattern } from "./and-pattern";
-import { OrPattern } from "./or-pattern";
-import { NotPattern } from "./not-pattern";
-import { CapturePattern } from "./capture-pattern";
-import { SearchPattern } from "./search-pattern";
-import { TraversePattern } from "./traverse-pattern";
-import { GroupPattern } from "./group-pattern";
+import { type AnyPattern } from "./any-pattern";
+import { type AndPattern } from "./and-pattern";
+import { type OrPattern } from "./or-pattern";
+import { type NotPattern } from "./not-pattern";
+import { type CapturePattern } from "./capture-pattern";
+import { type SearchPattern } from "./search-pattern";
+import { type TraversePattern } from "./traverse-pattern";
+import { type GroupPattern } from "./group-pattern";
 
 /**
  * Union type for all meta patterns.
@@ -263,7 +263,7 @@ export function metaPatternCollectCaptureNames(pattern: MetaPattern, out: string
 function collectCaptureNamesFromPattern(pattern: Pattern, out: string[]): void {
   // This will be properly implemented when Pattern type is fully defined
   const p = pattern as unknown as { collectCaptureNames?: (out: string[]) => void };
-  if (p.collectCaptureNames) {
+  if (p.collectCaptureNames !== undefined) {
     p.collectCaptureNames(out);
   }
 }

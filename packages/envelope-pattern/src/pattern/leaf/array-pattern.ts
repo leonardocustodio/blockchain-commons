@@ -198,7 +198,7 @@ export class ArrayPattern implements Matcher {
       case "Any":
         return "[*]";
       case "Interval":
-        return `[{${this.#pattern.interval}}]`;
+        return `[{${this.#pattern.interval.toString()}}]`;
       case "DCBORPattern":
         return dcborPatternDisplay(this.#pattern.pattern);
       case "WithPatterns":

@@ -83,7 +83,7 @@ export function axisChildren(axis: Axis, env: Envelope): [Envelope, EdgeType][] 
         const subject = envCase.subject;
         if (subject.isWrapped()) {
           const unwrapped = subject.unwrap();
-          if (unwrapped) {
+          if (unwrapped !== undefined) {
             return [[unwrapped, "Content"]];
           }
         }
@@ -213,12 +213,13 @@ function repeatPaths(
       const subPaths = _patternPaths(pat, e);
       for (const subPath of subPaths) {
         const last = subPath[subPath.length - 1];
-        if (last && last.digest().hex() === e.digest().hex()) {
+        if (last !== undefined && last.digest().hex() === e.digest().hex()) {
           continue; // Avoid infinite loops
         }
-        if (last) {
+        if (last !== undefined) {
           const combined = [...pth];
-          if (subPath[0] && subPath[0].digest().hex() === e.digest().hex()) {
+          const subPathFirst = subPath[0];
+          if (subPathFirst !== undefined && subPathFirst.digest().hex() === e.digest().hex()) {
             combined.push(...subPath.slice(1));
           } else {
             combined.push(...subPath);
@@ -284,7 +285,7 @@ function repeatPaths(
     // Include results from counts determined by reluctance
     for (const c of counts) {
       const list = states[c];
-      if (list) {
+      if (list !== undefined) {
         out.push(...list);
       }
     }
@@ -302,7 +303,7 @@ function repeatPaths(
     // Then include results from counts determined by reluctance
     for (const c of counts) {
       const list = states[c];
-      if (list) {
+      if (list !== undefined) {
         out.push(...list);
       }
     }
@@ -320,9 +321,9 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
   const stack: Thread[] = [start];
 
   while (stack.length > 0) {
-    const th = stack.pop()!;
+    const th = stack.pop();
+    if (th === undefined) break;
 
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const instr = prog.code[th.pc];
 
@@ -372,14 +373,14 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
             // Extended path - use the full extended path
             th.path = [...firstPath];
             const lastEnv = firstPath[firstPath.length - 1];
-            if (lastEnv) {
+            if (lastEnv !== undefined) {
               th.env = lastEnv;
             }
           }
 
           // Add distributed captures for this path
           const pathCaptures = distributedCaptures[0];
-          if (pathCaptures) {
+          if (pathCaptures !== undefined) {
             for (const [name, capPaths] of pathCaptures) {
               const captureIdx = prog.captureNames.indexOf(name);
               if (captureIdx >= 0 && captureIdx < th.captures.length) {
@@ -395,15 +396,17 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
             for (const captureVec of fork.captures) {
               captureVec.length = 0;
             }
-            fork.path = [...paths[i]];
-            const lastEnv = paths[i][paths[i].length - 1];
-            if (lastEnv) {
+            const pathI = paths[i];
+            if (pathI === undefined) continue;
+            fork.path = [...pathI];
+            const lastEnv = pathI[pathI.length - 1];
+            if (lastEnv !== undefined) {
               fork.env = lastEnv;
             }
 
             // Add distributed captures for this path
             const forkCaptures = distributedCaptures[i];
-            if (forkCaptures) {
+            if (forkCaptures !== undefined) {
               for (const [name, capPaths] of forkCaptures) {
                 const captureIdx = prog.captureNames.indexOf(name);
                 if (captureIdx >= 0 && captureIdx < fork.captures.length) {
@@ -432,18 +435,23 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
           th.pc += 1;
 
           // Use first path for current thread
-          th.path = [...structurePaths[0]];
-          const firstLast = structurePaths[0][structurePaths[0].length - 1];
-          if (firstLast) {
-            th.env = firstLast;
+          const firstStructPath = structurePaths[0];
+          if (firstStructPath !== undefined) {
+            th.path = [...firstStructPath];
+            const firstLast = firstStructPath[firstStructPath.length - 1];
+            if (firstLast !== undefined) {
+              th.env = firstLast;
+            }
           }
 
           // Spawn threads for remaining paths
           for (let i = structurePaths.length - 1; i >= 1; i--) {
+            const structPathI = structurePaths[i];
+            if (structPathI === undefined) continue;
             const fork = cloneThread(th);
-            fork.path = [...structurePaths[i]];
-            const lastEnv = structurePaths[i][structurePaths[i].length - 1];
-            if (lastEnv) {
+            fork.path = [...structPathI];
+            const lastEnv = structPathI[structPathI.length - 1];
+            if (lastEnv !== undefined) {
               fork.env = lastEnv;
             }
             stack.push(fork);
@@ -497,6 +505,7 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
 
         case "Search": {
           const inner = prog.literals[instr.patternIndex];
+          if (inner === undefined) break;
           const [foundPaths, caps] = _patternPathsWithCaptures(inner, th.env);
 
           if (foundPaths.length > 0) {
@@ -504,7 +513,7 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
             for (const foundPath of foundPaths) {
               const resultPath = [...th.path];
               const first = foundPath[0];
-              if (first && first.digest().hex() === th.env.digest().hex()) {
+              if (first !== undefined && first.digest().hex() === th.env.digest().hex()) {
                 resultPath.push(...foundPath.slice(1));
               } else {
                 resultPath.push(...foundPath);
@@ -513,7 +522,7 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
               const resultCaps = th.captures.map((c) => c.map((p) => [...p]));
               for (const [name, idx] of instr.captureMap) {
                 const pths = caps.get(name);
-                if (pths) {
+                if (pths !== undefined) {
                   resultCaps[idx].push(...pths);
                 }
               }
@@ -547,11 +556,19 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
               allChildren.push(envCase.assertion.object());
               break;
             }
+            case "elided":
+            case "encrypted":
+            case "compressed":
+            case "leaf":
+            case "knownValue":
+              // These envelope types have no children to traverse
+              break;
           }
 
           // Push child threads in reverse order
           for (let i = allChildren.length - 1; i >= 0; i--) {
             const child = allChildren[i];
+            if (child === undefined) continue;
             const fork = cloneThread(th);
             fork.env = child;
             fork.path.push(child);
@@ -563,7 +580,7 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
 
         case "ExtendTraversal": {
           const lastEnv = th.path[th.path.length - 1];
-          if (lastEnv) {
+          if (lastEnv !== undefined) {
             th.savedPaths.push([...th.path]);
             th.env = lastEnv;
             th.path = [lastEnv]; // Start fresh path from the last envelope
@@ -574,14 +591,14 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
 
         case "CombineTraversal": {
           const savedPath = th.savedPaths.pop();
-          if (savedPath) {
+          if (savedPath !== undefined) {
             const combined = [...savedPath];
             const savedLast = savedPath[savedPath.length - 1];
             const currentFirst = th.path[0];
 
             if (
-              savedLast &&
-              currentFirst &&
+              savedLast !== undefined &&
+              currentFirst !== undefined &&
               savedLast.digest().hex() === currentFirst.digest().hex()
             ) {
               // Skip first element to avoid duplication
@@ -667,7 +684,7 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
               let end = th.path.length;
               // Check if next instruction is ExtendTraversal
               const nextInstr = prog.code[th.pc + 1];
-              if (nextInstr && nextInstr.type === "ExtendTraversal") {
+              if (nextInstr?.type === "ExtendTraversal") {
                 end = Math.max(0, end - 1);
               }
               const cap = th.path.slice(startIdx, end);
@@ -761,44 +778,59 @@ import type { MetaPattern } from "./meta";
 
 function collectStructureCaptureNames(pattern: StructurePattern, out: string[]): void {
   switch (pattern.type) {
-    case "Subject":
-      if (pattern.pattern.innerPattern()) {
-        collectCaptureNames(pattern.pattern.innerPattern()!, out);
+    case "Subject": {
+      const inner = pattern.pattern.innerPattern();
+      if (inner !== undefined) {
+        collectCaptureNames(inner, out);
       }
       break;
-    case "Predicate":
-      if (pattern.pattern.innerPattern()) {
-        collectCaptureNames(pattern.pattern.innerPattern()!, out);
+    }
+    case "Predicate": {
+      const inner = pattern.pattern.innerPattern();
+      if (inner !== undefined) {
+        collectCaptureNames(inner, out);
       }
       break;
-    case "Object":
-      if (pattern.pattern.innerPattern()) {
-        collectCaptureNames(pattern.pattern.innerPattern()!, out);
+    }
+    case "Object": {
+      const inner = pattern.pattern.innerPattern();
+      if (inner !== undefined) {
+        collectCaptureNames(inner, out);
       }
       break;
-    case "Assertions":
-      if (pattern.pattern.predicatePattern()) {
-        collectCaptureNames(pattern.pattern.predicatePattern()!, out);
+    }
+    case "Assertions": {
+      const predPat = pattern.pattern.predicatePattern();
+      if (predPat !== undefined) {
+        collectCaptureNames(predPat, out);
       }
-      if (pattern.pattern.objectPattern()) {
-        collectCaptureNames(pattern.pattern.objectPattern()!, out);
+      const objPat = pattern.pattern.objectPattern();
+      if (objPat !== undefined) {
+        collectCaptureNames(objPat, out);
       }
       break;
-    case "Node":
-      if (pattern.pattern.subjectPattern()) {
-        collectCaptureNames(pattern.pattern.subjectPattern()!, out);
+    }
+    case "Node": {
+      const subjPat = pattern.pattern.subjectPattern();
+      if (subjPat !== undefined) {
+        collectCaptureNames(subjPat, out);
       }
       for (const assertionPat of pattern.pattern.assertionPatterns()) {
         collectCaptureNames(assertionPat, out);
       }
       break;
-    case "Wrapped":
-      if (pattern.pattern.innerPattern()) {
-        collectCaptureNames(pattern.pattern.innerPattern()!, out);
+    }
+    case "Wrapped": {
+      const inner = pattern.pattern.innerPattern();
+      if (inner !== undefined) {
+        collectCaptureNames(inner, out);
       }
       break;
-    default:
-      // Leaf, Digest, Obscured don't have nested patterns
+    }
+    case "Digest":
+    case "Obscured":
+    case "Leaf":
+      // These don't have nested patterns
       break;
   }
 }
@@ -961,7 +993,9 @@ function compileMetaPattern(
     case "Traverse": {
       const patterns = pattern.pattern.patterns();
       for (let i = 0; i < patterns.length; i++) {
-        compilePattern(patterns[i], code, literals, captureNames);
+        const pat = patterns[i];
+        if (pat === undefined) continue;
+        compilePattern(pat, code, literals, captureNames);
         if (i < patterns.length - 1) {
           code.push({ type: "ExtendTraversal" });
         }
@@ -973,7 +1007,7 @@ function compileMetaPattern(
     }
     case "Group": {
       const quantifier = pattern.pattern.quantifier();
-      if (quantifier) {
+      if (quantifier !== undefined) {
         // Repeat pattern
         literals.push(pattern.pattern.pattern());
         code.push({

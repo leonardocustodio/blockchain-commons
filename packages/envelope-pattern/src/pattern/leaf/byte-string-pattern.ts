@@ -158,8 +158,8 @@ export class ByteStringPattern implements Matcher {
         break;
       case "Value": {
         const val = (this.#inner as { value: Uint8Array }).value;
-        for (let i = 0; i < val.length; i++) {
-          hash = hash * 31 + val[i];
+        for (const byte of val) {
+          hash = hash * 31 + byte;
         }
         break;
       }

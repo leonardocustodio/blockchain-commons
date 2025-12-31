@@ -88,7 +88,7 @@ export class CapturePattern implements Matcher {
   }
 
   toString(): string {
-    return `@${this.#name}(${this.#pattern})`;
+    return `@${this.#name}(${(this.#pattern as unknown as { toString(): string }).toString()})`;
   }
 
   /**
@@ -103,8 +103,8 @@ export class CapturePattern implements Matcher {
    */
   hashCode(): number {
     let hash = 0;
-    for (let i = 0; i < this.#name.length; i++) {
-      hash = (hash * 31 + this.#name.charCodeAt(i)) | 0;
+    for (const char of this.#name) {
+      hash = (hash * 31 + char.charCodeAt(0)) | 0;
     }
     return hash;
   }

@@ -224,7 +224,7 @@ export function parseArrayInner(src: string): Result<[Pattern, number]> {
 
     // Parse the first number
     const startPos = pos.value;
-    while (pos.value < src.length && src[pos.value] !== undefined && /\d/.test(src[pos.value]!)) {
+    while (pos.value < src.length && src[pos.value] !== undefined && /\d/.test(src[pos.value])) {
       pos.value++;
     }
     if (startPos === pos.value) {
@@ -274,7 +274,7 @@ export function parseArrayInner(src: string): Result<[Pattern, number]> {
         while (
           pos.value < src.length &&
           src[pos.value] !== undefined &&
-          /\d/.test(src[pos.value]!)
+          /\d/.test(src[pos.value])
         ) {
           pos.value++;
         }

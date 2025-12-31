@@ -123,7 +123,7 @@ export class SubjectPattern implements Matcher {
       case "Any":
         return "subj";
       case "Pattern":
-        return `subj(${this.#pattern.pattern})`;
+        return `subj(${(this.#pattern.pattern as unknown as { toString(): string }).toString()})`;
     }
   }
 

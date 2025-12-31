@@ -135,7 +135,7 @@ export class CBORPattern implements Matcher {
    */
   #collectDcborCaptureNames(dcborPattern: DCBORPattern, names: string[]): void {
     // Parse the pattern string to extract capture names
-    const patternStr = dcborPattern.toString();
+    const patternStr = dcborPatternDisplay(dcborPattern);
 
     // Simple parsing to find @name( patterns
     let i = 0;
@@ -351,9 +351,8 @@ export class CBORPattern implements Matcher {
  */
 function simpleStringHash(str: string): number {
   let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
+  for (const char of str) {
+    hash = (hash << 5) - hash + char.charCodeAt(0);
     hash = hash & hash; // Convert to 32-bit integer
   }
   return hash;

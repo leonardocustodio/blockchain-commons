@@ -72,7 +72,7 @@ export class NotPattern implements Matcher {
   }
 
   toString(): string {
-    return `!${this.#pattern}`;
+    return `!${(this.#pattern as unknown as { toString(): string }).toString()}`;
   }
 
   /**

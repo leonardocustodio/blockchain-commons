@@ -7,7 +7,7 @@
  */
 
 import type { Envelope } from "@bcts/envelope";
-import { KnownValue } from "@bcts/known-values";
+import { type KnownValue } from "@bcts/known-values";
 import {
   type KnownValuePattern as DCBORKnownValuePattern,
   knownValuePatternAny,

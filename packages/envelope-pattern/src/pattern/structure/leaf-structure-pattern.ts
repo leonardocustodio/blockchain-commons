@@ -28,7 +28,9 @@ export function registerLeafStructurePatternFactory(
  * Corresponds to the Rust `LeafStructurePattern` struct in leaf_structure_pattern.rs
  */
 export class LeafStructurePattern implements Matcher {
-  private constructor() {}
+  private constructor() {
+    // Empty constructor - LeafStructurePattern is a singleton-like pattern with no state
+  }
 
   /**
    * Creates a new LeafStructurePattern.

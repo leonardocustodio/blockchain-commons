@@ -163,7 +163,7 @@ function parseOr(lexer: Lexer): Result<Pattern> {
 
   while (true) {
     const next = lexer.peekToken();
-    if (next === undefined || next.token.type !== "Or") {
+    if (next?.token.type !== "Or") {
       break;
     }
     lexer.next(); // consume the |
@@ -191,7 +191,7 @@ function parseTraverse(lexer: Lexer): Result<Pattern> {
 
   while (true) {
     const next = lexer.peekToken();
-    if (next === undefined || next.token.type !== "Traverse") {
+    if (next?.token.type !== "Traverse") {
       break;
     }
     lexer.next(); // consume the ->
@@ -219,7 +219,7 @@ function parseAnd(lexer: Lexer): Result<Pattern> {
 
   while (true) {
     const next = lexer.peekToken();
-    if (next === undefined || next.token.type !== "And") {
+    if (next?.token.type !== "And") {
       break;
     }
     lexer.next(); // consume the &
@@ -240,7 +240,7 @@ function parseAnd(lexer: Lexer): Result<Pattern> {
  */
 function parseNot(lexer: Lexer): Result<Pattern> {
   const next = lexer.peekToken();
-  if (next !== undefined && next.token.type === "Not") {
+  if (next?.token.type === "Not") {
     lexer.next(); // consume the !
     const inner = parseGroup(lexer);
     if (!inner.ok) return inner;
@@ -262,54 +262,45 @@ function parseGroup(lexer: Lexer): Result<Pattern> {
     return primary;
   }
 
+  const tokenType = next.token.type;
   let quantifier: Quantifier | undefined;
 
-  switch (next.token.type) {
-    case "RepeatZeroOrMore":
-      lexer.next();
-      quantifier = Quantifier.zeroOrMore(Reluctance.Greedy);
-      break;
-    case "RepeatZeroOrMoreLazy":
-      lexer.next();
-      quantifier = Quantifier.zeroOrMore(Reluctance.Lazy);
-      break;
-    case "RepeatZeroOrMorePossessive":
-      lexer.next();
-      quantifier = Quantifier.zeroOrMore(Reluctance.Possessive);
-      break;
-    case "RepeatOneOrMore":
-      lexer.next();
-      quantifier = Quantifier.oneOrMore(Reluctance.Greedy);
-      break;
-    case "RepeatOneOrMoreLazy":
-      lexer.next();
-      quantifier = Quantifier.oneOrMore(Reluctance.Lazy);
-      break;
-    case "RepeatOneOrMorePossessive":
-      lexer.next();
-      quantifier = Quantifier.oneOrMore(Reluctance.Possessive);
-      break;
-    case "RepeatZeroOrOne":
-      lexer.next();
-      quantifier = Quantifier.zeroOrOne(Reluctance.Greedy);
-      break;
-    case "RepeatZeroOrOneLazy":
-      lexer.next();
-      quantifier = Quantifier.zeroOrOne(Reluctance.Lazy);
-      break;
-    case "RepeatZeroOrOnePossessive":
-      lexer.next();
-      quantifier = Quantifier.zeroOrOne(Reluctance.Possessive);
-      break;
-    case "Range":
-      lexer.next();
-      if (!next.token.value.ok) {
-        return err(next.token.value.error);
-      }
-      quantifier = next.token.value.value;
-      break;
-    default:
-      return primary;
+  if (tokenType === "RepeatZeroOrMore") {
+    lexer.next();
+    quantifier = Quantifier.zeroOrMore(Reluctance.Greedy);
+  } else if (tokenType === "RepeatZeroOrMoreLazy") {
+    lexer.next();
+    quantifier = Quantifier.zeroOrMore(Reluctance.Lazy);
+  } else if (tokenType === "RepeatZeroOrMorePossessive") {
+    lexer.next();
+    quantifier = Quantifier.zeroOrMore(Reluctance.Possessive);
+  } else if (tokenType === "RepeatOneOrMore") {
+    lexer.next();
+    quantifier = Quantifier.oneOrMore(Reluctance.Greedy);
+  } else if (tokenType === "RepeatOneOrMoreLazy") {
+    lexer.next();
+    quantifier = Quantifier.oneOrMore(Reluctance.Lazy);
+  } else if (tokenType === "RepeatOneOrMorePossessive") {
+    lexer.next();
+    quantifier = Quantifier.oneOrMore(Reluctance.Possessive);
+  } else if (tokenType === "RepeatZeroOrOne") {
+    lexer.next();
+    quantifier = Quantifier.zeroOrOne(Reluctance.Greedy);
+  } else if (tokenType === "RepeatZeroOrOneLazy") {
+    lexer.next();
+    quantifier = Quantifier.zeroOrOne(Reluctance.Lazy);
+  } else if (tokenType === "RepeatZeroOrOnePossessive") {
+    lexer.next();
+    quantifier = Quantifier.zeroOrOne(Reluctance.Possessive);
+  } else if (tokenType === "Range") {
+    lexer.next();
+    if (!next.token.value.ok) {
+      return err(next.token.value.error);
+    }
+    quantifier = next.token.value.value;
+  } else {
+    // No quantifier found, return the primary expression as-is
+    return primary;
   }
 
   return ok(repeat(primary.value, quantifier.min(), quantifier.max(), quantifier.reluctance()));
@@ -459,7 +450,25 @@ function parsePrimary(lexer: Lexer): Result<Pattern> {
     case "Null":
       return ok(nullPattern());
 
-    default:
+    // These tokens are not valid as primary expressions
+    // They are handled by other parsers or are structural tokens
+    case "And":
+    case "Or":
+    case "Not":
+    case "Traverse":
+    case "RepeatZeroOrMoreLazy":
+    case "RepeatZeroOrMorePossessive":
+    case "RepeatOneOrMore":
+    case "RepeatOneOrMoreLazy":
+    case "RepeatOneOrMorePossessive":
+    case "RepeatZeroOrOne":
+    case "RepeatZeroOrOneLazy":
+    case "RepeatZeroOrOnePossessive":
+    case "ParenClose":
+    case "BracketClose":
+    case "Comma":
+    case "Ellipsis":
+    case "Range":
       return err(unexpectedToken(token, span));
   }
 }
@@ -476,7 +485,7 @@ function parseParenGroup(lexer: Lexer): Result<Pattern> {
   if (!inner.ok) return inner;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -497,7 +506,7 @@ function parseCapture(lexer: Lexer, name: string): Result<Pattern> {
  */
 function parseSearch(lexer: Lexer): Result<Pattern> {
   const open = lexer.next();
-  if (open === undefined || open.token.type !== "ParenOpen") {
+  if (open?.token.type !== "ParenOpen") {
     return err({ type: "ExpectedOpenParen", span: lexer.span() });
   }
 
@@ -505,7 +514,7 @@ function parseSearch(lexer: Lexer): Result<Pattern> {
   if (!inner.ok) return inner;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -597,7 +606,7 @@ function parseArray(lexer: Lexer): Result<Pattern> {
   if (first.token.type === "RepeatZeroOrMore") {
     lexer.next(); // consume *
     const close = lexer.next();
-    if (close === undefined || close.token.type !== "BracketClose") {
+    if (close?.token.type !== "BracketClose") {
       return err({ type: "ExpectedCloseBracket", span: lexer.span() });
     }
     return ok(anyArray());
@@ -645,7 +654,7 @@ function parseArray(lexer: Lexer): Result<Pattern> {
  */
 function parseTag(lexer: Lexer): Result<Pattern> {
   const open = lexer.next();
-  if (open === undefined || open.token.type !== "ParenOpen") {
+  if (open?.token.type !== "ParenOpen") {
     return ok(anyTag());
   }
 
@@ -663,7 +672,7 @@ function parseTag(lexer: Lexer): Result<Pattern> {
   // tagToken.token.value.value contains the tag number for future tag-specific matching
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -708,7 +717,7 @@ function parseKnownValueContent(content: string): Result<Pattern> {
 function parseCbor(lexer: Lexer): Result<Pattern> {
   // Check for optional content in parentheses
   const next = lexer.peekToken();
-  if (next === undefined || next.token.type !== "ParenOpen") {
+  if (next?.token.type !== "ParenOpen") {
     return ok(patternLeaf(leafTag(TaggedPattern.any()))); // cbor matches any CBOR
   }
 
@@ -719,7 +728,7 @@ function parseCbor(lexer: Lexer): Result<Pattern> {
   if (!inner.ok) return inner;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -732,7 +741,7 @@ function parseCbor(lexer: Lexer): Result<Pattern> {
 
 function parseNode(lexer: Lexer): Result<Pattern> {
   const next = lexer.peekToken();
-  if (next === undefined || next.token.type !== "ParenOpen") {
+  if (next?.token.type !== "ParenOpen") {
     return ok(anyNode());
   }
 
@@ -741,7 +750,7 @@ function parseNode(lexer: Lexer): Result<Pattern> {
   if (!inner.ok) return inner;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -750,7 +759,7 @@ function parseNode(lexer: Lexer): Result<Pattern> {
 
 function parseAssertion(lexer: Lexer): Result<Pattern> {
   const next = lexer.peekToken();
-  if (next === undefined || next.token.type !== "ParenOpen") {
+  if (next?.token.type !== "ParenOpen") {
     return ok(anyAssertion());
   }
 
@@ -761,7 +770,7 @@ function parseAssertion(lexer: Lexer): Result<Pattern> {
   if (!pred.ok) return pred;
 
   const comma = lexer.next();
-  if (comma === undefined || comma.token.type !== "Comma") {
+  if (comma?.token.type !== "Comma") {
     return err(unexpectedToken(comma?.token ?? { type: "Null" }, comma?.span ?? lexer.span()));
   }
 
@@ -770,7 +779,7 @@ function parseAssertion(lexer: Lexer): Result<Pattern> {
   if (!obj.ok) return obj;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -781,7 +790,7 @@ function parseAssertion(lexer: Lexer): Result<Pattern> {
 
 function parseAssertionPred(lexer: Lexer): Result<Pattern> {
   const next = lexer.peekToken();
-  if (next === undefined || next.token.type !== "ParenOpen") {
+  if (next?.token.type !== "ParenOpen") {
     return ok(anyAssertion());
   }
 
@@ -790,7 +799,7 @@ function parseAssertionPred(lexer: Lexer): Result<Pattern> {
   if (!inner.ok) return inner;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -799,7 +808,7 @@ function parseAssertionPred(lexer: Lexer): Result<Pattern> {
 
 function parseAssertionObj(lexer: Lexer): Result<Pattern> {
   const next = lexer.peekToken();
-  if (next === undefined || next.token.type !== "ParenOpen") {
+  if (next?.token.type !== "ParenOpen") {
     return ok(anyAssertion());
   }
 
@@ -808,7 +817,7 @@ function parseAssertionObj(lexer: Lexer): Result<Pattern> {
   if (!inner.ok) return inner;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -817,7 +826,7 @@ function parseAssertionObj(lexer: Lexer): Result<Pattern> {
 
 function parseDigest(lexer: Lexer): Result<Pattern> {
   const next = lexer.peekToken();
-  if (next === undefined || next.token.type !== "ParenOpen") {
+  if (next?.token.type !== "ParenOpen") {
     return ok(patternStructure(structureDigest(DigestPattern.any())));
   }
 
@@ -832,7 +841,7 @@ function parseDigest(lexer: Lexer): Result<Pattern> {
   if (digestToken.token.type === "HexPattern") {
     if (!digestToken.token.value.ok) return err(digestToken.token.value.error);
     const close = lexer.next();
-    if (close === undefined || close.token.type !== "ParenClose") {
+    if (close?.token.type !== "ParenClose") {
       return err({ type: "ExpectedCloseParen", span: lexer.span() });
     }
     return ok(digestPrefix(digestToken.token.value.value));
@@ -843,7 +852,7 @@ function parseDigest(lexer: Lexer): Result<Pattern> {
 
 function parseObject(lexer: Lexer): Result<Pattern> {
   const next = lexer.peekToken();
-  if (next === undefined || next.token.type !== "ParenOpen") {
+  if (next?.token.type !== "ParenOpen") {
     return ok(anyObject());
   }
 
@@ -852,7 +861,7 @@ function parseObject(lexer: Lexer): Result<Pattern> {
   if (!inner.ok) return inner;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -861,7 +870,7 @@ function parseObject(lexer: Lexer): Result<Pattern> {
 
 function parsePredicate(lexer: Lexer): Result<Pattern> {
   const next = lexer.peekToken();
-  if (next === undefined || next.token.type !== "ParenOpen") {
+  if (next?.token.type !== "ParenOpen") {
     return ok(anyPredicate());
   }
 
@@ -870,7 +879,7 @@ function parsePredicate(lexer: Lexer): Result<Pattern> {
   if (!inner.ok) return inner;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -879,7 +888,7 @@ function parsePredicate(lexer: Lexer): Result<Pattern> {
 
 function parseSubject(lexer: Lexer): Result<Pattern> {
   const next = lexer.peekToken();
-  if (next === undefined || next.token.type !== "ParenOpen") {
+  if (next?.token.type !== "ParenOpen") {
     return ok(anySubject());
   }
 
@@ -888,7 +897,7 @@ function parseSubject(lexer: Lexer): Result<Pattern> {
   if (!inner.ok) return inner;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 
@@ -897,7 +906,7 @@ function parseSubject(lexer: Lexer): Result<Pattern> {
 
 function parseUnwrap(lexer: Lexer): Result<Pattern> {
   const next = lexer.peekToken();
-  if (next === undefined || next.token.type !== "ParenOpen") {
+  if (next?.token.type !== "ParenOpen") {
     return ok(unwrapEnvelope());
   }
 
@@ -906,7 +915,7 @@ function parseUnwrap(lexer: Lexer): Result<Pattern> {
   if (!inner.ok) return inner;
 
   const close = lexer.next();
-  if (close === undefined || close.token.type !== "ParenClose") {
+  if (close?.token.type !== "ParenClose") {
     return err({ type: "ExpectedCloseParen", span: lexer.span() });
   }
 

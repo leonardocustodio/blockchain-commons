@@ -1,6 +1,5 @@
 # Blockchain Commons Pattern Matcher for dCBOR (TypeScript)
 
-
 > Disclaimer: This package is under active development and APIs may change.
 
 ## Introduction

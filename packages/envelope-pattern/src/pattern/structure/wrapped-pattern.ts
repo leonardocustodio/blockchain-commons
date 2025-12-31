@@ -162,11 +162,11 @@ export class WrappedPattern implements Matcher {
         return "wrapped";
       case "Unwrap": {
         // Check if it's the "any" pattern by string comparison
-        const patternStr = String(this.#pattern.pattern);
+        const patternStr = (this.#pattern.pattern as unknown as { toString(): string }).toString();
         if (patternStr === "*") {
           return "unwrap";
         }
-        return `unwrap(${this.#pattern.pattern})`;
+        return `unwrap(${patternStr})`;
       }
     }
   }

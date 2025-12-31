@@ -79,7 +79,7 @@ export class SearchPattern implements Matcher {
     const seen = new Set<string>();
     const uniquePaths: Path[] = [];
     for (const path of resultPaths) {
-      const digestPath = path.map((e) => e.digest().hex).join(",");
+      const digestPath = path.map((e) => e.digest().hex()).join(",");
       if (!seen.has(digestPath)) {
         seen.add(digestPath);
         uniquePaths.push(path);
@@ -170,7 +170,7 @@ export class SearchPattern implements Matcher {
   }
 
   toString(): string {
-    return `search(${this.#pattern})`;
+    return `search(${(this.#pattern as unknown as { toString(): string }).toString()})`;
   }
 
   /**
@@ -195,7 +195,7 @@ function collectCaptureNames(pattern: Pattern, out: string[]): void {
   // This will be properly implemented when Pattern type is fully defined
   // For now, we check if it has a collectCaptureNames method
   const p = pattern as unknown as { collectCaptureNames?: (out: string[]) => void };
-  if (p.collectCaptureNames) {
+  if (p.collectCaptureNames !== undefined) {
     p.collectCaptureNames(out);
   }
 }
