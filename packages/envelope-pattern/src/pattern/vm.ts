@@ -593,7 +593,10 @@ function runThread(prog: Program, start: Thread, out: [Path, Path[][]][]): boole
             const combined = [...savedPath];
             const savedLast = savedPath[savedPath.length - 1];
 
-            if (savedLast?.digest().hex() === th.path[0]?.digest().hex() && savedLast !== undefined) {
+            if (
+              savedLast?.digest().hex() === th.path[0]?.digest().hex() &&
+              savedLast !== undefined
+            ) {
               // Skip first element to avoid duplication
               combined.push(...th.path.slice(1));
             } else {
