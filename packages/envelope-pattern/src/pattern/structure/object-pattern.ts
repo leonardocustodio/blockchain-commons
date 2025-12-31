@@ -1,0 +1,149 @@
+/**
+ * @bcts/envelope-pattern - Object pattern matching
+ *
+ * This is a 1:1 TypeScript port of bc-envelope-pattern-rust object_pattern.rs
+ *
+ * @module envelope-pattern/pattern/structure/object-pattern
+ */
+
+import type { Envelope } from "@bcts/envelope";
+import type { Path } from "../../format";
+import type { Matcher } from "../matcher";
+import type { Instr } from "../vm";
+import type { Pattern } from "../index";
+
+// Forward declaration for Pattern factory
+let createStructureObjectPattern: ((pattern: ObjectPattern) => Pattern) | undefined;
+
+export function registerObjectPatternFactory(factory: (pattern: ObjectPattern) => Pattern): void {
+  createStructureObjectPattern = factory;
+}
+
+/**
+ * Pattern type for object pattern matching.
+ *
+ * Corresponds to the Rust `ObjectPattern` enum in object_pattern.rs
+ */
+export type ObjectPatternType =
+  | { readonly type: "Any" }
+  | { readonly type: "Pattern"; readonly pattern: Pattern };
+
+/**
+ * Pattern for matching objects in envelopes.
+ *
+ * Corresponds to the Rust `ObjectPattern` enum in object_pattern.rs
+ */
+export class ObjectPattern implements Matcher {
+  readonly #pattern: ObjectPatternType;
+
+  private constructor(pattern: ObjectPatternType) {
+    this.#pattern = pattern;
+  }
+
+  /**
+   * Creates a new ObjectPattern that matches any object.
+   */
+  static any(): ObjectPattern {
+    return new ObjectPattern({ type: "Any" });
+  }
+
+  /**
+   * Creates a new ObjectPattern that matches objects matching the given pattern.
+   */
+  static pattern(pattern: Pattern): ObjectPattern {
+    return new ObjectPattern({ type: "Pattern", pattern });
+  }
+
+  /**
+   * Gets the pattern type.
+   */
+  get patternType(): ObjectPatternType {
+    return this.#pattern;
+  }
+
+  /**
+   * Gets the inner pattern if this is a Pattern type, undefined otherwise.
+   */
+  innerPattern(): Pattern | undefined {
+    return this.#pattern.type === "Pattern" ? this.#pattern.pattern : undefined;
+  }
+
+  pathsWithCaptures(haystack: Envelope): [Path[], Map<string, Path[]>] {
+    const object = haystack.asObject?.();
+
+    if (object === undefined) {
+      return [[], new Map<string, Path[]>()];
+    }
+
+    let paths: Path[];
+
+    switch (this.#pattern.type) {
+      case "Any":
+        paths = [[object]];
+        break;
+      case "Pattern": {
+        const innerMatcher = this.#pattern.pattern as unknown as Matcher;
+        if (innerMatcher.matches(object)) {
+          paths = [[object]];
+        } else {
+          paths = [];
+        }
+        break;
+      }
+    }
+
+    return [paths, new Map<string, Path[]>()];
+  }
+
+  paths(haystack: Envelope): Path[] {
+    return this.pathsWithCaptures(haystack)[0];
+  }
+
+  matches(haystack: Envelope): boolean {
+    return this.paths(haystack).length > 0;
+  }
+
+  compile(code: Instr[], literals: Pattern[], _captures: string[]): void {
+    if (createStructureObjectPattern === undefined) {
+      throw new Error("ObjectPattern factory not registered");
+    }
+    const idx = literals.length;
+    literals.push(createStructureObjectPattern(this));
+    code.push({ type: "MatchStructure", literalIndex: idx });
+  }
+
+  isComplex(): boolean {
+    return false;
+  }
+
+  toString(): string {
+    switch (this.#pattern.type) {
+      case "Any":
+        return "obj";
+      case "Pattern":
+        return `obj(${(this.#pattern.pattern as unknown as { toString(): string }).toString()})`;
+    }
+  }
+
+  /**
+   * Equality comparison.
+   */
+  equals(other: ObjectPattern): boolean {
+    if (this.#pattern.type !== other.#pattern.type) {
+      return false;
+    }
+    if (this.#pattern.type === "Any") {
+      return true;
+    }
+    const thisPattern = (this.#pattern as { type: "Pattern"; pattern: Pattern }).pattern;
+    const otherPattern = (other.#pattern as { type: "Pattern"; pattern: Pattern }).pattern;
+    return thisPattern === otherPattern;
+  }
+
+  /**
+   * Hash code for use in Maps/Sets.
+   */
+  hashCode(): number {
+    return this.#pattern.type === "Any" ? 0 : 1;
+  }
+}

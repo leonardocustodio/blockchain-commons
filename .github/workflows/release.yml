@@ -63,3 +63,35 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  tag:
+    name: Add NPM Tag (${{ matrix.tag }})
+    runs-on: ubuntu-latest
+    needs: publish
+    environment: npm
+    strategy:
+      matrix:
+        tag: [alpha, latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Add ${{ matrix.tag }} tag to all packages
+        run: |
+          for PKG_JSON in packages/*/package.json; do
+            PKG_NAME=$(jq -r '.name' "$PKG_JSON")
+            PKG_VERSION=$(jq -r '.version' "$PKG_JSON")
+            if [ "$PKG_NAME" != "null" ] && [ "$PKG_VERSION" != "null" ]; then
+              echo "Adding ${{ matrix.tag }} tag to $PKG_NAME@$PKG_VERSION"
+              npm dist-tag add "$PKG_NAME@$PKG_VERSION" ${{ matrix.tag }} || echo "Failed to tag $PKG_NAME"
+            fi
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
